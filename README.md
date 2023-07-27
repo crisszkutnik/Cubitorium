@@ -12,7 +12,13 @@
       - Primero correr `anchor build`. Se tiene que compilar el programa de Rust cuya salida esta en `backend/target`.
       - Despues correr `anchor test` y bueno, se tienen que correr los tests
 
+### Nota para los que usen VSCode
 
+La version nueva de YARN funciona diferente a las anteriores. Si tienen problemas para resolver los modulos cuando abren un archivo, hagan alguna de estas cosas.
+
+- Asegurense que no estan abriendo la carpeta root, sino la del modulo en particular. Es decir, no abran la carpeta `final-thesis` con VSCode, sino que tienen que abrir `client` y `backend` por separado. Si quieren tener las dos van a necesitar dos ventanas. Esto se podria arreglar creando un workspace pero creo que es bastante laburo y no se si vale la pena.
+- Agregado a lo anterior, seguir [esta guia](https://yarnpkg.com/getting-started/editor-sdks#editor-setup) que explica como configurar VSCode con YARN
+  
 ## Contributors
 
 | Name               | Email                     | FRBA email                   |

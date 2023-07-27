@@ -5,4 +5,10 @@ target
 **/*.rs.bk
 node_modules
 test-ledger
-.yarn
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
