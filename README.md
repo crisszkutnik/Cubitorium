@@ -1,6 +1,7 @@
 # Proyecto Final - 2023
 
-## Setup con links
+
+## Setup
 
 1. Instalar Node >= 18, recomiendo usar [NVM](https://github.com/nvm-sh/nvm)
 2. Instalar [YARN](https://yarnpkg.com/getting-started/install)
