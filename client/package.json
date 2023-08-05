@@ -14,6 +14,8 @@
     "@solana/web3.js": "1.78.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.45.4",
+    "react-router-dom": "^6.14.2",
     "zustand": "4.4.0"
   },
   "devDependencies": {
@@ -22,10 +24,18 @@
     "@typescript-eslint/eslint-plugin": "6.2.1",
     "@typescript-eslint/parser": "6.2.1",
     "@vitejs/plugin-react": "4.0.4",
+    "autoprefixer": "^10.4.14",
     "eslint": "8.46.0",
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-react-refresh": "0.4.3",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
     "typescript": "5.1.6",
     "vite": "4.4.8"
+  },
+  "dependenciesMeta": {
+    "@coral-xyz/anchor@0.28.1-beta.1": {
+      "unplugged": true
+    }
   }
 }

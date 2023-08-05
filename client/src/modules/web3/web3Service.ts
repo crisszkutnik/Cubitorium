@@ -5,10 +5,11 @@ import {
   setProvider,
   web3,
 } from "@coral-xyz/anchor";
-import { Backend } from "../../../../backend/target/types/backend";
+import { Backend, IDL } from "../../../../backend/target/types/backend";
 import { PDAHelper } from "./pdaHelper";
 import { UserInfo } from "../types/userInfo.interface";
-import * as idl from "../../../../backend/target/idl/backend.json";
+
+// TODO: Usar una wallet como metamask porque la Wallet de Anchor solo funciona en Node
 
 class Web3Service {
   provider: AnchorProvider;
@@ -27,7 +28,7 @@ class Web3Service {
     this.provider = provider;
 
     this.program = new Program<Backend>(
-      idl as Backend,
+      IDL,
       `2VDpa45STsAeuExQ447LPeCJq9LDWhFwXnfN1U1DuqcZ`
     );
   }
