@@ -21,7 +21,7 @@ export function TestPage() {
   useEffect(() => {
     if (wallet) {
       console.log(wallet);
-      web3Service.init(wallet);
+      web3Service.setWallet(wallet);
     }
 
     loadUserInfo();
