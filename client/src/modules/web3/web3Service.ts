@@ -1,26 +1,19 @@
-import {
-  AnchorProvider,
-  Program,
-  Wallet,
-  setProvider,
-  web3,
-} from "@coral-xyz/anchor";
+import { AnchorProvider, Program, setProvider, web3 } from "@coral-xyz/anchor";
 import { Backend, IDL } from "../../../../backend/target/types/backend";
 import { PDAHelper } from "./pdaHelper";
 import { UserInfo } from "../types/userInfo.interface";
-
-// TODO: Usar una wallet como metamask porque la Wallet de Anchor solo funciona en Node
+import { AnchorWallet } from "@solana/wallet-adapter-react";
 
 class Web3Service {
-  provider: AnchorProvider;
-  program: Program<Backend>;
+  provider: AnchorProvider | undefined;
+  program: Program<Backend> | undefined;
 
-  constructor() {
+  init(wallet: AnchorWallet) {
     const connection = new web3.Connection(`http://localhost:8899`, {
       commitment: `confirmed`,
     });
 
-    const provider = new AnchorProvider(connection, Wallet.local(), {
+    const provider = new AnchorProvider(connection, wallet, {
       commitment: `confirmed`,
     });
 
@@ -29,22 +22,26 @@ class Web3Service {
 
     this.program = new Program<Backend>(
       IDL,
-      `2VDpa45STsAeuExQ447LPeCJq9LDWhFwXnfN1U1DuqcZ`
+      `13YVuPAdZDTe1xssYDwTg6ndGFhhSMv3tZxh8s2wyZMA`
     );
   }
 
   async sendUserInfo(name: string, surname: string) {
-    return this.program.methods
+    return this.program?.methods
       .sendUserInfo(name, surname)
       .accounts({
-        user: this.provider.wallet.publicKey,
+        user: this.provider?.wallet.publicKey,
         userInfo: PDAHelper.getUserInfoPDA(),
       })
       .rpc();
   }
 
-  async getUserInfo(): Promise<UserInfo> {
-    return this.program.account.userInfo.fetch(PDAHelper.getUserInfoPDA());
+  async getUserInfo(): Promise<UserInfo | undefined> {
+    const pda = PDAHelper.getUserInfoPDA();
+
+    if (pda) {
+      return this.program?.account.userInfo.fetch(pda);
+    }
   }
 }
 
