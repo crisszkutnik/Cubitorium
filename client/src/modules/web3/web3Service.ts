@@ -62,7 +62,7 @@ class Web3Service {
       .rpc();
   }
 
-  async getUserInfo(): Promise<UserInfo | undefined> {
+  async getUserInfo(): Promise<UserInfo> {
     const pda = this.getPDAAddress(PDATypes.UserInfo);
     return this.program.account.userInfo.fetch(pda);
   }
