@@ -28,8 +28,10 @@ export function TestPage() {
   }, [wallet]);
 
   const loadUserInfo = async () => {
-    const a = await web3Service.getUserInfo();
-    console.log(a);
+    if (web3Service.isAuthenticated()) {
+      const a = await web3Service.getUserInfo();
+      console.log(a);
+    }
   };
 
   return (

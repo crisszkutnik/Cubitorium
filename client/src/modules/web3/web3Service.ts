@@ -15,14 +15,21 @@ export enum PDATypes {
 }
 class Web3Service {
   provider: AnchorProvider | undefined;
-  program: Program<Backend>;
+  _program: Program<Backend> | undefined;
 
-  constructor() {
-    this.program = new Program<Backend>(IDL, import.meta.env.PROGRAM_ID);
+  get program() {
+    if (this._program === undefined) {
+      this._program = new Program<Backend>(
+        IDL,
+        import.meta.env.VITE_PROGRAM_ID
+      );
+    }
+
+    return this._program;
   }
 
   setWallet(wallet: AnchorWallet) {
-    const connection = new web3.Connection(import.meta.env.NETWORK_URL, {
+    const connection = new web3.Connection(import.meta.env.VITE_NETWORK_URL, {
       commitment: `confirmed`,
     });
 

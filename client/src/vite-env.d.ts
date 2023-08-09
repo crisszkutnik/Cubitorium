@@ -1,6 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly PROGRAM_ID: string;
-  readonly NETWORK_URL: string;
+  readonly VITE_PROGRAM_ID: string;
+  readonly VITE_NETWORK_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
 }
