@@ -11,13 +11,17 @@
     - Parados sobre la carpeta `backend`
       - Primero correr `anchor build`. Se tiene que compilar el programa de Rust cuya salida esta en `backend/target`.
       - Despues correr `anchor test` y bueno, se tienen que correr los tests
+5. Correr la app
+    - Parados sobre la carpeta `backend`, correr Solana localmente corriendo `solana-test-validator`
+    - Tambien parados sobre `backend`, correr los siguientes comandos:
+      ```
+      solana config set --url localhost
+      anchor build
+      anchor deploy
+      ```
+      Se deberia hacer el deploy en tu instancia local de Solana
+    - Sobre la carpeta `client` correr `yarn dev` e ir a la URL que salga en pantalla. Agregar la ruta `/test` y se deberia mostrar un boton para conectarse a una wallet (por ahora solo funciona con Phantom). Una vez conectado, hay dos campos para enviar informacion de usuario a Solana. Si se guarda correctamente, la misma se deberia mostrar en pantalla
 
-### Nota para los que usen VSCode
-
-La version nueva de YARN funciona diferente a las anteriores. Si tienen problemas para resolver los modulos cuando abren un archivo, hagan alguna de estas cosas.
-
-- Asegurense que no estan abriendo la carpeta root, sino la del modulo en particular. Es decir, no abran la carpeta `final-thesis` con VSCode, sino que tienen que abrir `client` y `backend` por separado. Si quieren tener las dos van a necesitar dos ventanas. Esto se podria arreglar creando un workspace pero creo que es bastante laburo y no se si vale la pena.
-- Agregado a lo anterior, seguir [esta guia](https://yarnpkg.com/getting-started/editor-sdks#editor-setup) que explica como configurar VSCode con YARN
   
 ## Contributors
 
