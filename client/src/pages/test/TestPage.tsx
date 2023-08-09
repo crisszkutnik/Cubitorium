@@ -1,8 +1,8 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { web3Service } from "../../modules/web3/web3Service";
+import { useUserStore } from "../../modules/store/userStore";
+import { web3Service } from "../../modules/service/web3Service";
+import { LoginButton } from "../../components/LoginButton";
 
 interface FormData {
   name: string;
@@ -11,37 +11,29 @@ interface FormData {
 
 export function TestPage() {
   const { register, handleSubmit } = useForm<FormData>();
-  const wallet = useAnchorWallet();
+  const { userInfo, isLogged } = useUserStore();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    await web3Service.sendUserInfo(data.name, data.surname);
-    console.log(data);
+    web3Service.sendUserInfo(data.name, data.surname);
   };
 
   useEffect(() => {
-    if (wallet) {
-      console.log(wallet);
-      web3Service.setWallet(wallet);
+    if (isLogged) {
+      web3Service.getLoggedUserInfo();
     }
-
-    loadUserInfo();
-  }, [wallet]);
-
-  const loadUserInfo = async () => {
-    if (web3Service.isAuthenticated()) {
-      const a = await web3Service.getUserInfo();
-      console.log(a);
-    }
-  };
+  }, [isLogged]);
 
   return (
     <div onSubmit={handleSubmit(onSubmit)}>
-      <WalletMultiButton />
+      <LoginButton />
       <form>
         <input {...register("name")} />
         <input {...register("surname")} />
         <input type="submit" />
       </form>
+      <h1>
+        {userInfo.name} {userInfo.surname}
+      </h1>
     </div>
   );
 }

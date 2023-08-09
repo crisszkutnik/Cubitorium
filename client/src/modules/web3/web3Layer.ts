@@ -13,7 +13,8 @@ import { PublicKey } from "@solana/web3.js";
 export enum PDATypes {
   UserInfo = "user-info",
 }
-class Web3Service {
+
+class Web3Layer {
   provider: AnchorProvider | undefined;
   _program: Program<Backend> | undefined;
 
@@ -41,10 +42,6 @@ class Web3Service {
     this.provider = provider;
   }
 
-  isAuthenticated() {
-    return this.provider !== undefined;
-  }
-
   getPDAAddress(type: PDATypes) {
     if (this.provider === undefined) {
       throw new Error("User is not authenticated");
@@ -59,8 +56,8 @@ class Web3Service {
     )[0];
   }
 
-  async sendUserInfo(name: string, surname: string) {
-    return this.program.methods
+  async sendUserInfo(name: string, surname: string): Promise<void> {
+    await this.program.methods
       .sendUserInfo(name, surname)
       .accounts({
         user: this.provider?.wallet.publicKey,
@@ -69,10 +66,10 @@ class Web3Service {
       .rpc();
   }
 
-  async getUserInfo(): Promise<UserInfo> {
+  async getLoggedUserInfo(): Promise<UserInfo> {
     const pda = this.getPDAAddress(PDATypes.UserInfo);
     return this.program.account.userInfo.fetch(pda);
   }
 }
 
-export const web3Service = new Web3Service();
+export const web3Layer = new Web3Layer();
