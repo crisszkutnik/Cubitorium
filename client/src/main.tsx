@@ -7,7 +7,9 @@ import { WalletContext } from "./modules/context/WalletContext.tsx";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WalletContext>
-      <App />
+      <div>
+        <App />
+      </div>
     </WalletContext>
   </React.StrictMode>
 );
