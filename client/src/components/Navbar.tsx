@@ -10,13 +10,13 @@ export function Navbar() {
       </div>
       <div className="flex ml-5">
         <NavLink to="/" className="flex items-center text-md p-4">
-          Inicio
+          Home
         </NavLink>
         <NavLink to="/algorithms" className="flex items-center text-md p-4">
-          Algoritmos
+          Algorithms
         </NavLink>
         <NavLink to="/" className="flex items-center text-md p-4">
-          Practicar
+          Practice
         </NavLink>
       </div>
       <div className="flex-1"></div>
