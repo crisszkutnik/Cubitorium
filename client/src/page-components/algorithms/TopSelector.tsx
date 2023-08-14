@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
-import { Selector } from "../../../components/Selector";
-import { useAlgorithmsStore } from "../../../modules/store/algorithmsStore";
 import { useEffect, useState } from "react";
+import { useAlgorithmsStore } from "../../modules/store/algorithmsStore";
+import { Selector } from "../../components/Selector";
 
 enum QueryParams {
   TYPE = "type",
@@ -30,7 +30,7 @@ export function TopSelector() {
     let changedParams = false;
 
     const type = searchParams.get(QueryParams.TYPE);
-    if (type) {
+    if (type && type !== selectedType) {
       setSelectedType(type);
     } else {
       changedParams = true;
@@ -38,7 +38,7 @@ export function TopSelector() {
     }
 
     const subtype = searchParams.get(QueryParams.SUBTYPE);
-    if (subtype) {
+    if (subtype && subtype !== selectedSubtype) {
       setSelectedSubtype(subtype);
     } else {
       const value = getSubtypeValue(type);
@@ -55,12 +55,19 @@ export function TopSelector() {
   }, [searchParams]);
 
   const onSelectorChange = (newValue: string) => {
-    searchParams.set("type", newValue);
+    searchParams.set(QueryParams.TYPE, newValue);
+
+    const value = getSubtypeValue(newValue);
+
+    if (value) {
+      searchParams.set(QueryParams.SUBTYPE, value);
+    }
+
     setSearchParams(searchParams);
   };
 
   const onSubselectorChange = (newValue: string) => {
-    searchParams.set("subtype", newValue);
+    searchParams.set(QueryParams.SUBTYPE, newValue);
     setSearchParams(searchParams);
   };
 

@@ -31,7 +31,7 @@ export function Table() {
       </div>
       <div className="flex justify-center mt-3">
         <Link
-          to="/not-implemented"
+          to="/algorithms/all"
           className="border border-accent-primary rounded px-2 py-1 text-accent-primary hover:text-white hover:bg-accent-primary font-semibold"
         >
           + More algorithms

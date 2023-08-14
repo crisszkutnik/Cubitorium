@@ -1,18 +1,17 @@
-import { LeftPanel } from "./components/LeftPanel";
-import { RightPanel } from "./components/rightPanel/RightPanel";
-import { TopSelector } from "./components/TopSelector";
+import { DefaultLayout } from "../../components/DefaultLayout";
+import { LeftPanel } from "../../page-components/algorithms/LeftPanel";
+import { TopSelector } from "../../page-components/algorithms/TopSelector";
+import { RightPanel } from "../../page-components/algorithms/rightPanel/RightPanel";
 
 export function Algorithms() {
   return (
-    <div className="flex justify-center w-full">
-      <div className="flex w-full flex-col max-w-screen-xl	">
-        <h1 className="text-4xl py-6 text-accent-dark font-bold">Algorithms</h1>
-        <TopSelector />
-        <div className="flex mt-3">
-          <LeftPanel />
-          <RightPanel />
-        </div>
+    <DefaultLayout column={true}>
+      <h1 className="text-4xl py-6 text-accent-dark font-bold">Algorithms</h1>
+      <TopSelector />
+      <div className="flex mt-3">
+        <LeftPanel />
+        <RightPanel />
       </div>
-    </div>
+    </DefaultLayout>
   );
 }
