@@ -1,19 +1,21 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { TestPage } from "./pages/test/TestPage";
+import { Navbar } from "./components/Navbar";
+import { Algorithms } from "./pages/algorithms/Algorithms";
+import { AllAlgorithms } from "./pages/algorithms/allAlgorithms/AllAlgorithms";
 
 function App() {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <div>Hello final-thesis</div>,
-    },
-    {
-      path: "/test",
-      element: <TestPage />,
-    },
-  ]);
-
-  return <RouterProvider router={router} />;
+  return (
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<h1>Hello final-thesis</h1>} />
+        <Route path="/algorithms" element={<Algorithms />} />
+        <Route path="/algorithms/all" element={<AllAlgorithms />} />
+        <Route path="/test" element={<TestPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
