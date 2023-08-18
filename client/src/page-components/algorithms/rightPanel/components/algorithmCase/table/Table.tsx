@@ -29,7 +29,7 @@ export function Table() {
         <TableRow solution="y’ r’ U’ R U M’" />
         <TableRow solution="M’ U R U’ r’" />
       </div>
-      <div className="flex justify-center mt-3">
+      <div className="flex justify-center items-center h-full mt-3">
         <Link
           to="/algorithms/all"
           className="border border-accent-primary rounded px-2 py-1 text-accent-primary hover:text-white hover:bg-accent-primary font-semibold"

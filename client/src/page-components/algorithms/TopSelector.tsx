@@ -14,6 +14,23 @@ export function TopSelector() {
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedSubtype, setSelectedSubtype] = useState<string>("");
 
+  useEffect(() => {
+    const queryType = searchParams.get(QueryParams.TYPE);
+    const querySubtype = searchParams.get(QueryParams.SUBTYPE);
+
+    const typeParamChanged = shouldUpdateTypeParam(queryType, searchParams);
+
+    const subtypeParamChanged = shouldUpdateSubtypeParam(
+      querySubtype,
+      queryType,
+      searchParams
+    );
+
+    if (typeParamChanged || subtypeParamChanged) {
+      setSearchParams(searchParams);
+    }
+  }, [searchParams]);
+
   const getSubtypeValue = (type: string | null) => {
     let arr;
 
@@ -26,33 +43,41 @@ export function TopSelector() {
     return arr ? arr[0] : undefined;
   };
 
-  useEffect(() => {
-    let changedParams = false;
-
-    const type = searchParams.get(QueryParams.TYPE);
-    if (type && type !== selectedType) {
-      setSelectedType(type);
-    } else {
-      changedParams = true;
-      searchParams.set(QueryParams.TYPE, algorithmsType[0]);
+  const shouldUpdateTypeParam = (
+    queryType: string | null,
+    params: URLSearchParams
+  ) => {
+    if (!queryType) {
+      params.set(QueryParams.TYPE, algorithmsType[0]);
+      return true;
     }
 
-    const subtype = searchParams.get(QueryParams.SUBTYPE);
-    if (subtype && subtype !== selectedSubtype) {
-      setSelectedSubtype(subtype);
-    } else {
-      const value = getSubtypeValue(type);
-
-      if (value) {
-        changedParams = true;
-        searchParams.set(QueryParams.SUBTYPE, value);
-      }
+    if (queryType && queryType !== selectedType) {
+      setSelectedType(queryType);
     }
 
-    if (changedParams) {
-      setSearchParams(searchParams);
+    return false;
+  };
+
+  const shouldUpdateSubtypeParam = (
+    querySubtype: string | null,
+    queryType: string | null,
+    params: URLSearchParams
+  ) => {
+    if (querySubtype && querySubtype !== selectedSubtype) {
+      setSelectedSubtype(querySubtype);
+      return false;
     }
-  }, [searchParams]);
+
+    const value = getSubtypeValue(queryType);
+
+    if (value) {
+      params.set(QueryParams.SUBTYPE, value);
+      return true;
+    }
+
+    return false;
+  };
 
   const onSelectorChange = (newValue: string) => {
     searchParams.set(QueryParams.TYPE, newValue);
@@ -61,6 +86,8 @@ export function TopSelector() {
 
     if (value) {
       searchParams.set(QueryParams.SUBTYPE, value);
+    } else {
+      searchParams.delete(QueryParams.SUBTYPE);
     }
 
     setSearchParams(searchParams);
