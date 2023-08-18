@@ -15,7 +15,7 @@ export function Navbar() {
         <NavLink to="/algorithms" className="flex items-center text-md p-4">
           Algorithms
         </NavLink>
-        <NavLink to="/" className="flex items-center text-md p-4">
+        <NavLink to="/practice" className="flex items-center text-md p-4">
           Practice
         </NavLink>
       </div>

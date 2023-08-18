@@ -3,6 +3,7 @@ import { TestPage } from "./pages/test/TestPage";
 import { Navbar } from "./components/Navbar";
 import { Algorithms } from "./pages/algorithms/Algorithms";
 import { AllAlgorithms } from "./pages/algorithms/allAlgorithms/AllAlgorithms";
+import { Practice } from "./pages/practice/Practice";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/algorithms" element={<Algorithms />} />
         <Route path="/algorithms/all" element={<AllAlgorithms />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/practice" element={<Practice />} />
       </Routes>
     </BrowserRouter>
   );
