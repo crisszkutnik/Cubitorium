@@ -14,6 +14,26 @@ export function TopSelector() {
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedSubtype, setSelectedSubtype] = useState<string>("");
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    const queryType = searchParams.get(QueryParams.TYPE);
+    const querySubtype = searchParams.get(QueryParams.SUBTYPE);
+
+    const typeParamChanged = shouldUpdateTypeParam(queryType, searchParams);
+
+    const subtypeParamChanged = shouldUpdateSubtypeParam(
+      querySubtype,
+      queryType,
+      searchParams
+    );
+
+    if (typeParamChanged || subtypeParamChanged) {
+      setSearchParams(searchParams);
+    }
+  }, [searchParams]);
+
+>>>>>>> main
   const getSubtypeValue = (type: string | null) => {
     let arr;
 
@@ -26,6 +46,7 @@ export function TopSelector() {
     return arr ? arr[0] : undefined;
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     let changedParams = false;
 
@@ -53,6 +74,43 @@ export function TopSelector() {
       setSearchParams(searchParams);
     }
   }, [searchParams]);
+=======
+  const shouldUpdateTypeParam = (
+    queryType: string | null,
+    params: URLSearchParams
+  ) => {
+    if (!queryType) {
+      params.set(QueryParams.TYPE, algorithmsType[0]);
+      return true;
+    }
+
+    if (queryType && queryType !== selectedType) {
+      setSelectedType(queryType);
+    }
+
+    return false;
+  };
+
+  const shouldUpdateSubtypeParam = (
+    querySubtype: string | null,
+    queryType: string | null,
+    params: URLSearchParams
+  ) => {
+    if (querySubtype && querySubtype !== selectedSubtype) {
+      setSelectedSubtype(querySubtype);
+      return false;
+    }
+
+    const value = getSubtypeValue(queryType);
+
+    if (value) {
+      params.set(QueryParams.SUBTYPE, value);
+      return true;
+    }
+
+    return false;
+  };
+>>>>>>> main
 
   const onSelectorChange = (newValue: string) => {
     searchParams.set(QueryParams.TYPE, newValue);
@@ -61,6 +119,11 @@ export function TopSelector() {
 
     if (value) {
       searchParams.set(QueryParams.SUBTYPE, value);
+<<<<<<< HEAD
+=======
+    } else {
+      searchParams.delete(QueryParams.SUBTYPE);
+>>>>>>> main
     }
 
     setSearchParams(searchParams);

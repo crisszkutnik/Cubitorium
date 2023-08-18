@@ -15,7 +15,11 @@ export function Navbar() {
         <NavLink to="/algorithms" className="flex items-center text-md p-4">
           Algorithms
         </NavLink>
+<<<<<<< HEAD
         <NavLink to="/practice" className="flex items-center text-md p-4">
+=======
+        <NavLink to="/" className="flex items-center text-md p-4">
+>>>>>>> main
           Practice
         </NavLink>
       </div>
