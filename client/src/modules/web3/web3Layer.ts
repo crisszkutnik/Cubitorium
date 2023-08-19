@@ -42,6 +42,10 @@ class Web3Layer {
     this.provider = provider;
   }
 
+  reset() {
+    this.provider = undefined;
+  }
+
   getPDAAddress(type: PDATypes) {
     if (this.provider === undefined) {
       throw new Error("User is not authenticated");

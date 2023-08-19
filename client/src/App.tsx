@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { TestPage } from "./pages/test/TestPage";
-import { Navbar } from "./components/Navbar";
+import { Navbar } from "./components/navbar/Navbar";
 import { Algorithms } from "./pages/algorithms/Algorithms";
 import { AllAlgorithms } from "./pages/algorithms/allAlgorithms/AllAlgorithms";
 

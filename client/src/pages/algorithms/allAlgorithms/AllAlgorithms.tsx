@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { DefaultLayout } from "../../../components/DefaultLayout";
+import { Select } from "../../../components/Select";
 
 export function AllAlgorithms() {
   const data = useMemo(
@@ -20,6 +21,36 @@ export function AllAlgorithms() {
       <h1 className="text-accent-dark font-semibold my-6 text-4xl">
         All user-submitted algorithms
       </h1>
+      <div className="flex justify-between mb-4 gap-24">
+        <Select
+          type="primary"
+          values={["Free pairs", "Free pairs"]}
+          title="Algorithm type"
+          onChange={() => {}}
+          className="w-full"
+        />
+        <Select
+          type="secondary"
+          values={["Free pairs", "Free pairs"]}
+          title="Algorithm subtype"
+          onChange={() => {}}
+          className="w-full"
+        />
+        <Select
+          type="tertiary"
+          values={["Free pairs", "Free pairs"]}
+          title="Algorithm subtype"
+          onChange={() => {}}
+          className="w-full"
+        />
+        <Select
+          type="tertiary"
+          values={["Free pairs", "Free pairs"]}
+          title="Algorithm subtype"
+          onChange={() => {}}
+          className="w-full"
+        />
+      </div>
       <div>
         <table className="text-left w-full">
           <thead className="bg-accent-primary text-white">

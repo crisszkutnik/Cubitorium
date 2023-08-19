@@ -10,6 +10,7 @@ export function Table() {
         <div className="flex">
           {values.map((s, index) => (
             <p
+              key={index}
               className={
                 "px-3 py-1 rounded-t hover:cursor-pointer font-semibold" +
                 (index === 0
