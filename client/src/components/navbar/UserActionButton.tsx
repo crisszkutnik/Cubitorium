@@ -3,11 +3,13 @@ import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { WalletDisconnectButton } from "@solana/wallet-adapter-react-ui";
+import { useNavigate } from "react-router-dom";
 
 export function UserActionButton() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownMargin, setDropdownMargin] = useState(0);
+  const navigate = useNavigate();
 
   const onClick = () => {
     setOpen(!open);
@@ -16,7 +18,7 @@ export function UserActionButton() {
   const values = [
     {
       text: "My info",
-      onClick: () => {},
+      onClick: () => navigate("/userinfo"),
     },
     {
       text: "My solves",

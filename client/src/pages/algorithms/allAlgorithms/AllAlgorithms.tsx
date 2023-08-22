@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { DefaultLayout } from "../../../components/DefaultLayout";
+import { DefaultLayout } from "../../../components/layout/DefaultLayout";
 import { Select } from "../../../components/Select";
 
 export function AllAlgorithms() {
