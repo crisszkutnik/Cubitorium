@@ -25,8 +25,13 @@ export const useAlgorithmsStore = create<UseAlgorithmsStoreState>(() => ({
       "Last slot sets",
       "Other",
     ],
-    "2x2": ["Ortega", "EG Method"],
-    Megaminx: ["4 Look last layer", "2 Look last layer"],
+    "2x2": ["Ortega", "EG Method", "CLL", "EG1"],
+    "Megaminx": ["4 Look last layer", "2 Look last layer", "OLL", "PLL"],
     "Square-1": ["SubeShape", "Vandenbergh", "Lin"],
+    "4x4":["IDK"],
+    "5x5":["IDK"],
+    "6x6":["IDK"],
+    "Roux":["IDK"],
   },
 }));
+

@@ -3,7 +3,7 @@ import { TestPage } from "./pages/test/TestPage";
 import { Navbar } from "./components/Navbar";
 import { Algorithms } from "./pages/algorithms/Algorithms";
 import { AllAlgorithms } from "./pages/algorithms/allAlgorithms/AllAlgorithms";
-import { AlgorithmsUpload } from "./pages/algorithms/AlgorithmsUpload";
+import { AlgorithmsUpload } from "./pages/algorithms/uploadAlgorithms/AlgorithmsUpload";
 
 
 function App() {
