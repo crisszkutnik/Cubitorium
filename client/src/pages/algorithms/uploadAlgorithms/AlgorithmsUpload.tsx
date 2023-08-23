@@ -1,59 +1,69 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { TopSelector } from "../../../page-components/algorithms/TopSelector"; 
-
-enum QueryParams {
-  TYPE = "type",
-  SUBTYPE = "subtype",
-}
+import React, { useState } from "react";
+import { useAlgorithmsStore } from "../../../modules/store/algorithmsStore";
+import { useNavigate } from "react-router-dom";
 
 export function AlgorithmsUpload() {
-  const [algorithm, setAlgorithm] = useState(""); // Estado para almacenar el algoritmo
-  const [searchParams, setSearchParams] = useSearchParams();
+  // get the map of algorithms
+  const algorithmsStore = useAlgorithmsStore(); 
+  const navigate = useNavigate(); 
+
+  // default state
+  const [selectedType, setSelectedType] = useState(algorithmsStore.algorithmsType[0]);
+  const [selectedSubtype, setSelectedSubtype] = useState(
+    algorithmsStore.algorithmsSubtypes[selectedType][0]
+  );
+
+  const [notation, setNotation] = useState("");
+
+  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedType(event.target.value);
+    setSelectedSubtype(algorithmsStore.algorithmsSubtypes[event.target.value][0]);
+  };
+
+  const handleSubtypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSubtype(event.target.value);
+  };
+
+  const handleNotationChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNotation(event.target.value);
+  };
 
   const handleUpload = () => {
-    console.log("Loaded algorithm:", algorithm);
-    setAlgorithm(""); // Limpiar el área después de cargar
+    // TODO: logic for upload
+    navigate("/algorithms/all"); 
   };
 
   return (
     <div>
-    
+      <h2>Upload Algorithm</h2>
+      <label>
+        Algorithm Type:
+        <select value={selectedType} onChange={handleTypeChange}>
+          {algorithmsStore.algorithmsType.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+      </label>
       <br />
-      <TopSelector />
-      
-      <h1>Upload Algorithm for <b>{searchParams.get(QueryParams.TYPE)}</b> | <b>{searchParams.get(QueryParams.SUBTYPE)}</b> </h1>
-      <br></br>
-      <textarea
-  
-        rows={2}
-        cols={20}
-        value={algorithm}
-        onChange={(e) => setAlgorithm(e.target.value)}
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: "5px",
-          padding: "10px",
-          width: "40%",
-          fontSize: "20px",
-        }}
-      />
+      <label>
+        Algorithm Subtype:
+        <select value={selectedSubtype} onChange={handleSubtypeChange}>
+          {algorithmsStore.algorithmsSubtypes[selectedType].map((subtype) => (
+            <option key={subtype} value={subtype}>
+              {subtype}
+            </option>
+          ))}
+        </select>
+      </label>
       <br />
-      {/* TODO, use libraries? */}
-      <button
-        style={{
-          backgroundColor: "#4CAF50",
-          color: "white",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontSize: "16px",
-        }}
-        onClick={handleUpload}
-      >
-        Upload Algorithm
-      </button>
+      <label>
+        Notation:
+        <textarea rows={6} value={notation} onChange={handleNotationChange} />
+      </label>
+      <br />
+      <button onClick={handleUpload}>Upload Algorithm</button>
     </div>
   );
 }
