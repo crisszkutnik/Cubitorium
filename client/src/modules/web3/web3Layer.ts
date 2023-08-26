@@ -9,13 +9,14 @@ import { Backend, IDL } from "../../../../backend/target/types/backend";
 import { UserInfo } from "../types/userInfo.interface";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
+import { Web3Connection } from "./web3Connection";
+import { TransactionSignature } from "@solana/web3.js";
 
 export enum PDATypes {
   UserInfo = "user-info",
 }
 
-class Web3Layer {
-  provider: AnchorProvider | undefined;
+class Web3Layer extends Web3Connection {
   _program: Program<Backend> | undefined;
 
   get program() {
@@ -56,14 +57,19 @@ class Web3Layer {
     )[0];
   }
 
-  async sendUserInfo(name: string, surname: string): Promise<void> {
-    await this.program.methods
+  async sendUserInfo(
+    name: string,
+    surname: string
+  ): Promise<TransactionSignature> {
+    const tx = await this.program.methods
       .sendUserInfo(name, surname)
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPDAAddress(PDATypes.UserInfo),
       })
-      .rpc();
+      .transaction();
+
+    return this.signAndSendTx(tx);
   }
 
   async getLoggedUserInfo(): Promise<UserInfo> {
