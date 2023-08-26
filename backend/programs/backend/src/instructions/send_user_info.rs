@@ -2,20 +2,21 @@ use anchor_lang::prelude::*;
 
 use crate::error::UserInfoError;
 use crate::UserInfo;
+use crate::constants::*;
 
 #[derive(Accounts)]
 pub struct SendUserInfo<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    
     #[account(
         init,
         payer = user,
         space = UserInfo::LEN,
-        seeds = [b"user-info", user.key().as_ref()],
+        seeds = [USER_INFO_TAG.as_ref(), user.key().as_ref()],
         bump
     )]
     pub user_info: Account<'info, UserInfo>,
-
-    #[account(mut)]
-    pub user: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }
