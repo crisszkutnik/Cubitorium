@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
+use std::str::FromStr;
 
-use crate::{constants::*, state::*};
+use crate::{constants::*, state::*, error::*};
 
 #[derive(Accounts)]
 pub struct AddPrivilegedUser<'info> {
@@ -11,17 +12,17 @@ pub struct AddPrivilegedUser<'info> {
     #[account(mut)]
     pub grantee: UncheckedAccount<'info>,
 
-    // Existing privilege
+    // Existing privilege (not needed for program deployer)
     #[account(seeds = [PRIVILEGE_TAG.as_ref(), granter.key().as_ref()], bump = granter_privilege.bump)]
-    pub granter_privilege: Account<'info, Privilege>,
+    pub granter_privilege: Option<Account<'info, Privilege>>,
 
     // New privilege account
     #[account(
         init,
-        seeds = [PRIVILEGE_TAG.as_ref(), granter.key().as_ref()],
+        seeds = [PRIVILEGE_TAG.as_ref(), grantee.key().as_ref()],
         bump,
         space = Privilege::LEN,
-        payer = grantee
+        payer = granter
     )]
     pub grantee_privilege: Account<'info, Privilege>,
 
@@ -35,6 +36,19 @@ pub struct AddPrivilegedUserEvent {
 }
 
 pub fn handler(ctx: Context<AddPrivilegedUser>) -> Result<()> {
+    // If no privilege was passed for granter, it must be the deployer
+    if ctx.accounts.granter_privilege.is_none() {
+        require_keys_eq!(
+            ctx.accounts.granter.key(),
+            Pubkey::from_str(DEPLOYER_KEY).unwrap(),
+            PrivilegeError::PrivilegeEscalation,
+        );
+    }
+
+    // Store data and emit event
+
+    ctx.accounts.grantee_privilege.granter = ctx.accounts.granter.key();
+    ctx.accounts.grantee_privilege.grantee = ctx.accounts.grantee.key();
     ctx.accounts.grantee_privilege.bump = *ctx.bumps.get("grantee_privilege").unwrap();
 
     emit!(AddPrivilegedUserEvent {

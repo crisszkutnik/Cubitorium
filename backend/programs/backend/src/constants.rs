@@ -1,3 +1,5 @@
+pub const DEPLOYER_KEY: &'static str = env!("DEPLOYER_KEY");
+
 pub const DISCRIMINATOR_LENGTH: usize = 8;
 
 pub const BUMP_LENGTH: usize = 8;
