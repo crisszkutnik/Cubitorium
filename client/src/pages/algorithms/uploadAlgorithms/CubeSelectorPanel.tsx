@@ -1,16 +1,29 @@
 import { useRef, useState } from "react";
 import { useAlgorithmsStore } from "../../../modules/store/algorithmsStore";
-import images from "./images/Images";
+import { ScrambleDisplay } from "../../../components/ScrambleDisplay";
+
 
 export function CubeSelectorPanel() {
+  // map
+  const cubeScrambles = {
+    "2x2": "222",
+    "3x3": "333",
+    "4x4": "444",
+    "5x5": "555",
+    "6x6": "666",
+    "Megaminx":"minx",
+    "Roux": "roux",
+    "Square-1": "sq1"
+  };
+  
+
   const container = useRef<HTMLDivElement>(null);
   const algorithmsStore = useAlgorithmsStore();
 
   // states
-  //const [marginTop, setMarginTop] = useState(0);
   const [selectedType, setSelectedType] = useState(algorithmsStore.algorithmsType[0]);
   const [selectedSubtype, setSelectedSubtype] = useState(algorithmsStore.algorithmsSubtypes[selectedType][0]);
-  const [cubeImageUrl, setCubeImageUrl] = useState(images["3x3"]); 
+  const [cubeDisplay, setCubeDisplay] = useState("333"); 
 
 
   // when type changes
@@ -18,7 +31,7 @@ export function CubeSelectorPanel() {
     const newType = event.target.value;
     setSelectedType(newType);
     setSelectedSubtype(algorithmsStore.algorithmsSubtypes[newType][0]);
-    setCubeImageUrl(images[newType as keyof typeof images]);
+    setCubeDisplay(cubeScrambles[newType] || "333")
   };
 
   
@@ -33,9 +46,8 @@ export function CubeSelectorPanel() {
         <h1 className="font-bold text-accent-dark mb-5 text-2xl">
           Select your cube
         </h1>
-        <div className="w-1/4 h-fit">
-            <img className="flex w-90 h-30" src={cubeImageUrl} alt="Cube" />
-        </div>
+        <ScrambleDisplay height="20px" event={cubeDisplay}></ScrambleDisplay>
+
         <p className="text-accent-dark font-semibold">Algorithm Type</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedType} onChange={handleTypeChange}>
