@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useAlgorithmsStore } from "../../../modules/store/algorithmsStore";
 import images from "./images/Images";
 
-export function LeftPanel() {
+export function CubeSelectorPanel() {
   const container = useRef<HTMLDivElement>(null);
   const algorithmsStore = useAlgorithmsStore();
 
@@ -18,11 +18,11 @@ export function LeftPanel() {
     const newType = event.target.value;
     setSelectedType(newType);
     setSelectedSubtype(algorithmsStore.algorithmsSubtypes[newType][0]);
-    setCubeImageUrl(images[newType]);
+    setCubeImageUrl(images[newType as keyof typeof images]);
   };
 
   
-  // subtype changes
+  // when subtype changes
   const handleSubtypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSubtype(event.target.value);
   };
@@ -34,7 +34,7 @@ export function LeftPanel() {
           Select your cube
         </h1>
         <div className="w-1/4 h-fit">
-            <img className="w-80" src={cubeImageUrl} alt="Cube" />
+            <img className="flex w-90 h-30" src={cubeImageUrl} alt="Cube" />
         </div>
         <p className="text-accent-dark font-semibold">Algorithm Type</p>
         <select
@@ -43,6 +43,7 @@ export function LeftPanel() {
             <option key={type}>{type}</option>
           ))}
         </select>
+        <br></br>
         <p className="text-accent-dark font-semibold">Algorithm Subtype</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedSubtype} onChange={handleSubtypeChange}>
