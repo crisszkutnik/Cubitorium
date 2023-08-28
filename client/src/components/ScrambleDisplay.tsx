@@ -1,4 +1,5 @@
 interface Props {
+  event?: string;
   scramble?: string;
   visualization?: "2D" | "3D";
   className?: string;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function ScrambleDisplay({
+  event,
   scramble,
   visualization,
   height,
@@ -30,6 +32,7 @@ export function ScrambleDisplay({
             class="${height}"
             ${getStr("scramble", scramble)}
             visualization=${visualization || "3D"}
+            event=${event}
           >
           </scramble-display>
         `,
