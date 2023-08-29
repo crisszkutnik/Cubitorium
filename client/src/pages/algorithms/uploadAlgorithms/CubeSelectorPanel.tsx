@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { useAlgorithmsStore } from "../../../modules/store/algorithmsStore";
 import { ScrambleDisplay } from "../../../components/ScrambleDisplay";
 
-
 export function CubeSelectorPanel() {
   // map
   const cubeScrambles = {
@@ -55,7 +54,7 @@ export function CubeSelectorPanel() {
             <option key={type}>{type}</option>
           ))}
         </select>
-        <br></br>
+      
         <p className="text-accent-dark font-semibold">Algorithm Subtype</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedSubtype} onChange={handleSubtypeChange}>
