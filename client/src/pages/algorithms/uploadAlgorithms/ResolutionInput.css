@@ -1,7 +1,17 @@
 /* ResolutionInput.css */
 .custom-textfield .MuiInputBase-input {
-    font-size: 20px; 
+    font-size: 40px; 
     letter-spacing: 6px; 
     line-height: 1.5; 
   }
   
+
+.note {
+  font-size: 13px;
+  color: #3b3b3b;
+  text-align: center;
+  letter-spacing: 1px; 
+  margin-bottom: 20px;
+  background-color: rgba(245, 230, 248, 0.8); 
+  padding: 9px; 
+}
