@@ -2,7 +2,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { useUserStore } from "../../modules/store/userStore";
 import { web3Service } from "../../modules/service/web3Service";
-import { LoginButton } from "../../components/LoginButton";
+import { LoginButton } from "../../components/navbar/LoginButton";
 
 interface FormData {
   name: string;
