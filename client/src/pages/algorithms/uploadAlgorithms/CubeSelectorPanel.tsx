@@ -4,17 +4,18 @@ import { ScrambleDisplay } from "../../../components/ScrambleDisplay";
 
 export function CubeSelectorPanel() {
   // map
-  const cubeScrambles = {
+  // @cristobal ahora te entiendo why ts > js
+  // TODO : queda definir que vamos a hacer con esto
+  const cubeScrambles: Record<string, string> = {
     "2x2": "222",
     "3x3": "333",
     "4x4": "444",
     "5x5": "555",
     "6x6": "666",
-    "Megaminx":"minx",
+    "Megaminx": "minx",
     "Roux": "roux",
     "Square-1": "sq1"
   };
-  
 
   const container = useRef<HTMLDivElement>(null);
   const algorithmsStore = useAlgorithmsStore();
@@ -41,12 +42,11 @@ export function CubeSelectorPanel() {
 
   return (
     <div ref={container} className="w-1/4 h-fit">
-      <div style={{ marginTop: `2px` }} className="bg-gray-100  flex flex-col px-5 py-5 rounded-md">
+      <div className="bg-gray-100 flex flex-col px-5 py-5 rounded-md">
         <h1 className="font-bold text-accent-dark mb-5 text-2xl">
           Select your cube
         </h1>
         <ScrambleDisplay height="20px" event={cubeDisplay}></ScrambleDisplay>
-
         <p className="text-accent-dark font-semibold">Algorithm Type</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedType} onChange={handleTypeChange}>
