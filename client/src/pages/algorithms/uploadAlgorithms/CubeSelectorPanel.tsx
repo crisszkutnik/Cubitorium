@@ -3,7 +3,6 @@ import { useAlgorithmsStore } from "../../../modules/store/algorithmsStore";
 import { ScrambleDisplay } from "../../../components/ScrambleDisplay";
 
 export function CubeSelectorPanel() {
-  // map
   // @cristobal ahora te entiendo why ts > js
   // TODO : queda definir que vamos a hacer con esto
   const cubeScrambles: Record<string, string> = {
@@ -54,7 +53,6 @@ export function CubeSelectorPanel() {
             <option key={type}>{type}</option>
           ))}
         </select>
-      
         <p className="text-accent-dark font-semibold">Algorithm Subtype</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedSubtype} onChange={handleSubtypeChange}>
@@ -62,7 +60,6 @@ export function CubeSelectorPanel() {
             <option key={subtype}>{subtype}</option>
           ))}
         </select>
- 
       </div>
     </div>
   );

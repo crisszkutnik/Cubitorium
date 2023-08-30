@@ -21,7 +21,7 @@ export function ResolutionInput() {
       <div className="w-full p-8 bg-white rounded-lg shadow-lg">
         <div className="mb-10 grid">
         <div className="note text-xs text-gray-600 text-center tracking-wide leading-5 mb-5 bg-purple-100 p-2">
-        You need to provide a <b className="font-semibold">cube-solving algorithm;</b> otherwise, the upload will not be possible.
+          You need to provide a <b className="font-semibold">cube-solving algorithm;</b> otherwise, the upload will not be possible.
         </div>
           <textarea
             className="custom-textarea border rounded-lg p-2 w-full h-20 text-lg tracking-wide"
@@ -48,3 +48,4 @@ export function ResolutionInput() {
     </div>
   );
 }
+
