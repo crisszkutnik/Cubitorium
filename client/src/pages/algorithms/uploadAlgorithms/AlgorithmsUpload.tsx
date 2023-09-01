@@ -1,4 +1,4 @@
-import { DefaultLayout } from "../../../components/DefaultLayout";
+import { DefaultLayout } from "../../../components/layout/DefaultLayout";
 import { CubeSelectorPanel } from "./CubeSelectorPanel";
 import { ResolutionInput } from "./ResolutionInput";
 
