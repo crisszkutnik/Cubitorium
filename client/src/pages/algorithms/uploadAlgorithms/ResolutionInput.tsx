@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./ResolutionInput.css";
 
 export function ResolutionInput() {
   const [isVerified, setIsVerified] = useState(false);

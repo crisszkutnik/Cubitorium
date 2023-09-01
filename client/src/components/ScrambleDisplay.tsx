@@ -32,7 +32,7 @@ export function ScrambleDisplay({
             class="${height}"
             ${getStr("scramble", scramble)}
             visualization=${visualization || "3D"}
-            event=${event}
+            event=${event || "333"}
           >
           </scramble-display>
         `,
