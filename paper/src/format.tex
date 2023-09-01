@@ -1,0 +1,91 @@
+\documentclass[12pt,a4paper,final,oneside,notitlepage]{article}
+\usepackage[utf8]{inputenc} % Acentos, etc
+\usepackage[spanish]{babel} % Idioma
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry} % Margenes
+\usepackage[justification=centering,margin=.3cm]{caption} % Epígrafes
+
+\usepackage{mathptmx} % Times New Roman
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{multicol} % Dos columnas
+\setlength\columnsep{1cm}
+
+\usepackage[hidelinks]{hyperref} % Hipervinculos en color negro
+
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+% \usepackage[font=small, justification=justified, format=plain]{caption} % Para las captions por si hay errores
+\usepackage{graphicx}
+
+\usepackage{setspace}
+\usepackage{titlesec} % Formato de titulos de secciones
+
+\titleformat{\section}{\bfseries\normalsize}{}{0pt}{}
+\titlespacing*{\section}{0pt}{1em}{0pt}
+
+\titleformat{\subsection}{\bfseries\normalsize}{}{}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\quad}{}{}
+
+\pagestyle{empty} % Sin número de página
+
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0em}
+
+\makeatletter
+
+% Metadatos
+\def\email#1{\gdef\@email{#1}}
+\def\@email{\@latex@warning@no@line{No \noexpand\email given}}
+
+\def\universidad#1{\gdef\@universidad{#1}}
+\def\@universidad{\@latex@warning@no@line{No \noexpand\universidad given}}
+
+% Título
+\newcommand{\titulo} {
+	\begin{center}
+		{\LARGE\bfseries\@title}
+		
+		\vspace{2em}
+		{\Large\bfseries\@author}
+		\vspace{.5em}
+		
+		{\normalsize\bfseries\itshape\@universidad}
+		\vspace{2em}
+	\end{center}
+}
+\makeatother
+
+% Minisección (para las palabras clave, agradecimientos, etc)
+\newcommand{\miniseccion}[1] {
+ 	\vspace{0.5em}
+	{\footnotesize\ignorespaces\textbf{#1} \par}
+	\ignorespaces
+}
+
+% \titlespacing*{\minisection}{0pt}{0.5em}{0pt}
+% Abstract
+\newcommand{\resumen}[1] {
+	\miniseccion{Abstract}
+	{\noindent\footnotesize\textit{#1} \par}
+}
+
+% Figuras
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+ 
+\newcommand{\bibliofont}{\footnotesize}
+
+\let\OLDthebibliography\thebibliography
+\renewcommand\thebibliography[1]{
+  \OLDthebibliography{#1}
+  \bibliofont
+  \setlength{\parskip}{0pt}
+  \setlength{\itemsep}{0pt plus 0.2ex}
+  }
+  
+  
