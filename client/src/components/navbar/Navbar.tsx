@@ -34,6 +34,9 @@ export function Navbar() {
         <NavLink to="/" className="flex items-center text-md p-4">
           Practice
         </NavLink>
+        <NavLink to="/algorithms/upload" className="flex items-center text-md p-4">
+          Upload your Algorithm
+        </NavLink>
       </div>
       <div className="flex-1"></div>
       <div className="flex items-center">
