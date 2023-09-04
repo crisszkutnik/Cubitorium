@@ -1,4 +1,4 @@
-import { DefaultLayout } from "../../components/DefaultLayout";
+import { DefaultLayout } from "../../components/layout/DefaultLayout";
 import { StopWatch } from "../../page-components/practice/StopWatch";
 import { Performance } from "../../page-components/practice/Performance";
 
