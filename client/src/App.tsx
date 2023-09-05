@@ -6,6 +6,7 @@ import { AllAlgorithms } from "./pages/algorithms/allAlgorithms/AllAlgorithms";
 import { AlgorithmsUpload } from "./pages/algorithms/uploadAlgorithms/AlgorithmsUpload";
 import { UserInfo } from "./pages/userInfo/UserInfo";
 import { MySolves } from "./pages/userInfo/MySolves";
+import { InfoByUserID } from "./pages/userInfo/InfoByUserID";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/userinfo">
           <Route path="" element={<UserInfo />} />
           <Route path="solves" element={<MySolves />} />
+          <Route path=":id" element={<InfoByUserID />} />
         </Route>
         <Route path="/test" element={<TestPage />} />
       </Routes>

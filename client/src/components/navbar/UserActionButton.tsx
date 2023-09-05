@@ -4,12 +4,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { WalletDisconnectButton } from "@solana/wallet-adapter-react-ui";
 import { useNavigate } from "react-router-dom";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 export function UserActionButton() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownMargin, setDropdownMargin] = useState(0);
   const navigate = useNavigate();
+  const wallet = useAnchorWallet();
 
   const onClick = () => {
     setOpen(!open);
@@ -21,6 +23,10 @@ export function UserActionButton() {
   };
 
   const values = [
+    {
+      text: "My profile",
+      onClick: () => clickAction("/userinfo/" + wallet?.publicKey),
+    },
     {
       text: "My info",
       onClick: () => clickAction("/userinfo"),
