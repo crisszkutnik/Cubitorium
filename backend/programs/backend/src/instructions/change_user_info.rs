@@ -6,11 +6,12 @@ use crate::UserInfo;
 #[derive(Accounts)]
 pub struct ChangeUserInfo<'info> {
     pub user: Signer<'info>,
+
     #[account(
       mut,
       seeds = [b"user-info", user.key().as_ref()],
-      bump
-  )]
+      bump = user_info.bump
+    )]
     pub user_info: Account<'info, UserInfo>,
 }
 
