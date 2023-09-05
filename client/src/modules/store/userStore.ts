@@ -1,31 +1,29 @@
 import { create } from "zustand";
 import { UserInfo } from "../types/userInfo.interface";
+import { PublicKey } from "@solana/web3.js";
+import { getStringFromPKOrObject } from "../web3/utils";
 
 interface UserStoreState {
-  userInfo: UserInfo;
+  users: { [primaryKey: string]: UserInfo };
   isLogged: boolean;
-  setUserInfo: (UserInfo: UserInfo) => void;
   setIsLogged: (isLogged: boolean) => void;
-  reset: () => void;
+  addUser: (publicKey: PublicKey | string, userInfo: UserInfo) => void;
+  getUser: (publicKey: PublicKey | string) => UserInfo | undefined;
 }
 
-function getInitialUserInfo() {
-  return {
-    name: "",
-    surname: "",
-    bump: -1,
-  };
-}
-
-export const useUserStore = create<UserStoreState>((set) => ({
-  userInfo: getInitialUserInfo(),
+export const useUserStore = create<UserStoreState>((set, get) => ({
+  users: {},
   isLogged: false,
-  setUserInfo: (userInfo: UserInfo) => set({ userInfo }),
   setIsLogged: (isLogged: boolean) => set({ isLogged }),
-  reset: () => {
+  addUser: (publicKey: PublicKey | string, userInfo: UserInfo) => {
+    const key = getStringFromPKOrObject(publicKey);
     set({
-      userInfo: getInitialUserInfo(),
-      isLogged: false,
+      ...get().users,
+      [key]: userInfo,
     });
+  },
+  getUser: (publicKey: PublicKey | string): UserInfo | undefined => {
+    const key = getStringFromPKOrObject(publicKey);
+    return get().users[key];
   },
 }));

@@ -11,13 +11,14 @@ import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { Web3Connection } from "./web3Connection";
 import { TransactionSignature } from "@solana/web3.js";
+import { getPKFromStringOrObject } from "./utils";
 
 export enum PDATypes {
   UserInfo = "user-info",
 }
 
 class Web3Layer extends Web3Connection {
-  _program: Program<Backend> | undefined;
+  private _program: Program<Backend> | undefined;
 
   get program() {
     if (this._program === undefined) {
@@ -47,16 +48,21 @@ class Web3Layer extends Web3Connection {
     this.provider = undefined;
   }
 
-  getPDAAddress(type: PDATypes) {
+  get loggedUserPK() {
+    if (this.provider === undefined) {
+      throw new Error("User is not authenticated");
+    }
+
+    return this.provider.wallet.publicKey;
+  }
+
+  getPDAAddress(type: PDATypes, publicKey: PublicKey) {
     if (this.provider === undefined) {
       throw new Error("User is not authenticated");
     }
 
     return PublicKey.findProgramAddressSync(
-      [
-        utils.bytes.utf8.encode(type),
-        this.provider.wallet.publicKey.toBuffer(),
-      ],
+      [utils.bytes.utf8.encode(type), publicKey.toBuffer()],
       this.program.programId
     )[0];
   }
@@ -69,15 +75,18 @@ class Web3Layer extends Web3Connection {
       .sendUserInfo(name, surname)
       .accounts({
         user: this.provider?.wallet.publicKey,
-        userInfo: this.getPDAAddress(PDATypes.UserInfo),
+        userInfo: this.getPDAAddress(PDATypes.UserInfo, this.loggedUserPK),
       })
       .transaction();
 
     return this.signAndSendTx(tx);
   }
 
-  async getLoggedUserInfo(): Promise<UserInfo> {
-    const pda = this.getPDAAddress(PDATypes.UserInfo);
+  async getUserInfo(publicKey: string | PublicKey): Promise<UserInfo> {
+    const pda = this.getPDAAddress(
+      PDATypes.UserInfo,
+      getPKFromStringOrObject(publicKey)
+    );
     return this.program.account.userInfo.fetch(pda);
   }
 }

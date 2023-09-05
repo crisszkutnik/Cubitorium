@@ -3,10 +3,14 @@ import { DefaultLayout } from "../../components/layout/DefaultLayout";
 import { Button } from "../../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
 
 export function InfoByUserID() {
   const { id } = useParams();
-  id;
+
+  useEffect(() => {
+    id;
+  }, []);
 
   return (
     <DefaultLayout>

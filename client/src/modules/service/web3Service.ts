@@ -6,11 +6,19 @@ async function sendUserInfo(name: string, surname: string) {
   await web3Layer.sendUserInfo(name, surname);
 }
 
-async function getLoggedUserInfo() {
-  const { setUserInfo } = useUserStore.getState();
-  const userData = await web3Layer.getLoggedUserInfo();
+async function getUserInfo(primaryKey: string) {
+  const { getUser, addUser } = useUserStore.getState();
 
-  setUserInfo(userData);
+  const user = getUser(primaryKey);
+
+  if (user) {
+    return user;
+  }
+
+  const fetchedUser = await web3Layer.getUserInfo(primaryKey);
+
+  addUser(primaryKey, fetchedUser);
+  return fetchedUser;
 }
 
 async function login(wallet: AnchorWallet) {
@@ -20,14 +28,14 @@ async function login(wallet: AnchorWallet) {
 }
 
 async function logout() {
-  const { reset } = useUserStore.getState();
+  const { setIsLogged } = useUserStore.getState();
   web3Layer.reset();
-  reset();
+  setIsLogged(false);
 }
 
 export const web3Service = {
   sendUserInfo,
-  getLoggedUserInfo,
+  getUserInfo,
   login,
   logout,
 };

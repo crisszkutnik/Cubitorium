@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { TestPage } from "./pages/test/TestPage";
 import { Navbar } from "./components/navbar/Navbar";
 import { Algorithms } from "./pages/algorithms/Algorithms";
 import { AllAlgorithms } from "./pages/algorithms/allAlgorithms/AllAlgorithms";
@@ -7,7 +6,6 @@ import { AlgorithmsUpload } from "./pages/algorithms/uploadAlgorithms/Algorithms
 import { UserInfo } from "./pages/userInfo/UserInfo";
 import { MySolves } from "./pages/userInfo/MySolves";
 import { InfoByUserID } from "./pages/userInfo/InfoByUserID";
-
 
 function App() {
   return (
@@ -23,7 +21,6 @@ function App() {
           <Route path="solves" element={<MySolves />} />
           <Route path=":id" element={<InfoByUserID />} />
         </Route>
-        <Route path="/test" element={<TestPage />} />
       </Routes>
     </BrowserRouter>
   );
