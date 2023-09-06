@@ -4,7 +4,6 @@ import { Backend } from "../target/types/backend";
 import { casePda, fundAccounts, privilegePda } from "./utils";
 import { keypairs } from "./test-keys";
 
-import { Web3Layer } from "../../client/src/modules/web3/web3Layer";
 import { expect } from "chai";
 import {
   CASE_BASE_LEN,
