@@ -4,11 +4,11 @@ import { Backend } from "../target/types/backend";
 import { casePda, fundAccounts, privilegePda } from "./utils";
 import { keypairs } from "./test-keys";
 
-import { Web3Layer } from "../../client/src/modules/web3/web3Layer";
 import { expect } from "chai";
 import {
   CASE_BASE_LEN,
   CASE_TAG,
+  GLOBAL_CONFIG_TAG,
   PRIVILEGE_TAG,
   TREASURY_TAG,
 } from "./constants";
@@ -32,6 +32,11 @@ describe("backend", () => {
 
   const treasury = web3.PublicKey.findProgramAddressSync(
     [Buffer.from(TREASURY_TAG)],
+    program.programId
+  )[0];
+
+  const globalConfig = web3.PublicKey.findProgramAddressSync(
+    [Buffer.from(GLOBAL_CONFIG_TAG)],
     program.programId
   )[0];
 
@@ -137,6 +142,49 @@ describe("backend", () => {
           grantee: privilegedKeypair2.publicKey,
         })
         .rpc();
+    });
+
+    it("Can init global config", async () => {
+      let config = await program.account.globalConfig.fetchNullable(
+        globalConfig
+      );
+      expect(config).to.be.null;
+
+      await program.methods
+        .initGlobalConfig("hi")
+        .accounts({ admin: privilegedKeypair1.publicKey })
+        .signers([privilegedKeypair1])
+        .rpc();
+
+      config = await program.account.globalConfig.fetch(globalConfig);
+      expect(config).to.not.be.null;
+      expect(config.setsJson).to.equal("hi");
+    });
+
+    it("Can edit global config", async () => {
+      await program.methods
+        .setGlobalConfig("bye")
+        .accounts({ admin: privilegedKeypair1.publicKey })
+        .signers([privilegedKeypair1])
+        .rpc();
+
+      let config = await program.account.globalConfig.fetchNullable(
+        globalConfig
+      );
+      expect(config).to.not.be.null;
+      expect(config.setsJson).to.equal("bye");
+    });
+
+    it("Cannot set global config as non-admin", async () => {
+      try {
+        await program.methods
+          .setGlobalConfig("oops")
+          .accounts({ admin: regularKeypair.publicKey })
+          .signers([regularKeypair])
+          .rpc();
+      } catch (e) {
+        expect(e.error.errorCode.code).to.be.eq(`AccountNotInitialized`);
+      }
     });
   });
 
