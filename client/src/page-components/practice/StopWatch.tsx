@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { TwistyPlayer } from "./TwistyPlayer";
 
 export function StopWatch() {
   // state to store time
@@ -44,22 +45,11 @@ export function StopWatch() {
 
   return (
     <div className="flex flex-col items-center basis-3/4">
-      <div className="flex flex-col items-center bg-gray-300 rounded-lg pt-6 w-3/4">
-      <div
-      dangerouslySetInnerHTML={{
-        __html: `
-        <twisty-player
-        puzzle="3x3x3"
-        alg="R U2 R' U' R U' R'"
-       experimental-setup-anchor="end"
-       visualization="experimental-2D-LL"
-       background="none"
-       control-panel="none"
-     ></twisty-player>
-        `,
-      }}
-    ></div>
-        <h1 className="text-3xl font-bold">R U2 R’ U’ R U’ R’</h1>
+      <div className="flex flex-col items-center bg-gray-300 rounded-lg w-3/4">
+        <div className="flex flex-row items-center w-full p-6 border-b-4">
+          <TwistyPlayer puzzle="3x3x3" algorithm="R U2 R' U' R U' R'" size="100"></TwistyPlayer>
+          <h1 className="text-3xl font-bold w-full text-center">R U2 R’ U’ R U’ R’</h1>
+        </div>
         <p className="text-9xl text-white font-bold py-8">
           {seconds.toString().padStart(2, "0")}:
           {milliseconds.toString().padStart(2, "0")}
