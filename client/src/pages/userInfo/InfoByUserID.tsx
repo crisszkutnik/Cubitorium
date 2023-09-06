@@ -3,14 +3,14 @@ import { DefaultLayout } from '../../components/layout/DefaultLayout';
 import { Button } from '../../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import { UserInfo } from '../../modules/types/userInfo.interface';
+import { useEffect } from 'react';
 import { userService } from '../../modules/service/userService';
 import { getName } from '../../modules/utils/userDisplayUtils';
+import { useUserStore } from '../../modules/store/userStore';
 
 export function InfoByUserID() {
   const { id } = useParams();
-  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
+  const user = useUserStore((state) => state.getUser(id));
 
   useEffect(() => {
     fetchUserInfo();
@@ -18,8 +18,7 @@ export function InfoByUserID() {
 
   const fetchUserInfo = async () => {
     if (id) {
-      const info = await userService.getUserInfo(id);
-      setUserInfo(info);
+      await userService.getUserInfo(id);
     }
   };
 
@@ -30,7 +29,7 @@ export function InfoByUserID() {
           <img src="/user_placeholder.png" className="rounded-full w-48" />
         </div>
         <h1 className="font-bold text-accent-dark text-2xl mb-4 mt-3">
-          {getName(userInfo)}
+          {getName(user)}
         </h1>
         <div className="mb-4">
           <h2 className="font-bold text-accent-dark">WCA ID</h2>

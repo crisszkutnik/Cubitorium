@@ -5,9 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useNavigate } from 'react-router-dom';
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { UserInfo } from '../../modules/types/userInfo.interface';
-import { userService } from '../../modules/service/userService';
 import { getName } from '../../modules/utils/userDisplayUtils';
+import { useUserStore } from '../../modules/store/userStore';
 
 export function UserActionButton() {
   const [open, setOpen] = useState(false);
@@ -15,18 +14,7 @@ export function UserActionButton() {
   const [dropdownMargin, setDropdownMargin] = useState(0);
   const navigate = useNavigate();
   const wallet = useAnchorWallet();
-  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  const loadUser = async () => {
-    if (wallet && wallet.publicKey) {
-      const info = await userService.getUserInfo(wallet?.publicKey.toString());
-      setUserInfo(info);
-    }
-  };
+  const user = useUserStore((state) => state.getUser(wallet?.publicKey));
 
   const onClick = () => {
     setOpen(!open);
@@ -74,7 +62,7 @@ export function UserActionButton() {
           className="ml-2 flex items-center cursor-pointer"
         >
           <FontAwesomeIcon icon={faUser} />
-          <p className="mx-3">{getName(userInfo)}</p>
+          <p className="mx-3">{getName(user)}</p>
           <FontAwesomeIcon icon={open ? faCaretDown : faCaretUp} />
         </button>
         {open && (

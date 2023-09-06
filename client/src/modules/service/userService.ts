@@ -1,12 +1,12 @@
-import { useUserStore } from "../store/userStore";
-import { web3Layer } from "../web3/web3Layer";
+import { useUserStore } from '../store/userStore';
+import { web3Layer } from '../web3/web3Layer';
 
 async function sendUserInfo(name: string, surname: string) {
   await web3Layer.sendUserInfo(name, surname);
 }
 
 async function getUserInfo(primaryKey: string) {
-  const { getUser, addUser } = useUserStore.getState();
+  const { getUser, setUser } = useUserStore.getState();
 
   const user = getUser(primaryKey);
 
@@ -16,8 +16,7 @@ async function getUserInfo(primaryKey: string) {
 
   const fetchedUser = await web3Layer.getUserInfo(primaryKey);
 
-  addUser(primaryKey, fetchedUser);
-  return fetchedUser;
+  setUser(primaryKey, fetchedUser);
 }
 
 export const userService = {
