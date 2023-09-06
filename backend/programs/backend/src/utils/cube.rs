@@ -1,4 +1,12 @@
+use std::str::SplitWhitespace;
+
 use anchor_lang::prelude::*;
+
+use std::borrow::BorrowMut;
+
+use crate::error::CubeError;
+
+use super::move_cube;
 
 /// Cube state
 #[derive(Clone, Debug, AnchorDeserialize, AnchorSerialize)]
@@ -16,6 +24,7 @@ pub struct Cube {
 impl Cube {
     pub const LEN: usize = 8 + 8 + 12 + 12;
 
+    /// Returns a solved Cube
     pub fn default() -> Cube {
         Cube {
             co: [0; 8],
@@ -23,5 +32,78 @@ impl Cube {
             eo: [0; 12],
             ep: [1,2,3,4,5,6,7,8,9,10,11,12],
         }
+    }
+
+    /// Cube::default() + apply_moves()
+    pub fn from_moves(moves: String) -> Result<Cube> {
+        let mut cube: Cube = Self::default();
+        cube.apply_moves(moves)?;
+
+        Ok(cube)
+    }
+
+    /// Given a "moves" string, apply to cube
+    /// Example: moves = "R' U' F R U R2 D"
+    pub fn apply_moves(&mut self, moves: String) -> Result<()> {
+        // Iterate through every move and apply it if valid
+        let moves: SplitWhitespace = moves.split_whitespace();
+        for mov in moves {
+            if ![
+                "R","U","F","L","D","B",
+                "R'","U'","F'","L'","D'","B'",
+                "R2","U2","F2","L2","D2","B2",
+            ].contains(&mov) {
+                return Err(error!(CubeError::InvalidMove));
+            }
+
+            // Letter into index (shifted ASCII value)
+            // B=66, D=68, F=70, L=76, R=82, U=85
+            // B=0,  D=2,  F=4,  L=10, R=16, U=19
+            let base_move: usize = mov.chars().nth(0).unwrap() as usize - 66;
+            // Direction
+            if let Some(dir) = mov.chars().nth(1) {
+                match dir {
+                    '\'' => move_cube(base_move + 1, self.borrow_mut()),
+                    '2' => {
+                        move_cube(base_move, self.borrow_mut());
+                        move_cube(base_move, self.borrow_mut());
+                    },
+                    _ => (),
+                }
+            }
+            else {
+                move_cube(base_move, self.borrow_mut());
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Checks if the Cube is solved
+    pub fn is_solved(&self) -> Result<()> {
+        if !(
+            self.co == [0,0,0,0,0,0,0,0] &&
+            self.cp == [1,2,3,4,5,6,7,8] &&
+            self.eo == [0,0,0,0,0,0,0,0,0,0,0,0] &&
+            self.ep == [1,2,3,4,5,6,7,8,9,10,11,12]
+        ) {
+            return Err(error!(CubeError::UnsolvedCube));
+        }
+    
+        Ok(())
+    }
+
+    /// Checks if the OLL is solved (F2L solved + oriented last layer)
+    pub fn is_oll_solved(&self) -> Result<()> {
+        if !(
+            self.co        == [0,0,0,0,0,0,0,0] &&
+            self.cp[4..8]  == [5,6,7,8] &&
+            self.eo        == [0,0,0,0,0,0,0,0,0,0,0,0] &&
+            self.ep[4..12] == [5,6,7,8,9,10,11,12]
+        ) {
+            return Err(error!(CubeError::UnsolvedCube));
+        }
+    
+        Ok(())
     }
 }

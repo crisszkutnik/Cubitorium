@@ -4,13 +4,8 @@ import { Backend } from "../target/types/backend";
 import { casePda, fundAccounts, privilegePda } from "./utils";
 import { keypairs } from "./test-keys";
 
-import { expect } from "chai";
-import {
-  CASE_BASE_LEN,
-  CASE_TAG,
-  PRIVILEGE_TAG,
-  TREASURY_TAG,
-} from "./constants";
+import { assert, expect } from "chai";
+import { CASE_BASE_LEN, TREASURY_TAG } from "./constants";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -188,9 +183,12 @@ describe("backend", () => {
       expect(pdaCase.set).to.eq(caseObj.set);
       expect(pdaCase.setup).to.eq(caseObj.setup);
       expect(pdaCase.solutions).to.be.empty;
-      // expect(pdaCase.state); TODO: CHECK WHEN IMPLEMENTED
-
-      console.log("BIG PART OF THE TEST IS MISSING BRO! REMINDER!");
+      assert.deepEqual(pdaCase.state, {
+        co: [0, 2, 1, 0, 0, 0, 0, 0],
+        cp: [2, 1, 4, 3, 5, 6, 7, 8],
+        eo: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ep: [2, 3, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      });
 
       // User didn't pay for this, but treasury did
       let userBalanceAfter = await provider.connection.getBalance(
@@ -207,10 +205,6 @@ describe("backend", () => {
     });
 
     it("Can add a solution if it works", async () => {
-      console.log(
-        "WE STILL DON'T CHECK IF IT WORKS! DON'T FORGET TO FIX THIS DUMB IDIOT!"
-      );
-
       let caseObj = {
         set: `OLL`,
         id: 1,
@@ -239,6 +233,31 @@ describe("backend", () => {
       expect(caseAccount.solutions[0]).to.be.eq(solution);
     });
 
-    xit("Can't add a solution if it doesn't work", async () => {});
+    it("Can't add a solution if it doesn't work", async () => {
+      let caseObj = {
+        set: `OLL`,
+        id: 1,
+        setup: `F R U R' U' F'`,
+      };
+      let solution = `B2 F2 L2 D2 R' U`;
+
+      let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
+      let caseAccount = await program.account.case.fetch(caseAddress);
+
+      expect(caseAccount.setup).to.equal(caseObj.setup);
+
+      try {
+        await program.methods
+          .addSolution(solution)
+          .accounts({
+            signer: regularKeypair.publicKey,
+            case: caseAddress,
+          })
+          .signers([regularKeypair])
+          .rpc();
+      } catch (e) {
+        expect(e.error.errorCode.code).to.eq(`UnsolvedCube`);
+      }
+    });
   });
 });
