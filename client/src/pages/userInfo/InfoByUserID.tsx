@@ -1,16 +1,27 @@
-import { useParams } from "react-router-dom";
-import { DefaultLayout } from "../../components/layout/DefaultLayout";
-import { Button } from "../../components/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import { useEffect } from "react";
+import { useParams } from 'react-router-dom';
+import { DefaultLayout } from '../../components/layout/DefaultLayout';
+import { Button } from '../../components/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
+import { UserInfo } from '../../modules/types/userInfo.interface';
+import { userService } from '../../modules/service/userService';
+import { getName } from '../../modules/utils/userDisplayUtils';
 
 export function InfoByUserID() {
   const { id } = useParams();
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
 
   useEffect(() => {
-    id;
-  }, []);
+    fetchUserInfo();
+  }, [id]);
+
+  const fetchUserInfo = async () => {
+    if (id) {
+      const info = await userService.getUserInfo(id);
+      setUserInfo(info);
+    }
+  };
 
   return (
     <DefaultLayout>
@@ -19,13 +30,13 @@ export function InfoByUserID() {
           <img src="/user_placeholder.png" className="rounded-full w-48" />
         </div>
         <h1 className="font-bold text-accent-dark text-2xl mb-4 mt-3">
-          Name Surname
+          {getName(userInfo)}
         </h1>
         <div className="mb-4">
           <h2 className="font-bold text-accent-dark">WCA ID</h2>
           <a
             href={
-              "https://www.worldcubeassociation.org/persons/" + "2013DIPI01"
+              'https://www.worldcubeassociation.org/persons/' + '2013DIPI01'
             }
             className="text-accent-dark hover:underline"
           >
@@ -66,7 +77,7 @@ export function InfoByUserID() {
         </div>
         <hr className="w-full h-px my-3" />
         <div
-          style={{ height: "40rem" }}
+          style={{ height: '40rem' }}
           className="p-4 w-full flex flex-col items-center overflow-y-scroll"
         >
           <table className="text-left w-full mb-3">
@@ -87,7 +98,7 @@ export function InfoByUserID() {
                   <td className="py-2">3x3</td>
                   <td className="py-2">F2L 1</td>
                   <td className="py-2">50</td>
-                </tr>
+                </tr>,
               )}
             </tbody>
           </table>

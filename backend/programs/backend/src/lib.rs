@@ -1,14 +1,14 @@
 use anchor_lang::prelude::*;
 
+pub mod constants;
 pub mod error;
 pub mod instructions;
 pub mod state;
 pub mod utils;
-pub mod constants;
 
 pub use crate::{instructions::*, state::*};
 
-declare_id!("13YVuPAdZDTe1xssYDwTg6ndGFhhSMv3tZxh8s2wyZMA");
+declare_id!("8ptgSjCeuciKorgFjNhE1kpFrSnG2s5A1gEBBcczgVGH");
 
 #[program]
 pub mod backend {
@@ -29,7 +29,12 @@ pub mod backend {
     //////////// Case handling ////////////
 
     /// Creates a case (only privileged user)
-    pub fn create_case(ctx: Context<CreateCase>, set: String, id: u32, setup: String) -> Result<()> {
+    pub fn create_case(
+        ctx: Context<CreateCase>,
+        set: String,
+        id: u32,
+        setup: String,
+    ) -> Result<()> {
         create_case::handler(ctx, set, id, setup)
     }
 

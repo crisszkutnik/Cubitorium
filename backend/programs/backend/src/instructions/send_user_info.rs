@@ -1,14 +1,11 @@
 use anchor_lang::prelude::*;
 
+use crate::constants::*;
 use crate::error::UserInfoError;
 use crate::UserInfo;
-use crate::constants::*;
 
 #[derive(Accounts)]
 pub struct SendUserInfo<'info> {
-    #[account(mut)]
-    pub user: Signer<'info>,
-    
     #[account(
         init,
         payer = user,
@@ -17,6 +14,9 @@ pub struct SendUserInfo<'info> {
         bump
     )]
     pub user_info: Account<'info, UserInfo>,
+
+    #[account(mut)]
+    pub user: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }

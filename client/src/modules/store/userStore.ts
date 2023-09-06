@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { UserInfo } from "../types/userInfo.interface";
-import { PublicKey } from "@solana/web3.js";
-import { getStringFromPKOrObject } from "../web3/utils";
+import { create } from 'zustand';
+import { UserInfo } from '../types/userInfo.interface';
+import { PublicKey } from '@solana/web3.js';
+import { getStringFromPKOrObject } from '../web3/utils';
 
 interface UserStoreState {
   users: { [primaryKey: string]: UserInfo };

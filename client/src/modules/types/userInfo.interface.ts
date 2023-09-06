@@ -1,5 +1,5 @@
 export interface UserInfo {
   bump: number;
-  name: string;
-  surname: string;
+  name?: string;
+  surname?: string;
 }

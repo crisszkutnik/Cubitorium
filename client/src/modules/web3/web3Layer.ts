@@ -1,16 +1,9 @@
-import {
-  AnchorProvider,
-  Program,
-  setProvider,
-  utils,
-  web3,
-} from "@coral-xyz/anchor";
+import { AnchorProvider, Program, setProvider, utils } from "@coral-xyz/anchor";
 import { Backend, IDL } from "../../../../backend/target/types/backend";
 import { UserInfo } from "../types/userInfo.interface";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, TransactionSignature } from "@solana/web3.js";
 import { Web3Connection } from "./web3Connection";
-import { TransactionSignature } from "@solana/web3.js";
 import { getPKFromStringOrObject } from "./utils";
 
 export enum PDATypes {
@@ -32,11 +25,7 @@ class Web3Layer extends Web3Connection {
   }
 
   setWallet(wallet: AnchorWallet) {
-    const connection = new web3.Connection(import.meta.env.VITE_NETWORK_URL, {
-      commitment: `confirmed`,
-    });
-
-    const provider = new AnchorProvider(connection, wallet, {
+    const provider = new AnchorProvider(this.connection, wallet, {
       commitment: `confirmed`,
     });
 

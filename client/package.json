@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "yarn prettier --write ."
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.28.1-beta.1",

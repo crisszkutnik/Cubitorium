@@ -1,10 +1,13 @@
-import { faUser } from "@fortawesome/free-regular-svg-icons";
-import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
-import { WalletDisconnectButton } from "@solana/wallet-adapter-react-ui";
-import { useNavigate } from "react-router-dom";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useRef, useState } from 'react';
+import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
+import { useNavigate } from 'react-router-dom';
+import { useAnchorWallet } from '@solana/wallet-adapter-react';
+import { UserInfo } from '../../modules/types/userInfo.interface';
+import { userService } from '../../modules/service/userService';
+import { getName } from '../../modules/utils/userDisplayUtils';
 
 export function UserActionButton() {
   const [open, setOpen] = useState(false);
@@ -12,6 +15,18 @@ export function UserActionButton() {
   const [dropdownMargin, setDropdownMargin] = useState(0);
   const navigate = useNavigate();
   const wallet = useAnchorWallet();
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    if (wallet && wallet.publicKey) {
+      const info = await userService.getUserInfo(wallet?.publicKey.toString());
+      setUserInfo(info);
+    }
+  };
 
   const onClick = () => {
     setOpen(!open);
@@ -24,16 +39,16 @@ export function UserActionButton() {
 
   const values = [
     {
-      text: "My profile",
-      onClick: () => clickAction("/userinfo/" + wallet?.publicKey),
+      text: 'My profile',
+      onClick: () => clickAction('/userinfo/' + wallet?.publicKey),
     },
     {
-      text: "My info",
-      onClick: () => clickAction("/userinfo"),
+      text: 'My info',
+      onClick: () => clickAction('/userinfo'),
     },
     {
-      text: "My solves",
-      onClick: () => clickAction("/userinfo/solves"),
+      text: 'My solves',
+      onClick: () => clickAction('/userinfo/solves'),
     },
   ];
 
@@ -49,8 +64,8 @@ export function UserActionButton() {
     <>
       <div
         className={
-          "flex h-full items-center relative pr-3 z-50" +
-          (open ? " drop-shadow" : "")
+          'flex h-full items-center relative pr-3 z-50' +
+          (open ? ' drop-shadow' : '')
         }
       >
         <hr className="h-5/6 rounded w-px bg-black/5" />
@@ -59,7 +74,7 @@ export function UserActionButton() {
           className="ml-2 flex items-center cursor-pointer"
         >
           <FontAwesomeIcon icon={faUser} />
-          <p className="mx-3">Unknown user</p>
+          <p className="mx-3">{getName(userInfo)}</p>
           <FontAwesomeIcon icon={open ? faCaretDown : faCaretUp} />
         </button>
         {open && (
@@ -72,10 +87,10 @@ export function UserActionButton() {
               <button
                 key={index}
                 className={
-                  "py-2 hover:bg-accent-primary hover:text-white" +
+                  'py-2 hover:bg-accent-primary hover:text-white' +
                   (index !== values.length - 1
-                    ? " border-b border-black/5"
-                    : "")
+                    ? ' border-b border-black/5'
+                    : '')
                 }
                 onClick={onClick}
               >

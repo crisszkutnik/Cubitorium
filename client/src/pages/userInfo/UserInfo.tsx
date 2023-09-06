@@ -2,6 +2,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "../../components/Input";
 import { Submit } from "../../components/Submit";
 import { UserInfoLayout } from "../../components/layout/UserInfoLayout";
+import { userService } from "../../modules/service/userService";
 
 interface Inputs {
   name: string;
@@ -12,7 +13,7 @@ export function UserInfo() {
   const { register, handleSubmit } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+    userService.sendUserInfo(data.name, data.surname);
   };
 
   return (
