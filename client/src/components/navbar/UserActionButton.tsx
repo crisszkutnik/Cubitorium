@@ -6,7 +6,10 @@ import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useNavigate } from 'react-router-dom';
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { getName } from '../../modules/utils/userDisplayUtils';
-import { useUserStore } from '../../modules/store/userStore';
+import {
+  loggedUserSelector,
+  useUserStore,
+} from '../../modules/store/userStore';
 
 export function UserActionButton() {
   const [open, setOpen] = useState(false);
@@ -14,7 +17,7 @@ export function UserActionButton() {
   const [dropdownMargin, setDropdownMargin] = useState(0);
   const navigate = useNavigate();
   const wallet = useAnchorWallet();
-  const user = useUserStore((state) => state.getUser(wallet?.publicKey));
+  const user = useUserStore(loggedUserSelector);
 
   const onClick = () => {
     setOpen(!open);

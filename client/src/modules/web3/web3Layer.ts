@@ -1,13 +1,13 @@
-import { AnchorProvider, Program, setProvider, utils } from "@coral-xyz/anchor";
-import { Backend, IDL } from "../../../../backend/target/types/backend";
-import { UserInfo } from "../types/userInfo.interface";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, TransactionSignature } from "@solana/web3.js";
-import { Web3Connection } from "./web3Connection";
-import { getPKFromStringOrObject } from "./utils";
+import { AnchorProvider, Program, setProvider, utils } from '@coral-xyz/anchor';
+import { Backend, IDL } from '../../../../backend/target/types/backend';
+import { UserInfo } from '../types/userInfo.interface';
+import { AnchorWallet } from '@solana/wallet-adapter-react';
+import { PublicKey, TransactionSignature } from '@solana/web3.js';
+import { Web3Connection } from './web3Connection';
+import { getPKFromStringOrObject } from './utils';
 
 export enum PDATypes {
-  UserInfo = "user-info",
+  UserInfo = 'user-info',
 }
 
 class Web3Layer extends Web3Connection {
@@ -17,7 +17,7 @@ class Web3Layer extends Web3Connection {
     if (this._program === undefined) {
       this._program = new Program<Backend>(
         IDL,
-        import.meta.env.VITE_PROGRAM_ID
+        import.meta.env.VITE_PROGRAM_ID,
       );
     }
 
@@ -39,7 +39,7 @@ class Web3Layer extends Web3Connection {
 
   get loggedUserPK() {
     if (this.provider === undefined) {
-      throw new Error("User is not authenticated");
+      throw new Error('User is not authenticated');
     }
 
     return this.provider.wallet.publicKey;
@@ -47,21 +47,23 @@ class Web3Layer extends Web3Connection {
 
   getPDAAddress(type: PDATypes, publicKey: PublicKey) {
     if (this.provider === undefined) {
-      throw new Error("User is not authenticated");
+      throw new Error('User is not authenticated');
     }
 
     return PublicKey.findProgramAddressSync(
       [utils.bytes.utf8.encode(type), publicKey.toBuffer()],
-      this.program.programId
+      this.program.programId,
     )[0];
   }
 
   async sendUserInfo(
     name: string,
-    surname: string
+    surname: string,
+    wcaId: string,
+    location: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .sendUserInfo(name, surname)
+      .sendUserInfo(name, surname, wcaId, location)
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPDAAddress(PDATypes.UserInfo, this.loggedUserPK),
@@ -71,10 +73,29 @@ class Web3Layer extends Web3Connection {
     return this.signAndSendTx(tx);
   }
 
-  async getUserInfo(publicKey: string | PublicKey): Promise<UserInfo> {
+  async changeUserInfo(
+    name: string,
+    surname: string,
+    wcaId: string,
+    location: string,
+  ): Promise<TransactionSignature> {
+    const tx = await this.program.methods
+      .changeUserInfo(name, surname, wcaId, location)
+      .accounts({
+        user: this.provider?.wallet.publicKey,
+        userInfo: this.getPDAAddress(PDATypes.UserInfo, this.loggedUserPK),
+      })
+      .transaction();
+
+    return this.signAndSendTx(tx);
+  }
+
+  async getUserInfo(
+    publicKey: string | PublicKey,
+  ): Promise<UserInfo | undefined> {
     const pda = this.getPDAAddress(
       PDATypes.UserInfo,
-      getPKFromStringOrObject(publicKey)
+      getPKFromStringOrObject(publicKey),
     );
     return this.program.account.userInfo.fetch(pda);
   }

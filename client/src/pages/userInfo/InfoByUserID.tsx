@@ -3,24 +3,12 @@ import { DefaultLayout } from '../../components/layout/DefaultLayout';
 import { Button } from '../../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import { useEffect } from 'react';
-import { userService } from '../../modules/service/userService';
 import { getName } from '../../modules/utils/userDisplayUtils';
-import { useUserStore } from '../../modules/store/userStore';
+import { useUserStore, userSelector } from '../../modules/store/userStore';
 
 export function InfoByUserID() {
   const { id } = useParams();
-  const user = useUserStore((state) => state.getUser(id));
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, [id]);
-
-  const fetchUserInfo = async () => {
-    if (id) {
-      await userService.getUserInfo(id);
-    }
-  };
+  const user = useUserStore(userSelector(id || ''));
 
   return (
     <DefaultLayout>
@@ -33,22 +21,28 @@ export function InfoByUserID() {
         </h1>
         <div className="mb-4">
           <h2 className="font-bold text-accent-dark">WCA ID</h2>
-          <a
-            href={
-              'https://www.worldcubeassociation.org/persons/' + '2013DIPI01'
-            }
-            className="text-accent-dark hover:underline"
-          >
-            2013DIPI01
-            <FontAwesomeIcon
-              className="ml-2 text-sm"
-              icon={faUpRightFromSquare}
-            />
-          </a>
+          <div className="text-accent-dark">
+            {user?.wcaId ? (
+              <a
+                href={
+                  'https://www.worldcubeassociation.org/persons/' + '2013DIPI01'
+                }
+                className="hover:underline"
+              >
+                2013DIPI01
+                <FontAwesomeIcon
+                  className="ml-2 text-sm"
+                  icon={faUpRightFromSquare}
+                />
+              </a>
+            ) : (
+              <p>Unknown</p>
+            )}
+          </div>
         </div>
         <div className="mb-4">
           <h2 className="font-bold text-accent-dark">Location</h2>
-          <p className="text-accent-dark">Buenos Aires, Argentina</p>
+          <p className="text-accent-dark">{user?.location || 'Unknown'}</p>
         </div>
         <div>
           <h2 className="font-bold text-accent-dark">Birthdate</h2>

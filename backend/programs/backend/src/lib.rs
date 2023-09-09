@@ -46,8 +46,14 @@ pub mod backend {
     //////////// User profiles ////////////
 
     /// Initializes user info PDA (user)
-    pub fn send_user_info(ctx: Context<SendUserInfo>, name: String, surname: String) -> Result<()> {
-        send_user_info::handler(ctx, name, surname)
+    pub fn send_user_info(
+        ctx: Context<SendUserInfo>,
+        name: String,
+        surname: String,
+        wca_id: String,
+        location: String,
+    ) -> Result<()> {
+        send_user_info::handler(ctx, name, surname, wca_id, location)
     }
 
     /// Modifies existing user info PDA (user)
@@ -55,7 +61,9 @@ pub mod backend {
         ctx: Context<ChangeUserInfo>,
         new_name: String,
         new_surname: String,
+        new_wca_id: String,
+        new_location: String,
     ) -> Result<()> {
-        change_user_info::handler(ctx, new_name, new_surname)
+        change_user_info::handler(ctx, new_name, new_surname, new_wca_id, new_location)
     }
 }
