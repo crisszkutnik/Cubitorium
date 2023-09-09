@@ -26,6 +26,16 @@ pub mod backend {
         revoke_privilege::handler(ctx, revoked_user)
     }
 
+    /// Init global config PDA
+    pub fn init_global_config(ctx: Context<InitGlobalConfig>, content: String) -> Result<()> {
+        init_global_config::handler(ctx, content)
+    }
+
+    /// Set fields in global config
+    pub fn set_global_config(ctx: Context<SetGlobalConfig>, content: String) -> Result<()> {
+        set_global_config::handler(ctx, content)
+    }
+
     //////////// Case handling ////////////
 
     /// Creates a case (only privileged user)

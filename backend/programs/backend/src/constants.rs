@@ -21,3 +21,5 @@ pub const USER_INFO_TAG: &str = "user-info";
 pub const TREASURY_TAG: &str = "treasury";
 
 pub const CASE_TAG: &str = "case";
+
+pub const GLOBAL_CONFIG_TAG: &str = "global-config";
