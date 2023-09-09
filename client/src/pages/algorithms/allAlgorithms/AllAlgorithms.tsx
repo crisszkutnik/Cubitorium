@@ -1,19 +1,19 @@
-import { useMemo } from "react";
-import { DefaultLayout } from "../../../components/layout/DefaultLayout";
-import { Select } from "../../../components/Select";
+import { useMemo } from 'react';
+import { DefaultLayout } from '../../../components/layout/DefaultLayout';
+import { CustomSelect } from '../../../components/CustomSelect';
 
 export function AllAlgorithms() {
   const data = useMemo(
     () => Array(100).fill({ algorithm: "U R U' R'", votes: 50 }),
-    []
+    [],
   );
 
   const getRowClass = (index: number) => {
     if (index % 2 === 0) {
-      return "bg-accent-primary/10";
+      return 'bg-accent-primary/10';
     }
 
-    return "bg-accent-primary/5";
+    return 'bg-accent-primary/5';
   };
 
   return (
@@ -22,33 +22,25 @@ export function AllAlgorithms() {
         All user-submitted algorithms
       </h1>
       <div className="flex justify-between mb-4 gap-24">
-        <Select
-          type="primary"
-          values={["Free pairs", "Free pairs"]}
+        <CustomSelect
+          values={['Free pairs', 'Free pairs']}
           title="Algorithm type"
           onChange={() => {}}
-          className="w-full"
         />
-        <Select
-          type="secondary"
-          values={["Free pairs", "Free pairs"]}
+        <CustomSelect
+          values={['Free pairs', 'Free pairs']}
           title="Algorithm subtype"
           onChange={() => {}}
-          className="w-full"
         />
-        <Select
-          type="tertiary"
-          values={["Free pairs", "Free pairs"]}
+        <CustomSelect
+          values={['Free pairs', 'Free pairs']}
           title="Algorithm subtype"
           onChange={() => {}}
-          className="w-full"
         />
-        <Select
-          type="tertiary"
-          values={["Free pairs", "Free pairs"]}
+        <CustomSelect
+          values={['Free pairs', 'Free pairs']}
           title="Algorithm subtype"
           onChange={() => {}}
-          className="w-full"
         />
       </div>
       <div>

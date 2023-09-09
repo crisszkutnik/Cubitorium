@@ -6,8 +6,9 @@ import {
   loggedUserSelector,
   useUserStore,
 } from '../../modules/store/userStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
+import { Alert } from '../../components/Alert';
 
 interface Inputs {
   name: string;
@@ -21,6 +22,8 @@ export function UserInfo() {
     (state) => [loggedUserSelector(state), state.sendUserInfo],
     shallow,
   );
+  const [showSuccessAlert, setSuccessAlert] = useState(false);
+  const [showErrorAlert, setErrorAlert] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<Inputs>();
 
@@ -30,8 +33,15 @@ export function UserInfo() {
     }
   }, [loggedUser]);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    sendUserInfo(data.name, data.surname, data.wcaId, data.location);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      await sendUserInfo(data.name, data.surname, data.wcaId, data.location);
+      setErrorAlert(false);
+      setSuccessAlert(true);
+    } catch (e) {
+      setSuccessAlert(false);
+      setErrorAlert(true);
+    }
   };
 
   return (
@@ -70,6 +80,20 @@ export function UserInfo() {
           <Submit />
         </div>
       </form>
+      {showSuccessAlert && (
+        <Alert
+          onPress={() => setSuccessAlert(false)}
+          text="User details saved successfully"
+          type="success"
+        />
+      )}
+      {showErrorAlert && (
+        <Alert
+          onPress={() => setSuccessAlert(false)}
+          text="Failed to save user details"
+          type="error"
+        />
+      )}
     </UserInfoLayout>
   );
 }

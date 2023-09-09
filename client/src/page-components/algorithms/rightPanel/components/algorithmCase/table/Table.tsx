@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
-import { TableRow } from "./TableRow";
+import { Link } from 'react-router-dom';
+import { TableRow } from './TableRow';
+import { ButtonWrapper } from '../../../../../../components/ButtonWrapper';
 
 export function Table() {
-  const values = ["Front right", "Front left", "Back left", "Back right"];
+  const values = ['Front right', 'Front left', 'Back left', 'Back right'];
 
   return (
     <div className="w-4/5 flex flex-col">
@@ -12,10 +13,10 @@ export function Table() {
             <p
               key={index}
               className={
-                "px-3 py-1 rounded-t hover:cursor-pointer font-semibold" +
+                'px-3 py-1 rounded-t hover:cursor-pointer font-semibold' +
                 (index === 0
-                  ? " bg-accent-primary text-white"
-                  : " hover:bg-accent-primary/[0.7] hover:text-white text-accent-primary")
+                  ? ' bg-accent-primary text-white'
+                  : ' hover:bg-accent-primary/[0.7] hover:text-white text-accent-primary')
               }
             >
               {s}
@@ -31,11 +32,8 @@ export function Table() {
         <TableRow solution="M’ U R U’ r’" />
       </div>
       <div className="flex justify-center items-center h-full mt-3">
-        <Link
-          to="/algorithms/all"
-          className="border border-accent-primary rounded px-2 py-1 text-accent-primary hover:text-white hover:bg-accent-primary font-semibold"
-        >
-          + More algorithms
+        <Link to="/algorithms/all">
+          <ButtonWrapper variant="ghost" text="+ More algorithms" />
         </Link>
       </div>
     </div>

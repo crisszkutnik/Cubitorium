@@ -1,44 +1,40 @@
-import { Button } from "../../components/Button";
-import { Select } from "../../components/Select";
-import { UserInfoLayout } from "../../components/layout/UserInfoLayout";
+import { ButtonWrapper } from '../../components/ButtonWrapper';
+import { CustomSelect } from '../../components/CustomSelect';
+import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 
 export function MySolves() {
   return (
     <UserInfoLayout>
       <div className="flex flex-col mb-4 bg-white drop-shadow w-full">
         <div className="flex flex-col justify-between p-4">
-          <div className="flex">
-            <Select
-              type="primary"
-              values={["Free pairs", "Free pairs"]}
+          <div className="flex gap-3">
+            <CustomSelect
+              values={['Free pairs', 'Another pairs']}
+              defaultValue="Free pairs"
               title="Algorithm type"
               onChange={() => {}}
-              className="w-full mr-2"
             />
-            <Select
-              type="secondary"
-              values={["Free pairs", "Free pairs"]}
+            <CustomSelect
+              values={['Free pairs', 'Another pairs']}
+              defaultValue="Free pairs"
               title="Algorithm type"
               onChange={() => {}}
-              className="w-full ml-1 mr-1"
             />
-            <Select
-              type="tertiary"
-              values={["Free pairs", "Free pairs"]}
+            <CustomSelect
+              values={['Free pairs', 'Another pairs']}
+              defaultValue="Free pairs"
               title="Algorithm type"
               onChange={() => {}}
-              className="w-full ml-1 mr-1"
             />
-            <Select
-              type="tertiary"
-              values={["Free pairs", "Free pairs"]}
+            <CustomSelect
+              values={['Free pairs', 'Another pairs']}
+              defaultValue="Free pairs"
               title="Algorithm type"
               onChange={() => {}}
-              className="w-full ml-2"
             />
           </div>
           <div className="flex justify-end mt-3">
-            <Button text="Apply filters" />
+            <ButtonWrapper text="Apply filters" />
           </div>
         </div>
         <hr className="w-full h-px bg-black/5 rounded border-none" />
@@ -61,11 +57,11 @@ export function MySolves() {
                   <td className="py-2">3x3</td>
                   <td className="py-2">F2L 1</td>
                   <td className="py-2">50</td>
-                </tr>
+                </tr>,
               )}
             </tbody>
           </table>
-          <Button text="+ Load more" type="secondary" />
+          <ButtonWrapper text="+ Load more" />
         </div>
       </div>
     </UserInfoLayout>

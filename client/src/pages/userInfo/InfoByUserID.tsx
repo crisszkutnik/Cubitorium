@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { DefaultLayout } from '../../components/layout/DefaultLayout';
-import { Button } from '../../components/Button';
+import { ButtonWrapper } from '../../components/ButtonWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { getName } from '../../modules/utils/userDisplayUtils';
@@ -95,7 +95,7 @@ export function InfoByUserID() {
               )}
             </tbody>
           </table>
-          <Button text="+ Load more" type="secondary" />
+          <ButtonWrapper text="+ Load more" type="secondary" />
         </div>
       </div>
     </DefaultLayout>
