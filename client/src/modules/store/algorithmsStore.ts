@@ -1,36 +1,63 @@
-import { create } from 'zustand';
+import { Set } from '../types/globalConfig.interface';
+import { web3Layer } from '../web3/web3Layer';
+import { createWithEqualityFn } from 'zustand/traditional';
 
 interface UseAlgorithmsStoreState {
   algorithmsType: string[];
   algorithmsSubtypes: Record<string, string[]>;
+  setSets: (sets: Record<string, Set>) => void;
+  loadSets: () => Promise<void>;
+  updateSets: (str: string) => Promise<void>;
+  sets: Record<string, Set> | undefined;
 }
 
-export const useAlgorithmsStore = create<UseAlgorithmsStoreState>(() => ({
-  algorithmsType: [
-    '3x3',
-    'Roux',
-    '2x2',
-    '4x4',
-    '5x5',
-    '6x6',
-    'Megaminx',
-    'Square-1',
-  ],
-  algorithmsSubtypes: {
-    '3x3': [
-      'First two layers',
-      'Orient last layer',
-      'Permute last layer',
-      'Advanced methods',
-      'Last slot sets',
-      'Other',
-    ],
-    '2x2': ['Ortega', 'EG Method', 'CLL', 'EG1'],
-    Megaminx: ['4 Look last layer', '2 Look last layer', 'OLL', 'PLL'],
-    'Square-1': ['SubeShape', 'Vandenbergh', 'Lin'],
-    '4x4': ['IDK'],
-    '5x5': ['IDK'],
-    '6x6': ['IDK'],
-    Roux: ['IDK'],
-  },
-}));
+export const selectAllSets = (state: UseAlgorithmsStoreState) => {
+  if (state.sets === undefined) {
+    state.loadSets();
+    return {};
+  }
+
+  return state.sets;
+};
+
+export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
+  (set, get) => ({
+    sets: undefined,
+    loadSets: async () => {
+      const cfg = await web3Layer.loadGlobalConfig();
+
+      if (!cfg) {
+        return;
+      }
+
+      const sets: Record<string, Set> = JSON.parse(cfg.setsJson);
+
+      get().setSets(sets);
+    },
+    setSets: (sets: Record<string, Set>) => {
+      const algorithmsType = Object.keys(sets);
+
+      const algorithmsSubtypes = algorithmsType.reduce((obj, type) => {
+        obj[type] = Object.keys(sets[type]);
+        return obj;
+      }, {} as Record<string, string[]>);
+
+      set({ sets, algorithmsType, algorithmsSubtypes });
+    },
+    updateSets: async (str: string) => {
+      console.log(str);
+      const sets = JSON.parse(str);
+
+      if (get().sets === undefined) {
+        await web3Layer.initGlobalConfig(str);
+      } else {
+        await web3Layer.setGlobalConfig(str);
+      }
+
+      get().setSets(sets);
+    },
+    algorithmsType: [],
+    algorithmsSubtypes: {},
+  }),
+  Object.is,
+);

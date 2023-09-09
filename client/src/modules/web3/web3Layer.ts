@@ -1,6 +1,7 @@
 import { AnchorProvider, Program, setProvider, utils } from '@coral-xyz/anchor';
 import { Backend, IDL } from '../../../../backend/target/types/backend';
 import { UserInfo } from '../types/userInfo.interface';
+import { EncodedGlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
@@ -8,6 +9,7 @@ import { getPKFromStringOrObject } from './utils';
 
 export enum PDATypes {
   UserInfo = 'user-info',
+  GlobalConfig = 'global-config',
 }
 
 class Web3Layer extends Web3Connection {
@@ -45,15 +47,18 @@ class Web3Layer extends Web3Connection {
     return this.provider.wallet.publicKey;
   }
 
-  getPDAAddress(type: PDATypes, publicKey: PublicKey) {
+  getPDAAddress(type: PDATypes, publicKey?: PublicKey) {
     if (this.provider === undefined) {
       throw new Error('User is not authenticated');
     }
 
-    return PublicKey.findProgramAddressSync(
-      [utils.bytes.utf8.encode(type), publicKey.toBuffer()],
-      this.program.programId,
-    )[0];
+    const seeds = [utils.bytes.utf8.encode(type)];
+
+    if (publicKey) {
+      seeds.push(publicKey.toBuffer());
+    }
+
+    return PublicKey.findProgramAddressSync(seeds, this.program.programId)[0];
   }
 
   async sendUserInfo(
@@ -98,6 +103,50 @@ class Web3Layer extends Web3Connection {
       getPKFromStringOrObject(publicKey),
     );
     return this.program.account.userInfo.fetch(pda);
+  }
+
+  async loadGlobalConfig(): Promise<EncodedGlobalConfig | undefined> {
+    const pda = this.getPDAAddress(PDATypes.GlobalConfig);
+
+    return this.program.account.globalConfig.fetch(pda);
+  }
+
+  async initGlobalConfig(config: string) {
+    const tx = await this.program.methods
+      .initGlobalConfig(config)
+      .accounts({
+        admin: this.provider?.wallet.publicKey,
+        globalConfig: this.getPDAAddress(PDATypes.GlobalConfig),
+      })
+      .transaction();
+
+    return this.signAndSendTx(tx);
+  }
+
+  async setGlobalConfig(config: string) {
+    const tx = await this.program.methods
+      .setGlobalConfig(config)
+      .accounts({
+        admin: this.provider?.wallet.publicKey,
+        globalConfig: this.getPDAAddress(PDATypes.GlobalConfig),
+      })
+      .transaction();
+
+    return this.signAndSendTx(tx);
+  }
+
+  async addPrivilegedUser(publicKey: string) {
+    console.log(this.provider?.wallet.publicKey.toString());
+    const tx = await this.program.methods
+      .addPrivilegedUser()
+      .accounts({
+        granter: this.provider?.wallet.publicKey,
+        grantee: new PublicKey(publicKey),
+        granterPrivilege: null,
+      })
+      .transaction();
+
+    return this.signAndSendTx(tx);
   }
 }
 

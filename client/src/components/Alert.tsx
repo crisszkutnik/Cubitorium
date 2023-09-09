@@ -16,7 +16,7 @@ export function Alert({ text, onPress, type }: Props) {
   }, []);
 
   return (
-    <div className="absolute right-10">
+    <div className="absolute right-10 top-24">
       <Card
         onPress={onPress}
         isPressable={true}
