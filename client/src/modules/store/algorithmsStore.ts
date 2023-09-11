@@ -1,8 +1,29 @@
 import { create } from "zustand";
 
+class PuzzleSet {
+  name: String;
+  algorithms: String[];
+  constructor(name: String, algorithms: String[]) {
+    this.name = name;
+    this.algorithms = algorithms;
+  }
+
+}
+
+class Puzzle {
+  name: String;
+  sets: PuzzleSet[]
+  constructor(name: String, sets: PuzzleSet[]) {
+    this.name = name;
+    this.sets = sets;
+  }
+}
+
 interface UseAlgorithmsStoreState {
   algorithmsType: string[];
   algorithmsSubtypes: { [key: string]: string[] };
+  newAlgorithmTypes: { [key: string]: { [key: string]: string[] } };
+  test: Puzzle[];
 }
 
 export const useAlgorithmsStore = create<UseAlgorithmsStoreState>(() => ({
@@ -33,5 +54,28 @@ export const useAlgorithmsStore = create<UseAlgorithmsStoreState>(() => ({
     "6x6":["IDK"],
     "Roux":["IDK"],
   },
+  newAlgorithmTypes: {
+    "3x3": {
+      "F2L": ["F2L 1", "F2L 2", "F2L 3", "F2L 4", "F2L 5", "F2L 6", "F2L 7", "F2L 8"],
+      "OLL": ["OLL 1", "OLL 2", "OLL 3"],
+      "PLL": ["Aa", "Ab", "F"],
+      "Advanced F2L": ["AF2L 1", "AF2L 2", "AF2L 3", "AF2L 4", "AF2L 5"],
+      "Last slot sets": ["1", "2", "3", "4", "5", "6", "7", "8"],
+      "Other": ["A", "B", "C", "D", "E", "F", "G", "H"],
+    },
+    "2x2": {
+      "Ortega": ["Sune", "Anti Sune", "Pi"],
+      "EG1": ["EG1 AS 1", "EG1 AS 2"],
+      "EG2": ["EG2 AS 1", "EG2 AS 2"],
+      "CLL": ["CLL AS 1", "CLL AS 2"],
+    },
+  },
+  test: [new Puzzle("3x3", [new PuzzleSet("F2L", ["F2L 1", "F2L 2", "F2L 3", "F2L 4", "F2L 5", "F2L 6", "F2L 7", "F2L 8"]), 
+      new PuzzleSet("OLL", ["OLL 1", "OLL 2", "OLL 3"]), 
+      new PuzzleSet("PLL", ["Aa", "Ab", "F"]), 
+      new PuzzleSet("Advanced F2L", ["AF2L 1", "AF2L 2", "AF2L 3", "AF2L 4", "AF2L 5"]), 
+      new PuzzleSet("Last slot sets", ["1", "2", "3", "4", "5", "6", "7", "8"]), 
+      new PuzzleSet("Other", ["A", "B", "C", "D", "E", "F", "G", "H"])])
+  ],
 }));
 
