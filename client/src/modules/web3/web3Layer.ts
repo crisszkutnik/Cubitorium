@@ -6,6 +6,7 @@ import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
 import { getPKFromStringOrObject } from './utils';
+import { Privilege } from '../types/privilege.interface';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -95,9 +96,7 @@ class Web3Layer extends Web3Connection {
     return this.signAndSendTx(tx);
   }
 
-  async getUserInfo(
-    publicKey: string | PublicKey,
-  ): Promise<UserInfo | undefined> {
+  async getUserInfo(publicKey: string | PublicKey): Promise<UserInfo> {
     const pda = this.getPDAAddress(
       PDATypes.UserInfo,
       getPKFromStringOrObject(publicKey),
@@ -105,7 +104,7 @@ class Web3Layer extends Web3Connection {
     return this.program.account.userInfo.fetch(pda);
   }
 
-  async loadGlobalConfig(): Promise<EncodedGlobalConfig | undefined> {
+  async loadGlobalConfig(): Promise<EncodedGlobalConfig> {
     const pda = this.getPDAAddress(PDATypes.GlobalConfig);
 
     return this.program.account.globalConfig.fetch(pda);
@@ -132,21 +131,38 @@ class Web3Layer extends Web3Connection {
       })
       .transaction();
 
-    return this.signAndSendTx(tx);
+    await this.signAndSendTx(tx);
   }
 
-  async addPrivilegedUser(publicKey: string) {
-    console.log(this.provider?.wallet.publicKey.toString());
+  async addPrivilegedUser(
+    publicKey: string,
+    privilege: Privilege | null | undefined,
+  ): Promise<TransactionSignature> {
     const tx = await this.program.methods
       .addPrivilegedUser()
       .accounts({
         granter: this.provider?.wallet.publicKey,
         grantee: new PublicKey(publicKey),
-        granterPrivilege: null,
+        granterPrivilege: privilege ? privilege.publicKey : privilege,
       })
       .transaction();
 
     return this.signAndSendTx(tx);
+  }
+
+  async revokePrivilege(publicKey: string) {
+    const tx = await this.program.methods
+      .revokePrivilege(new PublicKey(publicKey))
+      .accounts({
+        revoker: this.provider?.wallet.publicKey,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async fetchAllUserPrivilege(): Promise<Privilege[]> {
+    return this.program.account.privilege.all();
   }
 }
 

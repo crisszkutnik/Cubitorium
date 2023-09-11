@@ -7,7 +7,7 @@ import {
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
-import { PrivilegedUsers } from './PrivilegedUsers';
+import { PrivilegedUsers } from './privilegedUsers/PrivilegedUsers';
 import { useAlertContext } from '../../components/context/AlertContext';
 
 interface Input {
@@ -24,11 +24,10 @@ export function AdminPanel() {
   const { control, reset, handleSubmit } = useForm<Input>();
 
   useEffect(() => {
-    console.log(sets);
     reset({
       sets: JSON.stringify(sets),
     });
-  }, []);
+  }, [sets]);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     try {

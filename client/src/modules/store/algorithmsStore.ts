@@ -26,10 +26,6 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
     loadSets: async () => {
       const cfg = await web3Layer.loadGlobalConfig();
 
-      if (!cfg) {
-        return;
-      }
-
       const sets: Record<string, Set> = JSON.parse(cfg.setsJson);
 
       get().setSets(sets);

@@ -92,9 +92,10 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
         loggedUserPk: pk,
       };
 
-      const user = await web3Layer.getUserInfo(pk);
+      let user;
+      try {
+        user = await web3Layer.getUserInfo(pk);
 
-      if (user) {
         setObj.users = [
           ...get().users,
           {
@@ -102,6 +103,8 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
             publicKey: pk,
           },
         ];
+      } catch (e) {
+        console.log('Account PDA does not exist');
       }
 
       set(setObj);
