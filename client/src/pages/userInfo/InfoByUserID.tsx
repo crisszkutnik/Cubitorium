@@ -95,7 +95,7 @@ export function InfoByUserID() {
               )}
             </tbody>
           </table>
-          <ButtonWrapper text="+ Load more" type="secondary" />
+          <ButtonWrapper text="+ Load more" />
         </div>
       </div>
     </DefaultLayout>
