@@ -42,9 +42,9 @@ pub fn handler(
     // Write to PDA
     ctx.accounts.case.set = set;
     ctx.accounts.case.id = id;
-    ctx.accounts.case.setup = setup;
+    ctx.accounts.case.setup = setup.clone();
     ctx.accounts.case.solutions = vec![];
-    ctx.accounts.case.state = Cube::default(); // TODO: replace by actual state (compute it)
+    ctx.accounts.case.state = Cube::from_moves(setup)?;
     ctx.accounts.case.bump = *ctx.bumps.get("case").unwrap();
 
     Ok(())

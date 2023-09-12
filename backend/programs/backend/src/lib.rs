@@ -5,6 +5,7 @@ pub mod instructions;
 pub mod state;
 pub mod utils;
 pub mod constants;
+pub mod cube_move_def;
 
 pub use crate::{instructions::*, state::*};
 
