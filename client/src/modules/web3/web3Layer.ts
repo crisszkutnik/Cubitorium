@@ -1,7 +1,7 @@
 import { AnchorProvider, Program, setProvider, utils } from '@coral-xyz/anchor';
 import { Backend, IDL } from '../../../../backend/target/types/backend';
 import { UserInfo } from '../types/userInfo.interface';
-import { EncodedGlobalConfig } from '../types/globalConfig.interface';
+import { SetsMap } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
@@ -48,8 +48,8 @@ class Web3Layer extends Web3Connection {
     return this.provider.wallet.publicKey;
   }
 
-  getPDAAddress(type: PDATypes, publicKey?: PublicKey) {
-    if (this.provider === undefined) {
+  getPDAAddress(type: PDATypes, publicKey?: PublicKey, requiresAuth = false) {
+    if (requiresAuth && this.provider === undefined) {
       throw new Error('User is not authenticated');
     }
 
@@ -59,7 +59,15 @@ class Web3Layer extends Web3Connection {
       seeds.push(publicKey.toBuffer());
     }
 
-    return PublicKey.findProgramAddressSync(seeds, this.program.programId)[0];
+    return PublicKey.findProgramAddressSync(seeds, this.programId)[0];
+  }
+
+  async getAndParseAccountInfo<T>(pda: PublicKey): Promise<T | undefined> {
+    const res = await this.connection.getAccountInfo(pda);
+
+    if (res?.data) {
+      return JSON.parse(res.data.toString(undefined, 12));
+    }
   }
 
   async sendUserInfo(
@@ -97,6 +105,7 @@ class Web3Layer extends Web3Connection {
   }
 
   async getUserInfo(publicKey: string | PublicKey): Promise<UserInfo> {
+    // TODO: Fix this so user info can be loaded without program being initialized
     const pda = this.getPDAAddress(
       PDATypes.UserInfo,
       getPKFromStringOrObject(publicKey),
@@ -104,10 +113,10 @@ class Web3Layer extends Web3Connection {
     return this.program.account.userInfo.fetch(pda);
   }
 
-  async loadGlobalConfig(): Promise<EncodedGlobalConfig> {
-    const pda = this.getPDAAddress(PDATypes.GlobalConfig);
+  async loadGlobalConfig() {
+    const pda = this.getPDAAddress(PDATypes.GlobalConfig, undefined, false);
 
-    return this.program.account.globalConfig.fetch(pda);
+    return this.getAndParseAccountInfo<SetsMap>(pda);
   }
 
   async initGlobalConfig(config: string) {

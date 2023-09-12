@@ -20,15 +20,27 @@ export const selectAllSets = (state: UseAlgorithmsStoreState) => {
   return state.sets;
 };
 
+export const selectTypesAndSubtypes = (state: UseAlgorithmsStoreState) => {
+  if (state.sets === undefined) {
+    state.loadSets();
+  }
+
+  const { algorithmsType, algorithmsSubtypes } = state;
+
+  return { algorithmsType, algorithmsSubtypes };
+};
+
 export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
   (set, get) => ({
     sets: undefined,
     loadSets: async () => {
-      const cfg = await web3Layer.loadGlobalConfig();
+      const setsCfg = await web3Layer.loadGlobalConfig();
 
-      const sets: Record<string, Set> = JSON.parse(cfg.setsJson);
+      if (!setsCfg) {
+        return;
+      }
 
-      get().setSets(sets);
+      get().setSets(setsCfg);
     },
     setSets: (sets: Record<string, Set>) => {
       const algorithmsType = Object.keys(sets);
@@ -41,7 +53,6 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
       set({ sets, algorithmsType, algorithmsSubtypes });
     },
     updateSets: async (str: string) => {
-      console.log(str);
       const sets = JSON.parse(str);
 
       if (get().sets === undefined) {

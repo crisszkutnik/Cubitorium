@@ -1,21 +1,10 @@
 import { NavLink } from 'react-router-dom';
 import { useUserStore } from '../../modules/store/userStore';
 import { UserActionButton } from './UserActionButton';
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { useEffect } from 'react';
 import { LoginButton } from './LoginButton';
 
 export function Navbar() {
-  const { login, logout, isLogged } = useUserStore();
-  const wallet = useAnchorWallet();
-
-  useEffect(() => {
-    if (wallet) {
-      login(wallet);
-    } else if (isLogged) {
-      logout();
-    }
-  }, [wallet]);
+  const { isLogged } = useUserStore();
 
   return (
     <nav className="flex text-text-primary border-b-2">
