@@ -6,7 +6,7 @@
     "build": "DEPLOYER_KEY=$(solana-keygen pubkey ~/.config/solana/id.json) anchor build"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.28.0"
+    "@coral-xyz/anchor": "0.28.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
