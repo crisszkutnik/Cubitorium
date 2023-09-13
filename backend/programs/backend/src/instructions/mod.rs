@@ -6,6 +6,7 @@ pub mod init_global_config;
 pub mod append_set_to_config;
 pub mod revoke_privilege;
 pub mod send_user_info;
+pub mod set_global_config;
 
 pub use add_privileged_user::*;
 pub use add_solution::*;
@@ -15,3 +16,4 @@ pub use init_global_config::*;
 pub use append_set_to_config::*;
 pub use revoke_privilege::*;
 pub use send_user_info::*;
+pub use set_global_config::*;
