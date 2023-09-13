@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
 
 pub mod constants;
+pub mod constants;
+pub mod cube_move_def;
 pub mod error;
 pub mod instructions;
 pub mod state;
@@ -31,9 +33,13 @@ pub mod backend {
         init_global_config::handler(ctx, content)
     }
 
-    /// Set fields in global config
-    pub fn set_global_config(ctx: Context<SetGlobalConfig>, content: String) -> Result<()> {
-        set_global_config::handler(ctx, content)
+    /// Appends new set with its cases to global config
+    pub fn append_set_to_config(
+        ctx: Context<AppendSetToConfig>,
+        set_name: String,
+        case_names: Vec<String>,
+    ) -> Result<()> {
+        append_set_to_config::handler(ctx, set_name, case_names)
     }
 
     //////////// Case handling ////////////
@@ -42,7 +48,7 @@ pub mod backend {
     pub fn create_case(
         ctx: Context<CreateCase>,
         set: String,
-        id: u32,
+        id: String,
         setup: String,
     ) -> Result<()> {
         create_case::handler(ctx, set, id, setup)

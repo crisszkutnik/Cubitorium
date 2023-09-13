@@ -18,3 +18,5 @@ default = []
 [dependencies]
 anchor-lang = {version = "0.28.0", features = [ "init-if-needed" ] }
 anchor-spl = "0.28.0"
+serde_json = "1.0.106"
+serde = { version = "1.0", features = ["derive"] }
