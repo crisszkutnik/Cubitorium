@@ -22,4 +22,19 @@ pub enum CubeError {
 
     #[msg("Some given move is not valid as per WCA notation")]
     InvalidMove,
+
+    #[msg("The set is invalid. Contact an admin")]
+    InvalidSet,
+
+    #[msg("The case does not exist in this set")]
+    InvalidCase,
+}
+
+#[error_code]
+pub enum ConfigError {
+    #[msg("Could not deserialize existing config. Mayhem!")]
+    ConfigDeserializationError,
+
+    #[msg("Could not serialize existing config. Mayhem!")]
+    ConfigSerializationError,
 }
