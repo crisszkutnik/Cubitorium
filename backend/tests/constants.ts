@@ -8,4 +8,4 @@ export const CASE_TAG = "case";
 
 export const GLOBAL_CONFIG_TAG = "global-config";
 
-export const CASE_BASE_LEN = 177;
+export const CASE_BASE_LEN = 193;

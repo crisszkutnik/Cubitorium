@@ -35,7 +35,7 @@ impl Cube {
     }
 
     /// Cube::default() + apply_moves()
-    pub fn from_moves(moves: String) -> Result<Cube> {
+    pub fn from_moves(moves: &str) -> Result<Cube> {
         let mut cube: Cube = Self::default();
         cube.apply_moves(moves)?;
 
@@ -44,7 +44,7 @@ impl Cube {
 
     /// Given a "moves" string, apply to cube
     /// Example: moves = "R' U' F R U R2 D"
-    pub fn apply_moves(&mut self, moves: String) -> Result<()> {
+    pub fn apply_moves(&mut self, moves: &str) -> Result<()> {
         // Iterate through every move and apply it if valid
         let moves: SplitWhitespace = moves.split_whitespace();
         for mov in moves {
@@ -104,6 +104,51 @@ impl Cube {
             return Err(error!(CubeError::UnsolvedCube));
         }
     
+        Ok(())
+    }
+
+    /// Checks if the F2L is solved (first two layers)
+    pub fn is_f2l_solved(&self) -> Result<()> {
+        if !(
+            self.co[4..8]  == [0,0,0,0] &&
+            self.cp[4..8]  == [5,6,7,8] &&
+            self.eo[4..12] == [0,0,0,0,0,0,0,0] &&
+            self.ep[4..12] == [5,6,7,8,9,10,11,12]
+        ) {
+            return Err(error!(CubeError::UnsolvedCube));
+        }
+    
+        Ok(())
+    }
+
+    /// Checks if the CMLL is solved (first two blocks + corners)
+    pub fn is_cmll_solved(&self) -> Result<()> {
+        if !(
+            self.co        == [0,0,0,0,0,0,0,0] &&
+            self.cp        == [1,2,3,4,5,6,7,8] &&
+            self.eo[4..8]  == [0,0,0,0] &&
+            self.eo[9]     == 0 &&
+            self.eo[11]    == 0 &&
+            self.ep[4..8]  == [5,6,7,8] &&
+            self.ep[9]     == 10 &&
+            self.ep[11]    == 12
+        ) {
+            return Err(error!(CubeError::UnsolvedCube));
+        }
+    
+        Ok(())
+    }
+
+    pub fn check_solved_for_set(&self, set: &str) -> Result<()> {
+        match set {
+            "F2L" => self.is_f2l_solved()?,
+            "OLL" => self.is_oll_solved()?,
+            "PLL" => self.is_solved()?,
+            "ZBLL" => self.is_solved()?,
+            "CMLL" => self.is_cmll_solved()?,
+            _ => return Err(error!(CubeError::InvalidSet))
+        }
+
         Ok(())
     }
 }

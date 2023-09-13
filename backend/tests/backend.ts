@@ -5,7 +5,7 @@ import { casePda, fundAccounts, privilegePda } from "./utils";
 import { keypairs } from "./test-keys";
 
 import { assert, expect } from "chai";
-import { CASE_BASE_LEN, TREASURY_TAG } from "./constants";
+import { CASE_BASE_LEN, GLOBAL_CONFIG_TAG, TREASURY_TAG } from "./constants";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -145,19 +145,19 @@ describe("backend", () => {
       expect(config).to.be.null;
 
       await program.methods
-        .initGlobalConfig("hi")
+        .initGlobalConfig("[]")
         .accounts({ admin: privilegedKeypair1.publicKey })
         .signers([privilegedKeypair1])
         .rpc();
 
       config = await program.account.globalConfig.fetch(globalConfig);
       expect(config).to.not.be.null;
-      expect(config.setsJson).to.equal("hi");
+      expect(config.setsJson).to.equal("[]");
     });
 
     it("Can edit global config", async () => {
       await program.methods
-        .setGlobalConfig("bye")
+        .appendSetToConfig("OLL", ["1", "2", "40"])
         .accounts({ admin: privilegedKeypair1.publicKey })
         .signers([privilegedKeypair1])
         .rpc();
@@ -166,13 +166,15 @@ describe("backend", () => {
         globalConfig
       );
       expect(config).to.not.be.null;
-      expect(config.setsJson).to.equal("bye");
+      expect(config.setsJson).to.equal(
+        `[{"set_name":"OLL","case_names":["1","2","40"]}]`
+      );
     });
 
     it("Cannot set global config as non-admin", async () => {
       try {
         await program.methods
-          .setGlobalConfig("oops")
+          .appendSetToConfig("oops", [])
           .accounts({ admin: regularKeypair.publicKey })
           .signers([regularKeypair])
           .rpc();
@@ -182,14 +184,14 @@ describe("backend", () => {
     });
   });
 
-  describe("Cases and algorithms", () => {
-    it("Cannot create a case if not privileged", async () => {
-      let caseObj = {
-        set: `OLL`,
-        id: 1,
-        setup: `F R U R' U' F'`,
-      };
+  describe("Cases and algorithms - basic", () => {
+    let caseObj = {
+      set: `OLL`,
+      id: `1`,
+      setup: `F R U R' U' F'`,
+    };
 
+    it("Cannot create a case if not privileged", async () => {
       try {
         await program.methods
           .createCase(caseObj.set, caseObj.id, caseObj.setup)
@@ -202,13 +204,31 @@ describe("backend", () => {
       }
     });
 
-    it("Can create a case", async () => {
-      let caseObj = {
-        set: `OLL`,
-        id: 1,
-        setup: `F R U R' U' F'`,
-      };
+    it("Cannot create a case if set not in global config", async () => {
+      try {
+        await program.methods
+          .createCase(`F2L`, caseObj.id, caseObj.setup)
+          .accounts({ signer: privilegedKeypair1.publicKey })
+          .signers([privilegedKeypair1])
+          .rpc();
+      } catch (e) {
+        expect(e.error.errorCode.code).to.eq(`InvalidSet`);
+      }
+    });
 
+    it("Cannot create a case if case not in global config", async () => {
+      try {
+        await program.methods
+          .createCase(caseObj.set, `69`, caseObj.setup)
+          .accounts({ signer: privilegedKeypair1.publicKey })
+          .signers([privilegedKeypair1])
+          .rpc();
+      } catch (e) {
+        expect(e.error.errorCode.code).to.eq(`InvalidCase`);
+      }
+    });
+
+    it("Can create a case", async () => {
       let userBalanceBefore = await provider.connection.getBalance(
         deployer.publicKey
       );
@@ -227,7 +247,7 @@ describe("backend", () => {
       );
 
       expect(pdaCase).to.not.be.null;
-      expect(Number(pdaCase.id)).to.eq(caseObj.id);
+      expect(pdaCase.id).to.eq(caseObj.id);
       expect(pdaCase.set).to.eq(caseObj.set);
       expect(pdaCase.setup).to.eq(caseObj.setup);
       expect(pdaCase.solutions).to.be.empty;
@@ -253,11 +273,6 @@ describe("backend", () => {
     });
 
     it("Can add a solution if it works", async () => {
-      let caseObj = {
-        set: `OLL`,
-        id: 1,
-        setup: `F R U R' U' F'`,
-      };
       let solution = `F U R U' R' F'`;
 
       let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
@@ -282,11 +297,6 @@ describe("backend", () => {
     });
 
     it("Can't add a solution if it doesn't work", async () => {
-      let caseObj = {
-        set: `OLL`,
-        id: 1,
-        setup: `F R U R' U' F'`,
-      };
       let solution = `B2 F2 L2 D2 R' U`;
 
       let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
@@ -306,6 +316,119 @@ describe("backend", () => {
       } catch (e) {
         expect(e.error.errorCode.code).to.eq(`UnsolvedCube`);
       }
+    });
+  });
+
+  describe("Cases and algorithm - advanced", () => {
+    // Sune
+    let ollCase = {
+      set: `OLL`,
+      id: `40`,
+      setup: `R U2 R' U' R U' R'`,
+    };
+
+    // A Perm
+    let pllCase = {
+      set: `PLL`,
+      id: `Aa`,
+      setup: `R' F R' B2 R F' R' B2 R2`,
+    };
+
+    // 3 move insert
+    let f2lCase = {
+      set: `F2L`,
+      id: `1`,
+      setup: `R U R'`,
+    };
+
+    let ollCasePda = casePda(ollCase.set, ollCase.id, program.programId);
+    let pllCasePda = casePda(pllCase.set, pllCase.id, program.programId);
+    let f2lCasePda = casePda(f2lCase.set, f2lCase.id, program.programId);
+
+    before(async () => {
+      // Let's add a PLL, OLL, and F2L case.
+
+      // We need to edit config first to allow this to happen
+      await program.methods
+        .appendSetToConfig("PLL", ["Aa"])
+        .accounts({ admin: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("F2L", ["1"])
+        .accounts({ admin: deployer.publicKey })
+        .rpc();
+
+      // Adding the cases now!
+      await program.methods
+        .createCase(ollCase.set, ollCase.id, ollCase.setup)
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .createCase(pllCase.set, pllCase.id, pllCase.setup)
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .createCase(f2lCase.set, f2lCase.id, f2lCase.setup)
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
+    });
+
+    describe(`Happy path`, async () => {
+      it("Can add a different solution to the OLL case", async () => {
+        await program.methods
+          .addSolution("R U' L' U R' U' L")
+          .accounts({ signer: deployer.publicKey, case: ollCasePda })
+          .rpc();
+      });
+
+      it("Can add a different solution to the PLL case", async () => {
+        await program.methods
+          .addSolution("F U R' D' R U R' D R U2 F'")
+          .accounts({ signer: deployer.publicKey, case: pllCasePda })
+          .rpc();
+      });
+
+      it("Can add a different solution to the F2L case", async () => {
+        await program.methods
+          .addSolution("U' R' F R F'")
+          .accounts({ signer: deployer.publicKey, case: f2lCasePda })
+          .rpc();
+      });
+    });
+
+    describe(`Unhappy path`, async () => {
+      it("Can't add a different solution to the OLL case if it doesn't work", async () => {
+        try {
+          await program.methods
+            .addSolution("R U' L' U R' U'")
+            .accounts({ signer: deployer.publicKey, case: ollCasePda })
+            .rpc();
+        } catch (e) {
+          assert.equal(e.error.errorCode.code, `UnsolvedCube`);
+        }
+      });
+
+      it("Can't add a different solution to the PLL case if it doesn't work", async () => {
+        try {
+          await program.methods
+            .addSolution("F U R' D' R U R' D R U2")
+            .accounts({ signer: deployer.publicKey, case: pllCasePda })
+            .rpc();
+        } catch (e) {
+          assert.equal(e.error.errorCode.code, `UnsolvedCube`);
+        }
+      });
+
+      it("Can't add a different solution to the F2L case if it doesn't work", async () => {
+        try {
+          await program.methods
+            .addSolution("U' R' F R F' D")
+            .accounts({ signer: deployer.publicKey, case: f2lCasePda })
+            .rpc();
+        } catch (e) {
+          assert.equal(e.error.errorCode.code, `UnsolvedCube`);
+        }
+      });
     });
   });
 });

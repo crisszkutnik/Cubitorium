@@ -6,6 +6,8 @@ pub const BUMP_LENGTH: usize = 8;
 
 pub const STRING_LENGTH_PREFIX: usize = 4;
 
+pub const MAX_CASE_ID_LENGTH: usize = 20;
+
 pub const MAX_NAME_LENGTH: usize = 200;
 
 pub const MAX_SURNAME_LENGTH: usize = 200;

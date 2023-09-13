@@ -8,7 +8,7 @@ pub struct Case {
     pub set: String,
 
     /// Identifier of this case
-    pub id: u32,
+    pub id: String,
 
     /// Setup moves (ex. R U R' U')
     pub setup: String,
@@ -25,7 +25,7 @@ pub struct Case {
 impl Case {
     pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH +
         MAX_SET_NAME_LENGTH +
-        4 + // u32
+        MAX_CASE_ID_LENGTH +
         MAX_SETUP_LENGTH +
         4 + // empty Vec<T>
         Cube::LEN +
