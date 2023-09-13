@@ -36,15 +36,11 @@ export const privilegePda = (
 
 export const casePda = (
   set: string,
-  id: number,
+  id: string,
   pid: anchor.web3.PublicKey
 ) => {
   return anchor.web3.PublicKey.findProgramAddressSync(
-    [
-      Buffer.from(CASE_TAG),
-      Buffer.from(set),
-      new anchor.BN(id).toArrayLike(Buffer, `le`, 4),
-    ],
+    [Buffer.from(CASE_TAG), Buffer.from(set), Buffer.from(id)],
     pid
   )[0];
 };
