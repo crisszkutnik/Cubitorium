@@ -5,15 +5,25 @@ import {
   translateError,
   parseIdlErrors,
   translateAddress,
-} from "@coral-xyz/anchor";
-import { TransactionSignature } from "@solana/web3.js";
-import { txVersion } from "./utils";
-import * as idl from "../../../../backend/target/idl/backend.json";
+} from '@coral-xyz/anchor';
+import { Connection, PublicKey, TransactionSignature } from '@solana/web3.js';
+import { txVersion } from './utils';
+import * as idl from '../../../../backend/target/idl/backend.json';
 
 export class Web3Connection {
-  connection: web3.Connection;
+  connection: Connection;
   provider: AnchorProvider | undefined;
-  idlErrors: Map<number, string> = parseIdlErrors(idl);
+  programId: PublicKey;
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  idlErrors: Map<number, string> = parseIdlErrors(idl as any);
+
+  constructor() {
+    this.programId = new PublicKey(import.meta.env.VITE_PROGRAM_ID);
+    const connection = new web3.Connection(import.meta.env.VITE_NETWORK_URL, {
+      commitment: `confirmed`,
+    });
+    this.connection = connection;
+  }
 
   /**
    * Sign a transaction
@@ -24,21 +34,27 @@ export class Web3Connection {
   async signTx<T extends web3.Transaction | web3.VersionedTransaction>(
     tx: T,
     otherSigners?: web3.Signer[],
-    feePayer?: Address
+    feePayer?: Address,
   ): Promise<T> {
-    if (this.provider === undefined) throw new Error("Please setWallet first.");
+    if (this.provider === undefined) {
+      throw new Error('User is not authenticated');
+    }
 
     if (txVersion(tx) === 0) {
-      if (otherSigners) (tx as web3.VersionedTransaction).sign(otherSigners);
+      if (otherSigners) {
+        (tx as web3.VersionedTransaction).sign(otherSigners);
+      }
       return this.provider.wallet.signTransaction(tx);
     }
 
     // Assume legacy otherwise
 
     const txLegacy = tx as web3.Transaction;
-    const { blockhash } = await this.connection.getLatestBlockhash(`finalized`);
+    const obj = await this.connection.getLatestBlockhash(`finalized`);
 
-    txLegacy.recentBlockhash = blockhash;
+    if (obj && obj.blockhash) {
+      txLegacy.recentBlockhash = obj.blockhash;
+    }
     if (feePayer) {
       txLegacy.feePayer = translateAddress(feePayer);
     } else {
@@ -60,8 +76,12 @@ export class Web3Connection {
     { printLogs = false, timeout = 120000 } = {
       printLogs: false,
       timeout: 120000,
-    }
+    },
   ): Promise<TransactionSignature> {
+    if (this.provider === undefined) {
+      throw new Error('User is not authenticated');
+    }
+
     try {
       const rawTx = signedTx.serialize();
       const startTime = Date.now();
@@ -72,12 +92,10 @@ export class Web3Connection {
 
       (async () => {
         while (!done && Date.now() - startTime < timeout) {
-          // eslint-disable-next-line no-await-in-loop
           await new Promise((resolve) => {
             setTimeout(resolve, 1000);
           });
 
-          // console.debug(`Resending tx...`);
           this.connection.sendRawTransaction(rawTx, {
             skipPreflight: true,
           });
@@ -93,12 +111,14 @@ export class Web3Connection {
           blockhash,
           lastValidBlockHeight,
         },
-        `confirmed`
+        `confirmed`,
       );
 
       done = true;
 
-      if (result.value.err) throw new Error(JSON.stringify(result.value.err));
+      if (result.value.err) {
+        throw new Error(JSON.stringify(result.value.err));
+      }
 
       if (printLogs) {
         const response = await this.connection.getTransaction(txid, {
@@ -111,20 +131,23 @@ export class Web3Connection {
       }
 
       return txid;
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
     } catch (err: any) {
-      const log = err.logs?.find((l: string) =>
-        l.includes(`insufficient lamports`)
-      );
-
-      if (log) {
-        const logs = log
-          .split(` `)
-          .map((e: string) => parseFloat(e))
-          .filter((e: number) => !Number.isNaN(e));
-        const transactionFees = Math.max(...logs) / 1000000000;
-        throw new Error(
-          `You do not have enough SOL for this transaction. Please make sure you have ${transactionFees} SOL and try again.`
+      if (err && err.logs) {
+        const log = err.logs?.find((l: string) =>
+          l.includes(`insufficient lamports`),
         );
+
+        if (log) {
+          const logs = log
+            .split(` `)
+            .map((e: string) => parseFloat(e))
+            .filter((e: number) => !Number.isNaN(e));
+          const transactionFees = Math.max(...logs) / 1000000000;
+          throw new Error(
+            `You do not have enough SOL for this transaction. Please make sure you have ${transactionFees} SOL and try again.`,
+          );
+        }
       }
 
       throw translateError(err, this.idlErrors);
@@ -136,8 +159,12 @@ export class Web3Connection {
    */
   async signAndSendTx<T extends web3.Transaction | web3.VersionedTransaction>(
     tx: T,
-    otherSigners?: web3.Signer[]
+    otherSigners?: web3.Signer[],
   ): Promise<TransactionSignature> {
+    if (this.provider === undefined) {
+      throw new Error('User is not authenticated');
+    }
+
     const signedTx = await this.signTx(tx, otherSigners);
 
     return this.sendTx(signedTx);

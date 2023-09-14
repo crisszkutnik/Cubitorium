@@ -7,6 +7,12 @@ pub enum UserInfoError {
 
     #[msg("User surname too long")]
     UserSurnameTooLong,
+
+    #[msg("WCA ID too long")]
+    WCAIDTooLong,
+
+    #[msg("Location too long")]
+    LocationTooLong,
 }
 
 #[error_code]

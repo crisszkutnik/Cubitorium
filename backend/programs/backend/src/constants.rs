@@ -12,6 +12,10 @@ pub const MAX_NAME_LENGTH: usize = 200;
 
 pub const MAX_SURNAME_LENGTH: usize = 200;
 
+pub const MAX_WCA_ID_LENGTH: usize = 20;
+
+pub const MAX_LOCATION_LENGTH: usize = 100;
+
 pub const MAX_SET_NAME_LENGTH: usize = 20;
 
 pub const MAX_SETUP_LENGTH: usize = 100;

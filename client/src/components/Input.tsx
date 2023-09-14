@@ -1,4 +1,4 @@
-import { UseFormRegisterReturn } from "react-hook-form";
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface Props {
   label: string;
@@ -18,11 +18,11 @@ export function Input({
   register,
 }: Props) {
   const getLabelClass = () => {
-    return "flex flex-col" + (labelClassName ? " " + labelClassName : "");
+    return 'flex flex-col' + (labelClassName ? ' ' + labelClassName : '');
   };
 
   const getInputClass = () => {
-    return "border rounded p-1" + (inputClassName ? " " + inputClassName : "");
+    return 'border rounded p-1' + (inputClassName ? ' ' + inputClassName : '');
   };
 
   return (
@@ -31,7 +31,7 @@ export function Input({
       <input
         {...register}
         className={getInputClass()}
-        type={type || "text"}
+        type={type || 'text'}
         name={name}
       />
     </label>
