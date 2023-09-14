@@ -1,18 +1,26 @@
-import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useAlgorithmsStore } from "../../modules/store/algorithmsStore";
-import { Selector } from "../../components/Selector";
+import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import {
+  selectSets2,
+  useAlgorithmsStore,
+} from '../../modules/store/algorithmsStore';
+import { Selector } from '../../components/Selector';
 
 enum QueryParams {
-  TYPE = "type",
-  SUBTYPE = "subtype",
+  TYPE = 'type',
+  SUBTYPE = 'subtype',
 }
 
+/*
+  OBS: Part of this file is hardcoded because right now we are
+  only supporting 3x3 cubes
+*/
+
 export function TopSelector() {
-  const { algorithmsType, algorithmsSubtypes } = useAlgorithmsStore();
+  const sets2 = useAlgorithmsStore(selectSets2);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedType, setSelectedType] = useState<string>("");
-  const [selectedSubtype, setSelectedSubtype] = useState<string>("");
+  const [selectedType, setSelectedType] = useState<string>('3x3');
+  const [selectedSubtype, setSelectedSubtype] = useState<string>('');
 
   useEffect(() => {
     const queryType = searchParams.get(QueryParams.TYPE);
@@ -23,7 +31,7 @@ export function TopSelector() {
     const subtypeParamChanged = shouldUpdateSubtypeParam(
       querySubtype,
       queryType,
-      searchParams
+      searchParams,
     );
 
     if (typeParamChanged || subtypeParamChanged) {
@@ -32,23 +40,31 @@ export function TopSelector() {
   }, [searchParams]);
 
   const getSubtypeValue = (type: string | null) => {
+    /*
+    
     let arr;
 
-    if (type) {
+    (if (type) {
       arr = algorithmsSubtypes[type];
     } else {
       arr = algorithmsSubtypes[algorithmsType[0]];
     }
 
-    return arr ? arr[0] : undefined;
+    return arr ? arr[0] : undefined;*/
+    if (sets2.length === 0) {
+      return '';
+    }
+    type;
+    return sets2[0].set_name;
   };
 
   const shouldUpdateTypeParam = (
     queryType: string | null,
-    params: URLSearchParams
+    params: URLSearchParams,
   ) => {
     if (!queryType) {
-      params.set(QueryParams.TYPE, algorithmsType[0]);
+      // params.set(QueryParams.TYPE, algorithmsType[0]);
+      params.set(QueryParams.TYPE, '3x3');
       return true;
     }
 
@@ -62,7 +78,7 @@ export function TopSelector() {
   const shouldUpdateSubtypeParam = (
     querySubtype: string | null,
     queryType: string | null,
-    params: URLSearchParams
+    params: URLSearchParams,
   ) => {
     if (querySubtype && querySubtype !== selectedSubtype) {
       setSelectedSubtype(querySubtype);
@@ -100,8 +116,10 @@ export function TopSelector() {
 
   return (
     <Selector
-      selectors={algorithmsType}
-      subselectors={algorithmsSubtypes}
+      selectors={['3x3']}
+      subselectors={{
+        '3x3': sets2.length === 0 ? [] : sets2.flatMap((s) => s.set_name),
+      }}
       selectedSelector={selectedType}
       selectedSubselector={selectedSubtype}
       onSelectorChange={onSelectorChange}

@@ -1,37 +1,31 @@
 import { Input, Textarea } from '@nextui-org/react';
 import { DefaultLayout } from '../../components/layout/DefaultLayout';
 import {
-  selectAllSets,
+  selectSets2,
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
 import { PrivilegedUsers } from './privilegedUsers/PrivilegedUsers';
 import { useAlertContext } from '../../components/context/AlertContext';
 
 interface Input {
-  sets: string;
+  names: string;
+  cases: string;
 }
 
 export function AdminPanel() {
-  const [sets, updateSets] = useAlgorithmsStore(
-    (state) => [selectAllSets(state), state.updateSets],
+  const [updateSets2, sets2] = useAlgorithmsStore(
+    (state) => [state.updateSets2, selectSets2(state)],
     shallow,
   );
   const { success, error } = useAlertContext();
 
-  const { control, reset, handleSubmit } = useForm<Input>();
-
-  useEffect(() => {
-    reset({
-      sets: JSON.stringify(sets),
-    });
-  }, [sets]);
+  const { control, handleSubmit } = useForm<Input>();
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     try {
-      await updateSets(data.sets);
+      await updateSets2(data.names, data.cases.split(','));
       success('Sets updated successfully');
     } catch (e) {
       console.error(e);
@@ -46,14 +40,20 @@ export function AdminPanel() {
       </h1>
       <div className="bg-white drop-shadow w-full p-4 rounded mb-4">
         <h2 className="text-accent-dark font-semibold text-xl mb-2">Sets</h2>
+        <Textarea disabled value={JSON.stringify(sets2)} />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full flex-col"
         >
           <Controller
             control={control}
-            name="sets"
-            render={({ field }) => <Textarea {...field} />}
+            name="names"
+            render={({ field }) => <Input {...field} />}
+          />
+          <Controller
+            control={control}
+            name="cases"
+            render={({ field }) => <Input {...field} />}
           />
           <div className="w-24 mt-2">
             <Input type="submit" color="primary" />

@@ -1,7 +1,7 @@
 import { AnchorProvider, Program, setProvider, utils } from '@coral-xyz/anchor';
 import { Backend, IDL } from '../../../../backend/target/types/backend';
 import { UserInfo } from '../types/userInfo.interface';
-import { SetsMap } from '../types/globalConfig.interface';
+import { EncodedGlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
@@ -11,6 +11,10 @@ import { Privilege } from '../types/privilege.interface';
 export enum PDATypes {
   UserInfo = 'user-info',
   GlobalConfig = 'global-config',
+}
+
+export enum AccountName {
+  GlobalConfig = 'globalConfig',
 }
 
 class Web3Layer extends Web3Connection {
@@ -62,11 +66,14 @@ class Web3Layer extends Web3Connection {
     return PublicKey.findProgramAddressSync(seeds, this.programId)[0];
   }
 
-  async getAndParseAccountInfo<T>(pda: PublicKey): Promise<T | undefined> {
+  async getAndParseAccountInfo<T>(
+    pda: PublicKey,
+    accountName: AccountName,
+  ): Promise<T | undefined> {
     const res = await this.connection.getAccountInfo(pda);
 
     if (res?.data) {
-      return JSON.parse(res.data.toString(undefined, 12));
+      return this.program.coder.accounts.decode(accountName, res.data);
     }
   }
 
@@ -115,13 +122,22 @@ class Web3Layer extends Web3Connection {
 
   async loadGlobalConfig() {
     const pda = this.getPDAAddress(PDATypes.GlobalConfig, undefined, false);
-
-    return this.getAndParseAccountInfo<SetsMap>(pda);
+    return this.getAndParseAccountInfo<EncodedGlobalConfig>(
+      pda,
+      AccountName.GlobalConfig,
+    );
   }
 
-  async initGlobalConfig(config: string) {
+  async initGlobalConfig(name: string, cases: string[]) {
+    const payload = [
+      {
+        set_name: name,
+        case_names: cases,
+      },
+    ];
+
     const tx = await this.program.methods
-      .initGlobalConfig(config)
+      .initGlobalConfig(JSON.stringify(payload))
       .accounts({
         admin: this.provider?.wallet.publicKey,
         globalConfig: this.getPDAAddress(PDATypes.GlobalConfig),
@@ -131,9 +147,9 @@ class Web3Layer extends Web3Connection {
     return this.signAndSendTx(tx);
   }
 
-  async setGlobalConfig(config: string) {
+  async appendSetToConfig(name: string, cases: string[]) {
     const tx = await this.program.methods
-      .setGlobalConfig(config)
+      .appendSetToConfig(name, cases)
       .accounts({
         admin: this.provider?.wallet.publicKey,
         globalConfig: this.getPDAAddress(PDATypes.GlobalConfig),
