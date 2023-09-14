@@ -37,7 +37,7 @@ export function TopSelector() {
     if (typeParamChanged || subtypeParamChanged) {
       setSearchParams(searchParams);
     }
-  }, [searchParams]);
+  }, [searchParams, sets2]);
 
   const getSubtypeValue = (type: string | null) => {
     /*
