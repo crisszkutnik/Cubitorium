@@ -26,6 +26,7 @@ export default {
       light: {
         colors: {
           primary: {
+            "50": "#E8E4FF",
             "100": "#DEDAFF",
             "200": "#BEB6FF",
             "300": "#9C91FF",

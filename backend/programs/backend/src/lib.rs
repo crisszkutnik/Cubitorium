@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 
 pub mod constants;
-pub mod constants;
 pub mod cube_move_def;
 pub mod error;
 pub mod instructions;

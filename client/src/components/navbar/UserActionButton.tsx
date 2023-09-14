@@ -41,6 +41,10 @@ export function UserActionButton() {
       text: 'My solves',
       onClick: () => clickAction('/userinfo/solves'),
     },
+    {
+      text: 'Admin panel',
+      onClick: () => clickAction('/adminpanel'),
+    },
   ];
 
   useEffect(() => {
