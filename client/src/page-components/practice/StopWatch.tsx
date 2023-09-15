@@ -44,7 +44,7 @@ export function StopWatch() {
   const milliseconds = time % 100;
 
   return (
-    <div className="flex flex-col items-center basis-3/4">
+    <div className="flex flex-col items-center w-full">
       <div className="flex flex-col items-center bg-gray-300 rounded-lg w-3/4">
         <div className="flex flex-row items-center w-full p-6 border-b-4">
           <TwistyPlayer puzzle="3x3x3" algorithm="R U2 R' U' R U' R'" size="100"></TwistyPlayer>
