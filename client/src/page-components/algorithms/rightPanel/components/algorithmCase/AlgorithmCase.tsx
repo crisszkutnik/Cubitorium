@@ -1,11 +1,16 @@
-import { Info } from "./Info";
-import { Table } from "./table/Table";
+import { CaseAccount } from '../../../../../modules/types/case.interface';
+import { Info } from './Info';
+import { AlgorithmTable } from './table/AlgorithmTable';
 
-export function AlgorithmCase() {
+interface Props {
+  caseAccount: CaseAccount;
+}
+
+export function AlgorithmCase({ caseAccount }: Props) {
   return (
     <div className="flex drop-shadow bg-white p-3 mb-6 rounded-md">
-      <Info />
-      <Table />
+      <Info caseData={caseAccount.account} />
+      <AlgorithmTable solutions={caseAccount.account.solutions} />
     </div>
   );
 }
