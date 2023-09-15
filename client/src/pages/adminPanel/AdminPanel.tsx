@@ -8,6 +8,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { shallow } from 'zustand/shallow';
 import { PrivilegedUsers } from './privilegedUsers/PrivilegedUsers';
 import { useAlertContext } from '../../components/context/AlertContext';
+import { AddCase } from './addCase/AddCase';
 
 interface Input {
   names: string;
@@ -60,6 +61,7 @@ export function AdminPanel() {
           </div>
         </form>
       </div>
+      <AddCase />
       <PrivilegedUsers />
     </DefaultLayout>
   );

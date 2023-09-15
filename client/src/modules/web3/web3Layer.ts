@@ -7,10 +7,13 @@ import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
 import { getPKFromStringOrObject } from './utils';
 import { Privilege } from '../types/privilege.interface';
+import { CaseAccount } from '../types/case.interface';
 
 export enum PDATypes {
   UserInfo = 'user-info',
   GlobalConfig = 'global-config',
+  Case = 'case',
+  Treasury = 'treasury',
 }
 
 export enum AccountName {
@@ -52,7 +55,7 @@ class Web3Layer extends Web3Connection {
     return this.provider.wallet.publicKey;
   }
 
-  getPDAAddress(type: PDATypes, publicKey?: PublicKey, requiresAuth = false) {
+  getPdaWithAuth(type: PDATypes, publicKey?: PublicKey, requiresAuth = false) {
     if (requiresAuth && this.provider === undefined) {
       throw new Error('User is not authenticated');
     }
@@ -62,6 +65,15 @@ class Web3Layer extends Web3Connection {
     if (publicKey) {
       seeds.push(publicKey.toBuffer());
     }
+
+    return PublicKey.findProgramAddressSync(seeds, this.programId)[0];
+  }
+
+  getPdaWithSeeds(type: PDATypes, seedsStr: string[] = []) {
+    const seeds = [
+      utils.bytes.utf8.encode(type),
+      ...seedsStr.map((s) => utils.bytes.utf8.encode(s)),
+    ];
 
     return PublicKey.findProgramAddressSync(seeds, this.programId)[0];
   }
@@ -87,7 +99,7 @@ class Web3Layer extends Web3Connection {
       .sendUserInfo(name, surname, wcaId, location)
       .accounts({
         user: this.provider?.wallet.publicKey,
-        userInfo: this.getPDAAddress(PDATypes.UserInfo, this.loggedUserPK),
+        userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
       })
       .transaction();
 
@@ -104,7 +116,7 @@ class Web3Layer extends Web3Connection {
       .changeUserInfo(name, surname, wcaId, location)
       .accounts({
         user: this.provider?.wallet.publicKey,
-        userInfo: this.getPDAAddress(PDATypes.UserInfo, this.loggedUserPK),
+        userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
       })
       .transaction();
 
@@ -113,7 +125,7 @@ class Web3Layer extends Web3Connection {
 
   async getUserInfo(publicKey: string | PublicKey): Promise<UserInfo> {
     // TODO: Fix this so user info can be loaded without program being initialized
-    const pda = this.getPDAAddress(
+    const pda = this.getPdaWithAuth(
       PDATypes.UserInfo,
       getPKFromStringOrObject(publicKey),
     );
@@ -121,7 +133,7 @@ class Web3Layer extends Web3Connection {
   }
 
   async loadGlobalConfig() {
-    const pda = this.getPDAAddress(PDATypes.GlobalConfig, undefined, false);
+    const pda = this.getPdaWithSeeds(PDATypes.GlobalConfig);
     return this.getAndParseAccountInfo<EncodedGlobalConfig>(
       pda,
       AccountName.GlobalConfig,
@@ -140,7 +152,7 @@ class Web3Layer extends Web3Connection {
       .initGlobalConfig(JSON.stringify(payload))
       .accounts({
         admin: this.provider?.wallet.publicKey,
-        globalConfig: this.getPDAAddress(PDATypes.GlobalConfig),
+        globalConfig: this.getPdaWithAuth(PDATypes.GlobalConfig),
       })
       .transaction();
 
@@ -152,7 +164,7 @@ class Web3Layer extends Web3Connection {
       .appendSetToConfig(name, cases)
       .accounts({
         admin: this.provider?.wallet.publicKey,
-        globalConfig: this.getPDAAddress(PDATypes.GlobalConfig),
+        globalConfig: this.getPdaWithAuth(PDATypes.GlobalConfig),
       })
       .transaction();
 
@@ -188,6 +200,23 @@ class Web3Layer extends Web3Connection {
 
   async fetchAllUserPrivilege(): Promise<Privilege[]> {
     return this.program.account.privilege.all();
+  }
+
+  async addCase(set: string, id: string, setup: string) {
+    const tx = await this.program.methods
+      .createCase(set, id, setup)
+      .accounts({ signer: this.provider?.wallet.publicKey })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadCases(): Promise<CaseAccount[]> {
+    return this.program.account.case.all();
+  }
+
+  getTrasuryPda() {
+    return this.getPdaWithSeeds(PDATypes.Treasury);
   }
 }
 
