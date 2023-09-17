@@ -81,4 +81,8 @@ pub mod backend {
     ) -> Result<()> {
         change_user_info::handler(ctx, new_name, new_surname, new_wca_id, new_location)
     }
+
+    pub fn solution_solves_case(ctx: Context<SolutionSolvesCase>, solution: String) -> Result<()> {
+        solution_solves_case::handler(ctx, solution)
+    }
 }

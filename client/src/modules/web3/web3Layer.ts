@@ -218,6 +218,24 @@ class Web3Layer extends Web3Connection {
   getTrasuryPda() {
     return this.getPdaWithSeeds(PDATypes.Treasury);
   }
+
+  async solutionSolvesCase(
+    casePublicKey: string | PublicKey,
+    solution: string,
+  ) {
+    try {
+      const tx = await this.program.methods
+        .solutionSolvesCase(solution)
+        .accounts({
+          case: getPKFromStringOrObject(casePublicKey),
+        })
+        .transaction();
+      await this.signAndSendTx(tx);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 export const web3Layer = new Web3Layer();
