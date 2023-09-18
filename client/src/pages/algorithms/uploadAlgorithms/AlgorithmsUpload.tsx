@@ -26,10 +26,6 @@ export function AlgorithmsUpload() {
     loadCasesIfNotLoaded();
   }, []);
 
-  useEffect(() => {
-    console.log(setsLoadingState, caseLoadingState, hasAllRequiredData());
-  }, [setsLoadingState, caseLoadingState]);
-
   const hasAllRequiredData = () => {
     return (
       setsLoadingState === LoadingState.LOADED &&
