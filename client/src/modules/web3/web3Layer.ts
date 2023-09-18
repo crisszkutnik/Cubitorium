@@ -236,6 +236,17 @@ class Web3Layer extends Web3Connection {
       return false;
     }
   }
+
+  async addSolution(casePublicKey: string | PublicKey, solution: string) {
+    const tx = await this.program.methods
+      .addSolution(solution)
+      .accounts({
+        case: getPKFromStringOrObject(casePublicKey),
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
 }
 
 export const web3Layer = new Web3Layer();

@@ -28,7 +28,9 @@ export function AlgorithmTable({ solutions }: Props) {
     while (rows.length < 4) {
       rows.push(
         <TableRow key={rows.length}>
-          <TableCell className="p2 text-lg">U R U’ R’</TableCell>
+          <TableCell className="p2 text-lg">
+            <p className="invisible">''</p>
+          </TableCell>
         </TableRow>,
       );
     }

@@ -8,12 +8,15 @@ import {
 import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
 import { Loading } from '../../Loading';
 import { useState } from 'react';
+import { CaseAccount } from '../../../modules/types/case.interface';
 
 export function AlgorithmsUpload() {
   const sets2 = useAlgorithmsStore(selectSets2);
   const cases = useCaseStore(selectCases);
 
-  const [setupScramble, setSetupScramble] = useState('');
+  const [activeCase, setActiveCase] = useState<CaseAccount | undefined>(
+    undefined,
+  );
 
   const hasAllRequiredData = () => {
     return sets2.length > 0 && cases.length > 0;
@@ -30,10 +33,10 @@ export function AlgorithmsUpload() {
       </h1>
       <div className="flex gap-4">
         <CubeSelectorPanel
-          setSetupScramble={setSetupScramble}
-          setupScramble={setupScramble}
+          setActiveCase={setActiveCase}
+          activeCase={activeCase}
         />
-        <ResolutionInput setupScramble={setupScramble} />
+        <ResolutionInput activeCase={activeCase} />
       </div>
     </DefaultLayout>
   );

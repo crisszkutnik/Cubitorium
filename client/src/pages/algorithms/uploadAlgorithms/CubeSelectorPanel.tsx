@@ -13,25 +13,24 @@ import {
 import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
 import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
+import { CaseAccount } from '../../../modules/types/case.interface';
 
 interface Props {
-  setupScramble: string;
-  setSetupScramble: Dispatch<SetStateAction<string>>;
+  activeCase: CaseAccount | undefined;
+  setActiveCase: Dispatch<SetStateAction<CaseAccount | undefined>>;
 }
 
-export function CubeSelectorPanel({ setupScramble, setSetupScramble }: Props) {
+export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
   const sets2 = useAlgorithmsStore(selectSets2);
   const cases = useCaseStore(selectCases);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedCase, setSelectedCase] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    sets2.length > 0 ? sets2[0].set_name : '',
+  );
 
-  useEffect(() => {
-    if (sets2.length > 0) {
-      setSelectedCategory(sets2[0].set_name);
-      setSelectedCase(sets2[0].case_names[0]);
-    }
-  }, [sets2]);
+  const [selectedCase, setSelectedCase] = useState<string>(
+    sets2.length > 0 ? sets2[0].case_names[0] : '',
+  );
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
@@ -45,14 +44,12 @@ export function CubeSelectorPanel({ setupScramble, setSetupScramble }: Props) {
     setSelectedCase(event.target.value);
   };
 
-  const filteredCases = useMemo(() => {
+  const casesForSelectedCategory = useMemo(() => {
     return cases.filter((c) => c.account.set === selectedCategory);
   }, [selectedCategory, cases]);
 
   useEffect(() => {
-    setSetupScramble(
-      cases.find((c) => c.account.id === selectedCase)?.account.setup || '',
-    );
+    setActiveCase(cases.find((c) => c.account.id === selectedCase));
   }, [selectedCategory, selectedCase]);
 
   return (
@@ -61,7 +58,7 @@ export function CubeSelectorPanel({ setupScramble, setSetupScramble }: Props) {
       <ScrambleDisplay
         height="h-60 mb-8"
         event={'3x3'}
-        scramble={setupScramble}
+        scramble={activeCase?.account.setup}
       ></ScrambleDisplay>
 
       <Select
@@ -97,16 +94,18 @@ export function CubeSelectorPanel({ setupScramble, setSetupScramble }: Props) {
         color="primary"
         label="Algorithm case"
         defaultSelectedKeys={[
-          filteredCases.length > 0 ? filteredCases[0].account.id : '',
+          casesForSelectedCategory.length > 0
+            ? casesForSelectedCategory[0].account.id
+            : '',
         ]}
         onChange={handleCaseChange}
-        disabled={filteredCases.length === 0}
+        disabled={casesForSelectedCategory.length === 0}
         classNames={{
           label: 'text-accent-dark font-semibold text-lg',
           base: 'mt-10',
         }}
       >
-        {filteredCases.map((c) => (
+        {casesForSelectedCategory.map((c) => (
           <SelectItem key={c.account.id}>{c.account.id}</SelectItem>
         ))}
       </Select>

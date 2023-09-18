@@ -6,7 +6,6 @@ pub mod create_case;
 pub mod init_global_config;
 pub mod revoke_privilege;
 pub mod send_user_info;
-pub mod solution_solves_case;
 
 pub use add_privileged_user::*;
 pub use add_solution::*;
@@ -16,4 +15,3 @@ pub use create_case::*;
 pub use init_global_config::*;
 pub use revoke_privilege::*;
 pub use send_user_info::*;
-pub use solution_solves_case::*;
