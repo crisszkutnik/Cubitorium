@@ -1,25 +1,40 @@
 import { DefaultLayout } from '../../../components/layout/DefaultLayout';
 import { CubeSelectorPanel } from './CubeSelectorPanel';
 import { ResolutionInput } from './ResolutionInput';
-import {
-  selectSets2,
-  useAlgorithmsStore,
-} from '../../../modules/store/algorithmsStore';
-import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
+import { useAlgorithmsStore } from '../../../modules/store/algorithmsStore';
+import { useCaseStore } from '../../../modules/store/caseStore';
 import { Loading } from '../../Loading';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CaseAccount } from '../../../modules/types/case.interface';
+import { LoadingState } from '../../../modules/types/loadingState.enum';
 
 export function AlgorithmsUpload() {
-  const sets2 = useAlgorithmsStore(selectSets2);
-  const cases = useCaseStore(selectCases);
+  const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
+    ({ loadingState, loadIfNotLoaded }) => [loadingState, loadIfNotLoaded],
+  );
+
+  const [caseLoadingState, loadCasesIfNotLoaded] = useCaseStore(
+    ({ loadingState, loadIfNotLoaded }) => [loadingState, loadIfNotLoaded],
+  );
 
   const [activeCase, setActiveCase] = useState<CaseAccount | undefined>(
     undefined,
   );
 
+  useEffect(() => {
+    loadSetsIfNotLoaded();
+    loadCasesIfNotLoaded();
+  }, []);
+
+  useEffect(() => {
+    console.log(setsLoadingState, caseLoadingState, hasAllRequiredData());
+  }, [setsLoadingState, caseLoadingState]);
+
   const hasAllRequiredData = () => {
-    return sets2.length > 0 && cases.length > 0;
+    return (
+      setsLoadingState === LoadingState.LOADED &&
+      caseLoadingState === LoadingState.LOADED
+    );
   };
 
   if (!hasAllRequiredData()) {
