@@ -1,13 +1,11 @@
 import { Input, Textarea } from '@nextui-org/react';
 import { DefaultLayout } from '../../components/layout/DefaultLayout';
-import {
-  selectSets2,
-  useAlgorithmsStore,
-} from '../../modules/store/algorithmsStore';
+import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { shallow } from 'zustand/shallow';
 import { PrivilegedUsers } from './privilegedUsers/PrivilegedUsers';
 import { useAlertContext } from '../../components/context/AlertContext';
+import { AddCase } from './addCase/AddCase';
 
 interface Input {
   names: string;
@@ -15,8 +13,8 @@ interface Input {
 }
 
 export function AdminPanel() {
-  const [updateSets2, sets2] = useAlgorithmsStore(
-    (state) => [state.updateSets2, selectSets2(state)],
+  const [updateSets, sets] = useAlgorithmsStore(
+    (state) => [state.updateSets, state.sets],
     shallow,
   );
   const { success, error } = useAlertContext();
@@ -25,7 +23,7 @@ export function AdminPanel() {
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
     try {
-      await updateSets2(data.names, data.cases.split(','));
+      await updateSets(data.names, data.cases.split(','));
       success('Sets updated successfully');
     } catch (e) {
       console.error(e);
@@ -40,7 +38,7 @@ export function AdminPanel() {
       </h1>
       <div className="bg-white drop-shadow w-full p-4 rounded mb-4">
         <h2 className="text-accent-dark font-semibold text-xl mb-2">Sets</h2>
-        <Textarea disabled value={JSON.stringify(sets2)} />
+        <Textarea disabled value={JSON.stringify(sets)} />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full flex-col"
@@ -60,6 +58,7 @@ export function AdminPanel() {
           </div>
         </form>
       </div>
+      <AddCase />
       <PrivilegedUsers />
     </DefaultLayout>
   );
