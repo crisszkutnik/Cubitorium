@@ -58,6 +58,17 @@ pub mod backend {
         add_solution::handler(ctx, solution)
     }
 
+    /// Adds a like to a solution or changes existing like (user)
+    /// A user can only like one solution per case
+    pub fn like_solution(ctx: Context<LikeSolution>, solution: String) -> Result<()> {
+        like_solution::handler(ctx, solution)
+    }
+
+    /// Removes a like from a solution entirely (user)
+    pub fn remove_like(ctx: Context<RemoveLike>) -> Result<()> {
+        remove_like::handler(ctx)
+    }
+
     //////////// User profiles ////////////
 
     /// Initializes user info PDA (user)
