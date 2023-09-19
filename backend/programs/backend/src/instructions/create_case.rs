@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{state::*, constants::*, utils::*, error::CubeError};
+use crate::{state::*, constants::*, utils::*, error::{CubeError, TreasuryError}};
 
 #[derive(Accounts)]
 #[instruction(set: String, id: String)]
@@ -39,6 +39,10 @@ pub fn handler(
 ) -> Result<()> {
     // Refund lamports
     let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN);
+    require!(
+        ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
+        TreasuryError::TreasuryNeedsFunds
+    );
     **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= case_rent;
     **ctx.accounts.signer.try_borrow_mut_lamports()? += case_rent;
 

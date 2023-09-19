@@ -22,6 +22,12 @@ pub enum PrivilegeError {
 }
 
 #[error_code]
+pub enum TreasuryError {
+    #[msg("Treasury is broke - please fund it or Cubitorium dies")]
+    TreasuryNeedsFunds,
+}
+
+#[error_code]
 pub enum CubeError {
     #[msg("Cube is not solved for the required subset")]
     UnsolvedCube,
