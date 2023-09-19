@@ -1,11 +1,16 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program, web3 } from "@coral-xyz/anchor";
 import { Backend } from "../target/types/backend";
-import { casePda, fundAccounts, privilegePda } from "./utils";
+import { casePda, fundAccounts, likePda, privilegePda } from "./utils";
 import { keypairs } from "./test-keys";
 
 import { assert, expect } from "chai";
-import { CASE_BASE_LEN, GLOBAL_CONFIG_TAG, TREASURY_TAG } from "./constants";
+import {
+  CASE_BASE_LEN,
+  GLOBAL_CONFIG_TAG,
+  LIKE_TAG,
+  TREASURY_TAG,
+} from "./constants";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -384,6 +389,15 @@ describe("backend", () => {
 
         expect(target.likes).to.eq(1);
         expect(target.moves).to.eq(SOLUTION_1);
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(like.case.toString()).to.eq(testCasePda.toString());
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"notLearnt":{}}`);
+        expect(like.solutionIndex).to.eq(0);
+        expect(like.user.toString()).to.eq(deployer.publicKey.toString());
       });
 
       it("Can't like a solution again", async () => {
@@ -510,6 +524,45 @@ describe("backend", () => {
         } catch (e) {
           expect(e.error.errorCode.code).to.be.eq("SolutionDoesntExist");
         }
+      });
+
+      it("Can set learning status to learning", async () => {
+        await program.methods
+          .setLearningStatus({ learning: {} })
+          .accounts({ case: testCasePda })
+          .rpc();
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"learning":{}}`);
+      });
+
+      it("Can set learning status to learnt", async () => {
+        await program.methods
+          .setLearningStatus({ learnt: {} })
+          .accounts({ case: testCasePda })
+          .rpc();
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"learnt":{}}`);
+      });
+
+      it("Can set learning status to not learnt again", async () => {
+        await program.methods
+          .setLearningStatus({ notLearnt: {} })
+          .accounts({ case: testCasePda })
+          .rpc();
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"notLearnt":{}}`);
       });
     });
   });
