@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::*, state::*, utils::Cube, error::TreasuryError};
+use crate::{constants::*, state::*, utils::Cube, error::{CaseError, TreasuryError}};
 
 #[derive(Accounts)]
 #[instruction(solution: String)]
@@ -15,7 +15,7 @@ pub struct AddSolution<'info> {
     /// CHECK: no seeds needed because it can be any case
     #[account(
         mut,
-        realloc = case.to_account_info().data_len() + solution.len(),
+        realloc = case.to_account_info().data_len() + (32 + 4 + solution.len() + 8),
         realloc::payer = signer,
         realloc::zero = false,
     )]
@@ -26,6 +26,9 @@ pub struct AddSolution<'info> {
 }
 
 pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
+    // Check if case has enough solutions
+    require!(ctx.accounts.case.solutions.len() < MAX_SOLUTIONS_ALLOWED, CaseError::MaxSolutionsAllowed);
+
     // Refund extra rent
     let extra_rent = ctx.accounts.rent.minimum_balance(solution.len());
     require!(
@@ -40,7 +43,12 @@ pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
     cube.apply_moves(&solution)?;
     cube.check_solved_for_set(&ctx.accounts.case.set)?;
 
-    ctx.accounts.case.solutions.push(solution);
+    ctx.accounts.case.solutions.push(Solution {
+        author: ctx.accounts.signer.key(),
+        moves: solution,
+        likes: 0,
+        timestamp: Clock::get()?.unix_timestamp as u64,
+    });
 
     Ok(())
 }

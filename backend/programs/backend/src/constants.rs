@@ -21,6 +21,8 @@ pub const MAX_SET_NAME_LENGTH: usize = 20;
 
 pub const MAX_SETUP_LENGTH: usize = 100;
 
+pub const MAX_SOLUTIONS_ALLOWED: usize = 200;
+
 pub const PRIVILEGE_TAG: &str = "privilege";
 
 pub const USER_INFO_TAG: &str = "user-info";
@@ -28,5 +30,7 @@ pub const USER_INFO_TAG: &str = "user-info";
 pub const TREASURY_TAG: &str = "treasury";
 
 pub const CASE_TAG: &str = "case";
+
+pub const LIKE_TAG: &str = "like";
 
 pub const GLOBAL_CONFIG_TAG: &str = "global-config";

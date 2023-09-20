@@ -1,5 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
-import { CASE_TAG, PRIVILEGE_TAG } from "./constants";
+import { CASE_TAG, LIKE_TAG, PRIVILEGE_TAG } from "./constants";
 
 export const fundAccounts = async (
   provider: anchor.AnchorProvider,
@@ -41,6 +41,17 @@ export const casePda = (
 ) => {
   return anchor.web3.PublicKey.findProgramAddressSync(
     [Buffer.from(CASE_TAG), Buffer.from(set), Buffer.from(id)],
+    pid
+  )[0];
+};
+
+export const likePda = (
+  user: anchor.web3.PublicKey,
+  casE: anchor.web3.PublicKey,
+  pid: anchor.web3.PublicKey
+) => {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from(LIKE_TAG), user.toBuffer(), casE.toBuffer()],
     pid
   )[0];
 };

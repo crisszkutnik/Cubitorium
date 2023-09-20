@@ -50,3 +50,21 @@ pub enum ConfigError {
     #[msg("Could not serialize existing config. Mayhem!")]
     ConfigSerializationError,
 }
+
+#[error_code]
+pub enum LikeError {
+    #[msg("User has already liked this case")]
+    AlreadyLiked,
+
+    #[msg("The given solution doesn't exist for the given case")]
+    SolutionDoesntExist,
+}
+
+#[error_code]
+pub enum CaseError {
+    #[msg("Case has over MAX_SOLUTIONS_ALLOWED solutions.")]
+    MaxSolutionsAllowed,
+
+    #[msg("Catastrophic failure - world has ended")]
+    Cataclysm,
+}

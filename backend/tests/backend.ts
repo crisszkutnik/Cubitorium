@@ -1,11 +1,16 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program, web3 } from "@coral-xyz/anchor";
 import { Backend } from "../target/types/backend";
-import { casePda, fundAccounts, privilegePda } from "./utils";
+import { casePda, fundAccounts, likePda, privilegePda } from "./utils";
 import { keypairs } from "./test-keys";
 
 import { assert, expect } from "chai";
-import { CASE_BASE_LEN, GLOBAL_CONFIG_TAG, TREASURY_TAG } from "./constants";
+import {
+  CASE_BASE_LEN,
+  GLOBAL_CONFIG_TAG,
+  LIKE_TAG,
+  TREASURY_TAG,
+} from "./constants";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -54,6 +59,8 @@ describe("backend", () => {
           })
           .signers([regularKeypair])
           .rpc();
+
+        assert.fail("It needs to fail!");
       } catch (e) {
         expect(e.error.errorCode.code).to.be.eq(`PrivilegeEscalation`);
       }
@@ -178,6 +185,8 @@ describe("backend", () => {
           .accounts({ admin: regularKeypair.publicKey })
           .signers([regularKeypair])
           .rpc();
+
+        assert.fail("It needs to fail!");
       } catch (e) {
         expect(e.error.errorCode.code).to.be.eq(`AccountNotInitialized`);
       }
@@ -191,120 +200,106 @@ describe("backend", () => {
       setup: `F R U R' U' F'`,
     };
 
-    it("Cannot create a case if not privileged", async () => {
-      try {
-        await program.methods
-          .createCase(caseObj.set, caseObj.id, caseObj.setup)
-          .accounts({ signer: regularKeypair.publicKey })
-          .signers([regularKeypair])
-          .rpc();
-      } catch (e) {
-        // Fails like this, deal with it
-        expect(e.error.errorCode.code).to.eq(`AccountNotInitialized`);
-      }
-    });
+    describe("Creation and solution submission", async () => {
+      it("Cannot create a case if not privileged", async () => {
+        try {
+          await program.methods
+            .createCase(caseObj.set, caseObj.id, caseObj.setup)
+            .accounts({ signer: regularKeypair.publicKey })
+            .signers([regularKeypair])
+            .rpc();
 
-    it("Cannot create a case if set not in global config", async () => {
-      try {
-        await program.methods
-          .createCase(`F2L`, caseObj.id, caseObj.setup)
-          .accounts({ signer: privilegedKeypair1.publicKey })
-          .signers([privilegedKeypair1])
-          .rpc();
-      } catch (e) {
-        expect(e.error.errorCode.code).to.eq(`InvalidSet`);
-      }
-    });
-
-    it("Cannot create a case if case not in global config", async () => {
-      try {
-        await program.methods
-          .createCase(caseObj.set, `69`, caseObj.setup)
-          .accounts({ signer: privilegedKeypair1.publicKey })
-          .signers([privilegedKeypair1])
-          .rpc();
-      } catch (e) {
-        expect(e.error.errorCode.code).to.eq(`InvalidCase`);
-      }
-    });
-
-    it("Can create a case", async () => {
-      let userBalanceBefore = await provider.connection.getBalance(
-        deployer.publicKey
-      );
-      let treasuryBalanceBefore = await provider.connection.getBalance(
-        treasury
-      );
-
-      await program.methods
-        .createCase(caseObj.set, caseObj.id, caseObj.setup)
-        .accounts({ signer: deployer.publicKey })
-        .rpc();
-
-      // Case exists
-      const pdaCase = await program.account.case.fetch(
-        casePda(caseObj.set, caseObj.id, program.programId)
-      );
-
-      expect(pdaCase).to.not.be.null;
-      expect(pdaCase.id).to.eq(caseObj.id);
-      expect(pdaCase.set).to.eq(caseObj.set);
-      expect(pdaCase.setup).to.eq(caseObj.setup);
-      expect(pdaCase.solutions).to.be.empty;
-      assert.deepEqual(pdaCase.state, {
-        co: [0, 2, 1, 0, 0, 0, 0, 0],
-        cp: [2, 1, 4, 3, 5, 6, 7, 8],
-        eo: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ep: [2, 3, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          // Fails like this, deal with it
+          expect(e.error.errorCode.code).to.eq(`AccountNotInitialized`);
+        }
       });
 
-      // User didn't pay for this, but treasury did
-      let userBalanceAfter = await provider.connection.getBalance(
-        deployer.publicKey
-      );
-      let treasuryBalanceAfter = await provider.connection.getBalance(treasury);
+      it("Cannot create a case if set not in global config", async () => {
+        try {
+          await program.methods
+            .createCase(`F2L`, caseObj.id, caseObj.setup)
+            .accounts({ signer: privilegedKeypair1.publicKey })
+            .signers([privilegedKeypair1])
+            .rpc();
 
-      const rent = await provider.connection.getMinimumBalanceForRentExemption(
-        CASE_BASE_LEN
-      );
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          expect(e.error.errorCode.code).to.eq(`InvalidSet`);
+        }
+      });
 
-      expect(userBalanceBefore - userBalanceAfter).to.be.lessThan(rent);
-      expect(treasuryBalanceBefore - treasuryBalanceAfter).to.be.eq(rent);
-    });
+      it("Cannot create a case if case not in global config", async () => {
+        try {
+          await program.methods
+            .createCase(caseObj.set, `69`, caseObj.setup)
+            .accounts({ signer: privilegedKeypair1.publicKey })
+            .signers([privilegedKeypair1])
+            .rpc();
 
-    it("Can add a solution if it works", async () => {
-      let solution = `F U R U' R' F'`;
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          expect(e.error.errorCode.code).to.eq(`InvalidCase`);
+        }
+      });
 
-      let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
-      let caseAccount = await program.account.case.fetch(caseAddress);
+      it("Can create a case", async () => {
+        let userBalanceBefore = await provider.connection.getBalance(
+          deployer.publicKey
+        );
+        let treasuryBalanceBefore = await provider.connection.getBalance(
+          treasury
+        );
 
-      // No solution stored
-      expect(caseAccount.solutions).to.be.empty;
+        await program.methods
+          .createCase(caseObj.set, caseObj.id, caseObj.setup)
+          .accounts({ signer: deployer.publicKey })
+          .rpc();
 
-      await program.methods
-        .addSolution(solution)
-        .accounts({
-          signer: regularKeypair.publicKey,
-          case: caseAddress,
-        })
-        .signers([regularKeypair])
-        .rpc();
+        // Case exists
+        const pdaCase = await program.account.case.fetch(
+          casePda(caseObj.set, caseObj.id, program.programId)
+        );
 
-      // Case has the solution now
-      caseAccount = await program.account.case.fetch(caseAddress);
-      expect(caseAccount.solutions.length).to.be.eq(1);
-      expect(caseAccount.solutions[0]).to.be.eq(solution);
-    });
+        expect(pdaCase).to.not.be.null;
+        expect(pdaCase.id).to.eq(caseObj.id);
+        expect(pdaCase.set).to.eq(caseObj.set);
+        expect(pdaCase.setup).to.eq(caseObj.setup);
+        expect(pdaCase.solutions).to.be.empty;
+        assert.deepEqual(pdaCase.state, {
+          co: [0, 2, 1, 0, 0, 0, 0, 0],
+          cp: [2, 1, 4, 3, 5, 6, 7, 8],
+          eo: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          ep: [2, 3, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        });
 
-    it("Can't add a solution if it doesn't work", async () => {
-      let solution = `B2 F2 L2 D2 R' U`;
+        // User didn't pay for this, but treasury did
+        let userBalanceAfter = await provider.connection.getBalance(
+          deployer.publicKey
+        );
+        let treasuryBalanceAfter = await provider.connection.getBalance(
+          treasury
+        );
 
-      let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
-      let caseAccount = await program.account.case.fetch(caseAddress);
+        const rent =
+          await provider.connection.getMinimumBalanceForRentExemption(
+            CASE_BASE_LEN
+          );
 
-      expect(caseAccount.setup).to.equal(caseObj.setup);
+        expect(userBalanceBefore - userBalanceAfter).to.be.lessThan(rent);
+        expect(treasuryBalanceBefore - treasuryBalanceAfter).to.be.eq(rent);
+      });
 
-      try {
+      it("Can add a solution if it works", async () => {
+        let solution = `F U R U' R' F'`;
+
+        let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
+        let caseAccount = await program.account.case.fetch(caseAddress);
+
+        // No solution stored
+        expect(caseAccount.solutions).to.be.empty;
+
         await program.methods
           .addSolution(solution)
           .accounts({
@@ -313,13 +308,266 @@ describe("backend", () => {
           })
           .signers([regularKeypair])
           .rpc();
-      } catch (e) {
-        expect(e.error.errorCode.code).to.eq(`UnsolvedCube`);
-      }
+
+        // Case has the solution now
+        caseAccount = await program.account.case.fetch(caseAddress);
+        let now = Date.now() / 1000;
+        expect(caseAccount.solutions.length).to.be.eq(1);
+        expect(caseAccount.solutions[0].likes).to.be.eq(0);
+        expect(caseAccount.solutions[0].moves).to.be.eq(solution);
+        expect(caseAccount.solutions[0].author.toString()).to.be.eq(
+          regularKeypair.publicKey.toString()
+        );
+        expect(Number(caseAccount.solutions[0].timestamp)).to.be.approximately(
+          now,
+          100
+        );
+      });
+
+      it("Can't add a solution if it doesn't work", async () => {
+        let solution = `B2 F2 L2 D2 R' U`;
+
+        let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
+        let caseAccount = await program.account.case.fetch(caseAddress);
+
+        expect(caseAccount.setup).to.equal(caseObj.setup);
+
+        try {
+          await program.methods
+            .addSolution(solution)
+            .accounts({
+              signer: regularKeypair.publicKey,
+              case: caseAddress,
+            })
+            .signers([regularKeypair])
+            .rpc();
+
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          expect(e.error.errorCode.code).to.eq(`UnsolvedCube`);
+        }
+      });
+    });
+
+    describe("Likes", async () => {
+      const SOLUTION_1 = "F R' F' R U R U' R'";
+      const SOLUTION_2 = "F R U' R' U' R U R' F'";
+
+      let testCasePda = casePda("OLL", "2", program.programId);
+
+      before(async () => {
+        // We will test on this case
+        await program.methods
+          .createCase("OLL", "2", "R U R' U' R' F R F'")
+          .accounts({ signer: deployer.publicKey })
+          .rpc();
+
+        await program.methods
+          .addSolution(SOLUTION_1)
+          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .rpc();
+
+        await program.methods
+          .addSolution(SOLUTION_2)
+          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .rpc();
+
+        let casePda = await program.account.case.fetch(testCasePda);
+        expect(casePda.solutions.every((elem) => elem.likes === 0));
+        expect(casePda.solutions.length).to.eq(2);
+      });
+
+      it("Can like a solution", async () => {
+        await program.methods
+          .likeSolution(SOLUTION_1)
+          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .rpc();
+
+        let casePda = await program.account.case.fetch(testCasePda);
+
+        let target = casePda.solutions.find((elem) => elem.likes > 0);
+
+        expect(target.likes).to.eq(1);
+        expect(target.moves).to.eq(SOLUTION_1);
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(like.case.toString()).to.eq(testCasePda.toString());
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"notLearnt":{}}`);
+        expect(like.solutionIndex).to.eq(0);
+        expect(like.user.toString()).to.eq(deployer.publicKey.toString());
+      });
+
+      it("Can't like a solution again", async () => {
+        try {
+          await program.methods
+            .likeSolution(SOLUTION_1)
+            .accounts({ signer: deployer.publicKey, case: testCasePda })
+            .rpc();
+
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          expect(e.error.errorCode.code).to.be.eq("AlreadyLiked");
+        }
+      });
+
+      it("Can change like of solution within case", async () => {
+        let casePda = await program.account.case.fetch(testCasePda);
+
+        let target = casePda.solutions.find((elem) => elem.likes > 0);
+        expect(target.likes).to.eq(1);
+        expect(target.moves).to.eq(SOLUTION_1);
+
+        await program.methods
+          .likeSolution(SOLUTION_2)
+          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .rpc();
+
+        casePda = await program.account.case.fetch(testCasePda);
+
+        target = casePda.solutions.find((elem) => elem.likes > 0);
+        expect(target.likes).to.eq(1);
+        expect(target.moves).to.eq(SOLUTION_2);
+      });
+
+      it("Can remove a like", async () => {
+        let casePda = await program.account.case.fetch(testCasePda);
+
+        let target = casePda.solutions.find((elem) => elem.likes > 0);
+        expect(target.likes).to.eq(1);
+        expect(target.moves).to.eq(SOLUTION_2);
+
+        await program.methods
+          .removeLike()
+          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .rpc();
+
+        casePda = await program.account.case.fetch(testCasePda);
+
+        target = casePda.solutions.find((elem) => elem.moves == SOLUTION_2);
+        expect(target.likes).to.eq(0);
+      });
+
+      it("Can't remove a like if it's not liked", async () => {
+        let casePda = await program.account.case.fetch(testCasePda);
+
+        // No liked case
+        expect(casePda.solutions.filter((elem) => elem.likes > 0).length).to.eq(
+          0
+        );
+
+        try {
+          await program.methods
+            .removeLike()
+            .accounts({ signer: deployer.publicKey, case: testCasePda })
+            .rpc();
+        } catch (e) {
+          expect(e.error.errorCode.code).to.eq("AccountNotInitialized");
+        }
+      });
+
+      it("Can like an already liked solution (another user)", async () => {
+        let casePda = await program.account.case.fetch(testCasePda);
+        let target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
+        expect(target.likes).to.eq(0);
+
+        // Like SOLUTION_1
+        await program.methods
+          .likeSolution(SOLUTION_1)
+          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .rpc();
+
+        casePda = await program.account.case.fetch(testCasePda);
+        target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
+        expect(target.likes).to.eq(1);
+
+        // Like SOLUTION_1 again (other user)
+        await program.methods
+          .likeSolution(SOLUTION_1)
+          .accounts({ signer: regularKeypair.publicKey, case: testCasePda })
+          .signers([regularKeypair])
+          .rpc();
+
+        casePda = await program.account.case.fetch(testCasePda);
+        target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
+        expect(target.likes).to.eq(2);
+      });
+
+      it("Can like another solution within case (another user)", async () => {
+        let casePda = await program.account.case.fetch(testCasePda);
+        let target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
+        expect(target.likes).to.eq(2);
+
+        // Like SOLUTION_2
+        await program.methods
+          .likeSolution(SOLUTION_2)
+          .accounts({ signer: privilegedKeypair1.publicKey, case: testCasePda })
+          .signers([privilegedKeypair1])
+          .rpc();
+
+        casePda = await program.account.case.fetch(testCasePda);
+        expect(casePda.solutions.filter((elem) => elem.likes > 0).length).to.eq(
+          2
+        );
+      });
+
+      it("Can't like a solution that doesn't exist", async () => {
+        try {
+          await program.methods
+            .likeSolution("benbenben")
+            .accounts({ signer: deployer.publicKey, case: testCasePda })
+            .rpc();
+
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          expect(e.error.errorCode.code).to.be.eq("SolutionDoesntExist");
+        }
+      });
+
+      it("Can set learning status to learning", async () => {
+        await program.methods
+          .setLearningStatus({ learning: {} })
+          .accounts({ case: testCasePda })
+          .rpc();
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"learning":{}}`);
+      });
+
+      it("Can set learning status to learnt", async () => {
+        await program.methods
+          .setLearningStatus({ learnt: {} })
+          .accounts({ case: testCasePda })
+          .rpc();
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"learnt":{}}`);
+      });
+
+      it("Can set learning status to not learnt again", async () => {
+        await program.methods
+          .setLearningStatus({ notLearnt: {} })
+          .accounts({ case: testCasePda })
+          .rpc();
+
+        let like = await program.account.like.fetch(
+          likePda(deployer.publicKey, testCasePda, program.programId)
+        );
+
+        expect(JSON.stringify(like.learningStatus)).to.eq(`{"notLearnt":{}}`);
+      });
     });
   });
 
-  describe("Cases and algorithm - advanced", () => {
+  describe("Cases and algorithms - advanced", () => {
     // Sune
     let ollCase = {
       set: `OLL`,
@@ -403,6 +651,8 @@ describe("backend", () => {
             .addSolution("R U' L' U R' U'")
             .accounts({ signer: deployer.publicKey, case: ollCasePda })
             .rpc();
+
+          assert.fail("It needs to fail!");
         } catch (e) {
           assert.equal(e.error.errorCode.code, `UnsolvedCube`);
         }
@@ -414,6 +664,8 @@ describe("backend", () => {
             .addSolution("F U R' D' R U R' D R U2")
             .accounts({ signer: deployer.publicKey, case: pllCasePda })
             .rpc();
+
+          assert.fail("It needs to fail!");
         } catch (e) {
           assert.equal(e.error.errorCode.code, `UnsolvedCube`);
         }
@@ -425,6 +677,8 @@ describe("backend", () => {
             .addSolution("U' R' F R F' D")
             .accounts({ signer: deployer.publicKey, case: f2lCasePda })
             .rpc();
+
+          assert.fail("It needs to fail!");
         } catch (e) {
           assert.equal(e.error.errorCode.code, `UnsolvedCube`);
         }
