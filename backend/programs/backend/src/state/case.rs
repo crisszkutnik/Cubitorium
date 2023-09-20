@@ -1,6 +1,15 @@
 use anchor_lang::prelude::*;
 use crate::{utils::Cube, constants::*};
 
+#[repr(C)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+pub struct Solution {
+    pub author: Pubkey,
+    pub likes: u32,
+    pub timestamp: u64,
+    pub moves: String,
+}
+
 /// Describes a solvable case
 #[account]
 pub struct Case {
@@ -14,7 +23,7 @@ pub struct Case {
     pub setup: String,
 
     /// Solutions for the case
-    pub solutions: Vec<String>,
+    pub solutions: Vec<Solution>,
 
     /// Cube state of this case (after setup moves)
     pub state: Cube,
