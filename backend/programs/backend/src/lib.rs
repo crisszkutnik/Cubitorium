@@ -69,6 +69,11 @@ pub mod backend {
         remove_like::handler(ctx)
     }
 
+    /// Sets learning status. Needs to like solution first
+    pub fn set_learning_status(ctx: Context<SetLearningStatus>, status: LearningStatus) -> Result<()> {
+        set_learning_status::handler(ctx, status)
+    }
+
     //////////// User profiles ////////////
 
     /// Initializes user info PDA (user)

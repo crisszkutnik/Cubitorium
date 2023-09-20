@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 use crate::{constants::*, state::*, error::{LikeError, CaseError}, utils::is_liked};
 
 #[derive(Accounts)]
-#[instruction(solution: String)]
 pub struct LikeSolution<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
