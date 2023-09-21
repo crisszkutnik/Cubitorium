@@ -1,30 +1,36 @@
-import { useRef, useState } from "react";
-import { useAlgorithmsStore } from "../../modules/store/algorithmsStore";
-import { Button } from "../../components/Button";
+import { useRef, useState, useEffect } from "react";
 import { CasesSelector } from "./CasesSelector";
+import { ButtonWrapper } from "../../components/ButtonWrapper";
+import {
+  selectSets2,
+  useAlgorithmsStore,
+} from '../../modules/store/algorithmsStore';
 
 export function PracticeSelector() {
-  const container = useRef<HTMLDivElement>(null);
-  const algorithmsStore = useAlgorithmsStore();
+  const sets2 = useAlgorithmsStore(selectSets2);
 
-  // states
-  const [selectedType, setSelectedType] = useState(0);
-  const [selectedSubtype, setSelectedSubtype] = useState(0);
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (sets2.length > 0) {
+      setSelectedType(sets2[0].set_name);
+    }
+  }, [sets2]);
+
+  const [selectedType, setSelectedType] = useState('3x3');
+  const [selectedSubtype, setSelectedSubtype] = useState<string>('');
   const [showCases, setShowCases] = useState(false);
 
 
   // when type changes
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newType = event.target.value;
-    const index = algorithmsStore.test.findIndex((alg) => alg.name === newType);
-    setSelectedType(index);
-    setSelectedSubtype(0);
+    setSelectedSubtype('');
   };
 
   
   // when subtype changes
   const handleSubtypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSubtype(algorithmsStore.test[selectedType].sets.findIndex((set) => set.name === event.target.value));
+    setSelectedSubtype('');
   };
 
   const handleShowCases = () => {
@@ -40,18 +46,19 @@ export function PracticeSelector() {
         <p className="text-accent-dark font-semibold">Puzzle</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedType} onChange={handleTypeChange}>
-          {algorithmsStore.test.map((puzzle) => (
-            <option key={algorithmsStore.test.indexOf(puzzle)}>{puzzle.name}</option>
+          {sets2.map((puzzle) => (
+            <option key={puzzle.set_name}>{puzzle.set_name}</option>
           ))}
         </select>
         <p className="text-accent-dark font-semibold">Algorithm Set</p>
         <select
           className="px-2 py-2 rounded border border-gray-300 mb-4" value={selectedSubtype} onChange={handleSubtypeChange}>
-          {algorithmsStore.test[selectedType].sets.map((set) => (
-            <option key={algorithmsStore.test[selectedType].sets.indexOf(set)}>{set.name}</option>
-          ))}
+          {/*sets2.filter(set => set.set_name == selectedType)[0].case_names.map((set) => (
+            <option key={set}>{set}</option>
+          ))*/}
+          <option key={'a'}>{'a'}</option>
         </select>
-        <Button text="Select Specific Cases" onClick={handleShowCases} type="primary"></Button>
+        <ButtonWrapper variant="ghost" onClick={handleShowCases} text="Select Specific Cases" />
         {showCases && <CasesSelector></CasesSelector>}
       </div>
     </div>

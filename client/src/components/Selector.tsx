@@ -23,10 +23,10 @@ export function Selector({
             onClick={() => onSelectorChange(s)}
             key={index}
             className={
-              "px-3 py-1 rounded-t hover:cursor-pointer font-semibold" +
+              'px-3 py-1 rounded-t hover:cursor-pointer font-semibold' +
               (s === selectedSelector
-                ? " bg-accent-primary text-white"
-                : " hover:bg-accent-primary/[0.7] hover:text-white text-accent-primary")
+                ? ' bg-accent-primary text-white'
+                : ' hover:bg-accent-primary/[0.7] hover:text-white text-accent-primary')
             }
           >
             {s}
@@ -41,10 +41,10 @@ export function Selector({
               onClick={() => onSubselectorChange && onSubselectorChange(s)}
               key={index}
               className={
-                "px-3 py-1 rounded mr-3 font-semibold text-base border border-accent-primary cursor-pointer" +
+                'px-3 py-1 rounded mr-3 font-semibold text-base border border-accent-primary cursor-pointer' +
                 (s == selectedSubselector
-                  ? " bg-accent-primary text-white"
-                  : "  text-accent-primary hover:bg-accent-primary/[0.7] hover:text-white")
+                  ? ' bg-accent-primary text-white'
+                  : '  text-accent-primary hover:bg-accent-primary/[0.7] hover:text-white')
               }
             >
               {s}

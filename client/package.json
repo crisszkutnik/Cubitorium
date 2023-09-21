@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "yarn prettier --write ."
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.28.1-beta.1",
@@ -15,11 +16,13 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@nextui-org/react": "^2.1.10",
     "@solana/wallet-adapter-base": "0.9.23",
     "@solana/wallet-adapter-react": "0.15.34",
     "@solana/wallet-adapter-react-ui": "0.9.33",
     "@solana/wallet-adapter-wallets": "0.19.20",
     "@solana/web3.js": "1.78.3",
+    "framer-motion": "^10.16.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.45.4",
@@ -27,7 +30,7 @@
     "zustand": "4.4.1"
   },
   "devDependencies": {
-    "@types/react": "18.2.18",
+    "@types/react": "^18.2.18",
     "@types/react-dom": "18.2.7",
     "@types/react-modal": "^3.16.0",
     "@typescript-eslint/eslint-plugin": "6.2.1",

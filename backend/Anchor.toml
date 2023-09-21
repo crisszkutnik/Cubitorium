@@ -1,8 +1,8 @@
 [features]
-seeds = false
+seeds = true
 skip-lint = false
 [programs.localnet]
-backend = "13YVuPAdZDTe1xssYDwTg6ndGFhhSMv3tZxh8s2wyZMA"
+backend = "8ptgSjCeuciKorgFjNhE1kpFrSnG2s5A1gEBBcczgVGH"
 
 [registry]
 url = "https://api.apr.dev"

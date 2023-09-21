@@ -1,4 +1,4 @@
-import { Button } from "../../components/Button";
+import { ButtonWrapper } from "../../components/ButtonWrapper";
 import { TwistyPlayer } from "./TwistyPlayer";
 
 export function CasesSelector() {
@@ -9,8 +9,8 @@ export function CasesSelector() {
     return (
         <div className="">
             <div className="flex flex-row py-3 justify-center gap-2">
-                <Button text="Select None" onClick={handleShowCases} type="tertiary"></Button>
-                <Button text="Select All" onClick={handleShowCases} type="tertiary"></Button>
+                <ButtonWrapper variant="ghost" onClick={handleShowCases} text="Select None" />
+                <ButtonWrapper variant="ghost" onClick={handleShowCases} text="Select All" />
             </div>
             <div className="flex flex-col gap-2">
                 <Case/>
