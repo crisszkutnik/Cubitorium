@@ -14,7 +14,7 @@
    - Tambien parados sobre `backend`, correr los siguientes comandos:
      ```
      solana config set --url localhost
-     anchor build
+     yarn build
      anchor deploy
      ```
      Se deberia hacer el deploy en tu instancia local de Solana
