@@ -1,7 +1,7 @@
-pub mod cube;
 pub mod moves;
 pub mod likes;
+pub mod puzzles;
 
-pub use cube::*;
 pub use moves::*;
 pub use likes::*;
+pub use puzzles::*;

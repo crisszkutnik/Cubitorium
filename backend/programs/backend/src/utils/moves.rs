@@ -2,14 +2,23 @@
 
 #![allow(non_snake_case)]
 
-use crate::cube_move_def::*;
-use super::Cube;
+use crate::move_def::{pyra_move_def::{EP as P_EP, EO as P_EO, XO}, cube_move_def::*};
+use super::{Cube, Pyra};
 
 /// Rotate four elements
 pub fn apply_permutation(arr: &mut [u8], indices: [usize; 4]) -> () {
     // This was the easiest & fastest to think of option
     let last    = arr[indices[3]];
     arr[indices[3]] = arr[indices[2]];
+    arr[indices[2]] = arr[indices[1]];
+    arr[indices[1]] = arr[indices[0]];
+    arr[indices[0]] = last;
+}
+
+/// Rotate three elements
+pub fn apply_permutation_3(arr: &mut [u8], indices: [usize; 3]) -> () {
+    // This was the easiest & fastest to think of option
+    let last    = arr[indices[2]];
     arr[indices[2]] = arr[indices[1]];
     arr[indices[1]] = arr[indices[0]];
     arr[indices[0]] = last;
@@ -51,6 +60,29 @@ pub fn apply_to_cube(
     cube
 }
 
+/// Apply move to Pyra; modifies permutation of both edge arrays
+/// and orientation of centers (and edges if needed)
+pub fn apply_to_pyra(
+    mut pyra: Pyra,
+    ep_indices: [usize; 3],
+    xo_mask: [u8; 4],
+    eo_mask_opt: Option<[u8; 6]>
+) -> Pyra {
+    // Cycle both edge arrays
+    apply_permutation_3(&mut pyra.eo, ep_indices);
+    apply_permutation_3(&mut pyra.ep, ep_indices);
+
+    // Update center orientation
+    pyra.xo = apply_orientation(&pyra.xo, &xo_mask, 3).try_into().unwrap();
+
+    // Update edge orientations if needed
+    if let Some(eo_mask) = eo_mask_opt {
+        pyra.eo = apply_orientation(&pyra.eo, &eo_mask, 2).try_into().unwrap();
+    }
+
+    pyra
+}
+
 /// Given a move, applies corresponding move to cube
 pub fn move_cube(mov: usize, cube: &mut Cube) {
     *cube = apply_to_cube(
@@ -59,5 +91,14 @@ pub fn move_cube(mov: usize, cube: &mut Cube) {
         EP[mov],
         CO[mov],
         EO[mov],
+    );
+}
+
+pub fn move_pyra(mov: usize, pyra: &mut Pyra) {
+    *pyra = apply_to_pyra(
+        pyra.clone(),
+        P_EP[mov],
+        XO[mov],
+        P_EO[mov],
     );
 }

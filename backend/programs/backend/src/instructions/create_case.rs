@@ -19,7 +19,7 @@ pub struct CreateCase<'info> {
     #[account(
         init,
         seeds = [CASE_TAG.as_ref(), set.as_ref(), id.as_ref()], bump,
-        space = Case::BASE_LEN,
+        space = Case::BASE_LEN + Case::extra_size_for_set(&set),
         payer = signer,
     )]
     pub case: Account<'info, Case>,
@@ -38,7 +38,7 @@ pub fn handler(
     setup: String,
 ) -> Result<()> {
     // Refund lamports
-    let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN);
+    let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set));
     require!(
         ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
         TreasuryError::TreasuryNeedsFunds
@@ -59,12 +59,23 @@ pub fn handler(
     };
 
     // Write to PDA
-    ctx.accounts.case.set = set;
+    ctx.accounts.case.set = set.clone();
     ctx.accounts.case.id = id;
     ctx.accounts.case.setup = setup.clone();
     ctx.accounts.case.solutions = vec![];
-    ctx.accounts.case.state = Cube::from_moves(&setup)?;
     ctx.accounts.case.bump = *ctx.bumps.get("case").unwrap();
+
+    // Code horror
+    match &set[..] {
+        "L4E" => {
+            ctx.accounts.case.cube_state = None;
+            ctx.accounts.case.pyra_state = Some(Pyra::from_moves(&setup)?);
+        },
+        _ => {
+            ctx.accounts.case.cube_state = Some(Cube::from_moves(&setup)?);
+            ctx.accounts.case.pyra_state = None;
+        }
+    }
 
     Ok(())
 }
