@@ -164,7 +164,7 @@ describe("backend", () => {
 
     it("Can edit global config", async () => {
       await program.methods
-        .appendSetToConfig("OLL", ["1", "2", "40"])
+        .appendSetToConfig("OLL", ["0", "1", "2", "40"])
         .accounts({ admin: privilegedKeypair1.publicKey })
         .signers([privilegedKeypair1])
         .rpc();
@@ -174,7 +174,7 @@ describe("backend", () => {
       );
       expect(config).to.not.be.null;
       expect(config.setsJson).to.equal(
-        `[{"set_name":"OLL","case_names":["1","2","40"]}]`
+        `[{"set_name":"OLL","case_names":["0","1","2","40"]}]`
       );
     });
 
@@ -267,12 +267,13 @@ describe("backend", () => {
         expect(pdaCase.set).to.eq(caseObj.set);
         expect(pdaCase.setup).to.eq(caseObj.setup);
         expect(pdaCase.solutions).to.be.empty;
-        assert.deepEqual(pdaCase.state, {
+        assert.deepEqual(pdaCase.cubeState, {
           co: [0, 2, 1, 0, 0, 0, 0, 0],
           cp: [2, 1, 4, 3, 5, 6, 7, 8],
           eo: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           ep: [2, 3, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         });
+        expect(pdaCase.pyraState).to.be.null;
 
         // User didn't pay for this, but treasury did
         let userBalanceAfter = await provider.connection.getBalance(
@@ -589,9 +590,17 @@ describe("backend", () => {
       setup: `R U R'`,
     };
 
+    // Pyra 2flip
+    let l4eCase = {
+      set: `L4E`,
+      id: `1`,
+      setup: `L R' L B' L' U' B L`,
+    };
+
     let ollCasePda = casePda(ollCase.set, ollCase.id, program.programId);
     let pllCasePda = casePda(pllCase.set, pllCase.id, program.programId);
     let f2lCasePda = casePda(f2lCase.set, f2lCase.id, program.programId);
+    let l4eCasePda = casePda(l4eCase.set, l4eCase.id, program.programId);
 
     before(async () => {
       // Let's add a PLL, OLL, and F2L case.
@@ -603,6 +612,18 @@ describe("backend", () => {
         .rpc();
       await program.methods
         .appendSetToConfig("F2L", ["1"])
+        .accounts({ admin: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("L4E", ["1"])
+        .accounts({ admin: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("CMLL", ["0"])
+        .accounts({ admin: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("CLL", ["0"])
         .accounts({ admin: deployer.publicKey })
         .rpc();
 
@@ -617,6 +638,20 @@ describe("backend", () => {
         .rpc();
       await program.methods
         .createCase(f2lCase.set, f2lCase.id, f2lCase.setup)
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .createCase(l4eCase.set, l4eCase.id, l4eCase.setup)
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
+
+      // Fake solved cases to just test on a solved cube
+      await program.methods
+        .createCase("CMLL", "0", "")
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
+      await program.methods
+        .createCase("CLL", "0", "")
         .accounts({ signer: deployer.publicKey })
         .rpc();
     });
@@ -640,6 +675,37 @@ describe("backend", () => {
         await program.methods
           .addSolution("U' R' F R F'")
           .accounts({ signer: deployer.publicKey, case: f2lCasePda })
+          .rpc();
+      });
+
+      it("Can add a different solution to the L4E case", async () => {
+        try {
+          await program.methods
+            .addSolution("L' U R L' R U' R' U' R' U' R")
+            .accounts({ signer: deployer.publicKey, case: l4eCasePda })
+            .rpc();
+        } catch (e) {
+          console.log(e);
+        }
+      });
+
+      it("Validates CMLL", async () => {
+        await program.methods
+          .addSolution("R L' B R' L U'")
+          .accounts({
+            signer: deployer.publicKey,
+            case: casePda("CMLL", "0", program.programId),
+          })
+          .rpc();
+      });
+
+      it("Validates CLL", async () => {
+        await program.methods
+          .addSolution("R L' U2 D2 R' L F2 B2")
+          .accounts({
+            signer: deployer.publicKey,
+            case: casePda("CLL", "0", program.programId),
+          })
           .rpc();
       });
     });

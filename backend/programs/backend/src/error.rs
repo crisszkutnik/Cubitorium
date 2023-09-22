@@ -40,6 +40,9 @@ pub enum CubeError {
 
     #[msg("The case does not exist in this set")]
     InvalidCase,
+
+    #[msg("The given set is not supported yet (validator code missing)")]
+    UnsupportedSet,
 }
 
 #[error_code]

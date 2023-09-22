@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::{utils::Cube, constants::*};
+use crate::{utils::{Cube, Pyra}, constants::*};
 
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
@@ -26,7 +26,12 @@ pub struct Case {
     pub solutions: Vec<Solution>,
 
     /// Cube state of this case (after setup moves)
-    pub state: Cube,
+    /// Optional because Anchor can't handle modern programming
+    pub cube_state: Option<Cube>,
+
+    /// Pyra state of this case (after setup moves)
+    /// Optional because Anchor can't handle modern programming
+    pub pyra_state: Option<Pyra>,
 
     pub bump: u8,
 }
@@ -37,7 +42,14 @@ impl Case {
         MAX_CASE_ID_LENGTH +
         MAX_SETUP_LENGTH +
         4 + // empty Vec<T>
-        Cube::LEN +
+        1 + // Option<Cube> and Option<Pyra> calculated dynamically in ix, but one will be None always
         1
     ;
+
+    pub fn extra_size_for_set(set: &str) -> usize {
+        1 + match set {
+            "L4E" => Pyra::LEN,
+            _ => Cube::LEN,
+        }
+    }
 }

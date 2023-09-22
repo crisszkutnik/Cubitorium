@@ -1,12 +1,10 @@
-use std::str::SplitWhitespace;
-
 use anchor_lang::prelude::*;
 
-use std::borrow::BorrowMut;
+use std::{borrow::BorrowMut, str::SplitWhitespace};
 
 use crate::error::CubeError;
 
-use super::move_cube;
+use super::super::move_cube;
 
 /// Cube state
 #[derive(Clone, Debug, AnchorDeserialize, AnchorSerialize)]
@@ -139,6 +137,18 @@ impl Cube {
         Ok(())
     }
 
+    /// Checks only if corners are solved (good for 2x2x2)
+    pub fn are_corners_solved(&self) -> Result<()> {
+        if !(
+            self.co == [0,0,0,0,0,0,0,0] &&
+            self.cp == [1,2,3,4,5,6,7,8]
+        ) {
+            return Err(error!(CubeError::UnsolvedCube));
+        }
+    
+        Ok(())
+    }
+
     pub fn check_solved_for_set(&self, set: &str) -> Result<()> {
         match set {
             "F2L" => self.is_f2l_solved()?,
@@ -146,7 +156,10 @@ impl Cube {
             "PLL" => self.is_solved()?,
             "ZBLL" => self.is_solved()?,
             "CMLL" => self.is_cmll_solved()?,
-            _ => return Err(error!(CubeError::InvalidSet))
+            "CLL" => self.are_corners_solved()?,
+            "EG-1" => self.are_corners_solved()?,
+            "EG-2" => self.are_corners_solved()?,
+            _ => return Err(error!(CubeError::UnsupportedSet))
         }
 
         Ok(())

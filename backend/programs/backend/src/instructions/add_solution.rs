@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::*, state::*, utils::Cube, error::{CaseError, TreasuryError}};
+use crate::{constants::*, state::*, utils::validate_set_setup_solution, error::{CaseError, TreasuryError}};
 
 #[derive(Accounts)]
 #[instruction(solution: String)]
@@ -39,9 +39,11 @@ pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
     **ctx.accounts.signer.try_borrow_mut_lamports()? += extra_rent;
 
     // Check that solution works (setup + solution = solved state for its set)
-    let mut cube: Cube = Cube::from_moves(&ctx.accounts.case.setup)?;
-    cube.apply_moves(&solution)?;
-    cube.check_solved_for_set(&ctx.accounts.case.set)?;
+    validate_set_setup_solution(
+        &ctx.accounts.case.set,
+        &ctx.accounts.case.setup,
+        &solution
+    )?;
 
     ctx.accounts.case.solutions.push(Solution {
         author: ctx.accounts.signer.key(),
