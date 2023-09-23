@@ -13,13 +13,21 @@ pub struct AddSolution<'info> {
     pub treasury: Account<'info, Treasury>,
 
     /// CHECK: no seeds needed because it can be any case
-    #[account(
-        mut,
-        realloc = case.to_account_info().data_len() + (32 + 4 + solution.len() + 8),
-        realloc::payer = signer,
-        realloc::zero = false,
-    )]
+    #[account(mut)]
     pub case: Account<'info, Case>,
+
+    #[account(
+        init,
+        seeds = [
+            SOLUTION_TAG.as_ref(),
+            case.key().as_ref(),
+            &solution.hash_solution()
+        ],
+        bump,
+        payer = signer,
+        space = Solution::BASE_LEN + solution.len()
+    )]
+    pub solution_pda: Account<'info, Solution>,
 
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
@@ -27,16 +35,16 @@ pub struct AddSolution<'info> {
 
 pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
     // Check if case has enough solutions
-    require!(ctx.accounts.case.solutions.len() < MAX_SOLUTIONS_ALLOWED, CaseError::MaxSolutionsAllowed);
+    require!(ctx.accounts.case.solutions < MAX_SOLUTIONS_ALLOWED, CaseError::MaxSolutionsAllowed);
 
-    // Refund extra rent
-    let extra_rent = ctx.accounts.rent.minimum_balance(solution.len());
+    // Refund rent
+    let solution_pda_rent = ctx.accounts.rent.minimum_balance(Solution::BASE_LEN + solution.len());
     require!(
-        ctx.accounts.treasury.to_account_info().lamports() >= extra_rent,
+        ctx.accounts.treasury.to_account_info().lamports() >= solution_pda_rent,
         TreasuryError::TreasuryNeedsFunds
     );
-    **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= extra_rent;
-    **ctx.accounts.signer.try_borrow_mut_lamports()? += extra_rent;
+    **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= solution_pda_rent;
+    **ctx.accounts.signer.try_borrow_mut_lamports()? += solution_pda_rent;
 
     // Check that solution works (setup + solution = solved state for its set)
     validate_set_setup_solution(
@@ -45,12 +53,15 @@ pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
         &solution
     )?;
 
-    ctx.accounts.case.solutions.push(Solution {
-        author: ctx.accounts.signer.key(),
-        moves: solution,
-        likes: 0,
-        timestamp: Clock::get()?.unix_timestamp as u64,
-    });
+    // Populate Solution fields
+    ctx.accounts.solution_pda.case = ctx.accounts.case.key();
+    ctx.accounts.solution_pda.moves = solution;
+    ctx.accounts.solution_pda.self_index = ctx.accounts.case.solutions;
+    ctx.accounts.solution_pda.author = ctx.accounts.signer.key();
+    ctx.accounts.solution_pda.timestamp = Clock::get()?.unix_timestamp as u64;
+
+    // Update Case
+    ctx.accounts.case.solutions += 1;
 
     Ok(())
 }

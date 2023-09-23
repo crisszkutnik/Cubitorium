@@ -62,7 +62,6 @@ pub fn handler(
     ctx.accounts.case.set = set.clone();
     ctx.accounts.case.id = id;
     ctx.accounts.case.setup = setup.clone();
-    ctx.accounts.case.solutions = vec![];
     ctx.accounts.case.bump = *ctx.bumps.get("case").unwrap();
 
     // Code horror

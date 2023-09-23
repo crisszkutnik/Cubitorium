@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
 
+use std::collections::BTreeSet;
+
 use crate::constants::DISCRIMINATOR_LENGTH;
 
 pub type ConfigCaseJson = Vec<CaseJson>;
@@ -7,7 +9,7 @@ pub type ConfigCaseJson = Vec<CaseJson>;
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct CaseJson {
     pub set_name: String,
-    pub case_names: Vec<String>,
+    pub case_names: BTreeSet<String>,
 }
 
 #[account]

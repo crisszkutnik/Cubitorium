@@ -60,8 +60,8 @@ pub mod backend {
 
     /// Adds a like to a solution or changes existing like (user)
     /// A user can only like one solution per case
-    pub fn like_solution(ctx: Context<LikeSolution>, solution: String) -> Result<()> {
-        like_solution::handler(ctx, solution)
+    pub fn like_solution(ctx: Context<LikeSolution>) -> Result<()> {
+        like_solution::handler(ctx)
     }
 
     /// Removes a like from a solution entirely (user)

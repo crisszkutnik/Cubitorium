@@ -1,5 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
-import { CASE_TAG, LIKE_TAG, PRIVILEGE_TAG } from "./constants";
+import { hash } from "@coral-xyz/anchor/dist/cjs/utils/sha256";
+import {
+  CASE_TAG,
+  LIKE_CERTIFICATE_TAG,
+  PRIVILEGE_TAG,
+  SOLUTION_TAG,
+} from "./constants";
 
 export const fundAccounts = async (
   provider: anchor.AnchorProvider,
@@ -45,13 +51,32 @@ export const casePda = (
   )[0];
 };
 
-export const likePda = (
-  user: anchor.web3.PublicKey,
-  casE: anchor.web3.PublicKey,
+export const solutionKey = (
+  casePda: anchor.web3.PublicKey,
+  solution: string,
   pid: anchor.web3.PublicKey
 ) => {
   return anchor.web3.PublicKey.findProgramAddressSync(
-    [Buffer.from(LIKE_TAG), user.toBuffer(), casE.toBuffer()],
+    [
+      Buffer.from(SOLUTION_TAG),
+      casePda.toBuffer(),
+      Buffer.from(hash(solution), "hex"),
+    ],
+    pid
+  )[0];
+};
+
+export const likePda = (
+  user: anchor.web3.PublicKey,
+  solutionPda: anchor.web3.PublicKey,
+  pid: anchor.web3.PublicKey
+) => {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(LIKE_CERTIFICATE_TAG),
+      user.toBuffer(),
+      solutionPda.toBuffer(),
+    ],
     pid
   )[0];
 };
