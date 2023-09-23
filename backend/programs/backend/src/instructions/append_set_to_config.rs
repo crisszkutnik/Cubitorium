@@ -1,5 +1,7 @@
 use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instruction}};
 
+use std::collections::BTreeSet;
+
 use crate::{state::*, constants::*, error::ConfigError};
 
 #[derive(Accounts)]
@@ -29,12 +31,17 @@ pub fn handler(ctx: Context<AppendSetToConfig>, set_name: String, case_names: Ve
         .map_err(|_| ConfigError::ConfigDeserializationError)
         .unwrap();
 
-    current_config.push(
-        CaseJson {
-            set_name,
-            case_names,
-        }
-    );
+    // Check if set exists. If so, add new cases to it. Otherwise push new struct.
+    if let Some(set) = current_config.iter_mut().find(|elem| elem.set_name == set_name) {
+        set.case_names.extend(case_names.clone().into_iter());
+    } else {
+        current_config.push(
+            CaseJson {
+                set_name,
+                case_names: BTreeSet::from_iter(case_names.into_iter()),
+            }
+        );
+    }
 
     let new_config_string = serde_json
         ::to_string(&current_config)

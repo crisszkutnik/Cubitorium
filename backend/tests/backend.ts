@@ -1,16 +1,17 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program, web3 } from "@coral-xyz/anchor";
 import { Backend } from "../target/types/backend";
-import { casePda, fundAccounts, likePda, privilegePda } from "./utils";
+import {
+  casePda,
+  fundAccounts,
+  likePda,
+  privilegePda,
+  solutionKey,
+} from "./utils";
 import { keypairs } from "./test-keys";
 
 import { assert, expect } from "chai";
-import {
-  CASE_BASE_LEN,
-  GLOBAL_CONFIG_TAG,
-  LIKE_TAG,
-  TREASURY_TAG,
-} from "./constants";
+import { CASE_BASE_LEN, GLOBAL_CONFIG_TAG, TREASURY_TAG } from "./constants";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -18,6 +19,7 @@ describe("backend", () => {
   anchor.setProvider(provider);
 
   const program = anchor.workspace.Backend as Program<Backend>;
+  const pid = program.programId;
 
   const deployer = provider.wallet;
   const privilegedKeypair1: web3.Keypair = keypairs[1];
@@ -31,12 +33,12 @@ describe("backend", () => {
 
   const treasury = web3.PublicKey.findProgramAddressSync(
     [Buffer.from(TREASURY_TAG)],
-    program.programId
+    pid
   )[0];
 
   const globalConfig = web3.PublicKey.findProgramAddressSync(
     [Buffer.from(GLOBAL_CONFIG_TAG)],
-    program.programId
+    pid
   )[0];
 
   before(async () => {
@@ -78,7 +80,7 @@ describe("backend", () => {
 
       // Privilege exists
       const privilege = await program.account.privilege.fetch(
-        privilegePda(deployer.publicKey, program.programId)
+        privilegePda(deployer.publicKey, pid)
       );
 
       expect(privilege).to.not.be.null;
@@ -97,7 +99,7 @@ describe("backend", () => {
 
       // Privilege exists
       const privilege = await program.account.privilege.fetch(
-        privilegePda(privilegedKeypair1.publicKey, program.programId)
+        privilegePda(privilegedKeypair1.publicKey, pid)
       );
 
       expect(privilege).to.not.be.null;
@@ -110,7 +112,7 @@ describe("backend", () => {
     it("Can revoke a privilege", async () => {
       // Privilege exists
       let privilege = await program.account.privilege.fetch(
-        privilegePda(privilegedKeypair1.publicKey, program.programId)
+        privilegePda(privilegedKeypair1.publicKey, pid)
       );
 
       expect(privilege).to.not.be.null;
@@ -123,7 +125,7 @@ describe("backend", () => {
 
       // Privilege is gone
       privilege = await program.account.privilege.fetchNullable(
-        privilegePda(privilegedKeypair1.publicKey, program.programId)
+        privilegePda(privilegedKeypair1.publicKey, pid)
       );
 
       expect(privilege).to.be.null;
@@ -175,6 +177,22 @@ describe("backend", () => {
       expect(config).to.not.be.null;
       expect(config.setsJson).to.equal(
         `[{"set_name":"OLL","case_names":["0","1","2","40"]}]`
+      );
+    });
+
+    it("Can append to existing set in global config", async () => {
+      await program.methods
+        .appendSetToConfig("OLL", ["14"])
+        .accounts({ admin: privilegedKeypair1.publicKey })
+        .signers([privilegedKeypair1])
+        .rpc();
+
+      let config = await program.account.globalConfig.fetchNullable(
+        globalConfig
+      );
+      expect(config).to.not.be.null;
+      expect(config.setsJson).to.equal(
+        `[{"set_name":"OLL","case_names":["0","1","14","2","40"]}]`
       );
     });
 
@@ -259,14 +277,14 @@ describe("backend", () => {
 
         // Case exists
         const pdaCase = await program.account.case.fetch(
-          casePda(caseObj.set, caseObj.id, program.programId)
+          casePda(caseObj.set, caseObj.id, pid)
         );
 
         expect(pdaCase).to.not.be.null;
         expect(pdaCase.id).to.eq(caseObj.id);
         expect(pdaCase.set).to.eq(caseObj.set);
         expect(pdaCase.setup).to.eq(caseObj.setup);
-        expect(pdaCase.solutions).to.be.empty;
+        expect(pdaCase.solutions).to.be.eq(0);
         assert.deepEqual(pdaCase.cubeState, {
           co: [0, 2, 1, 0, 0, 0, 0, 0],
           cp: [2, 1, 4, 3, 5, 6, 7, 8],
@@ -285,7 +303,7 @@ describe("backend", () => {
 
         const rent =
           await provider.connection.getMinimumBalanceForRentExemption(
-            CASE_BASE_LEN
+            CASE_BASE_LEN + 41
           );
 
         expect(userBalanceBefore - userBalanceAfter).to.be.lessThan(rent);
@@ -295,17 +313,19 @@ describe("backend", () => {
       it("Can add a solution if it works", async () => {
         let solution = `F U R U' R' F'`;
 
-        let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
+        let caseAddress = casePda(caseObj.set, caseObj.id, pid);
+        let solutionPda = solutionKey(caseAddress, solution, pid);
         let caseAccount = await program.account.case.fetch(caseAddress);
 
         // No solution stored
-        expect(caseAccount.solutions).to.be.empty;
+        expect(caseAccount.solutions).to.be.eq(0);
 
         await program.methods
           .addSolution(solution)
           .accounts({
             signer: regularKeypair.publicKey,
             case: caseAddress,
+            solutionPda,
           })
           .signers([regularKeypair])
           .rpc();
@@ -313,22 +333,23 @@ describe("backend", () => {
         // Case has the solution now
         caseAccount = await program.account.case.fetch(caseAddress);
         let now = Date.now() / 1000;
-        expect(caseAccount.solutions.length).to.be.eq(1);
-        expect(caseAccount.solutions[0].likes).to.be.eq(0);
-        expect(caseAccount.solutions[0].moves).to.be.eq(solution);
-        expect(caseAccount.solutions[0].author.toString()).to.be.eq(
+        expect(caseAccount.solutions).to.be.eq(1);
+
+        // Solution PDA has expected fields
+        let solutionAccount = await program.account.solution.fetch(solutionPda);
+
+        expect(solutionAccount.likes).to.be.eq(0);
+        expect(solutionAccount.moves).to.be.eq(solution);
+        expect(solutionAccount.author.toString()).to.be.eq(
           regularKeypair.publicKey.toString()
         );
-        expect(Number(caseAccount.solutions[0].timestamp)).to.be.approximately(
-          now,
-          100
-        );
+        expect(Number(solutionAccount.timestamp)).to.be.approximately(now, 100);
       });
 
       it("Can't add a solution if it doesn't work", async () => {
         let solution = `B2 F2 L2 D2 R' U`;
 
-        let caseAddress = casePda(caseObj.set, caseObj.id, program.programId);
+        let caseAddress = casePda(caseObj.set, caseObj.id, pid);
         let caseAccount = await program.account.case.fetch(caseAddress);
 
         expect(caseAccount.setup).to.equal(caseObj.setup);
@@ -339,6 +360,7 @@ describe("backend", () => {
             .accounts({
               signer: regularKeypair.publicKey,
               case: caseAddress,
+              solutionPda: solutionKey(caseAddress, solution, pid),
             })
             .signers([regularKeypair])
             .rpc();
@@ -354,7 +376,9 @@ describe("backend", () => {
       const SOLUTION_1 = "F R' F' R U R U' R'";
       const SOLUTION_2 = "F R U' R' U' R U R' F'";
 
-      let testCasePda = casePda("OLL", "2", program.programId);
+      let testCasePda = casePda("OLL", "2", pid);
+      let solution1Pda = solutionKey(testCasePda, SOLUTION_1, pid);
+      let solution2Pda = solutionKey(testCasePda, SOLUTION_2, pid);
 
       before(async () => {
         // We will test on this case
@@ -365,104 +389,96 @@ describe("backend", () => {
 
         await program.methods
           .addSolution(SOLUTION_1)
-          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .accounts({
+            signer: deployer.publicKey,
+            case: testCasePda,
+            solutionPda: solution1Pda,
+          })
           .rpc();
 
         await program.methods
           .addSolution(SOLUTION_2)
-          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .accounts({
+            signer: deployer.publicKey,
+            case: testCasePda,
+            solutionPda: solution2Pda,
+          })
           .rpc();
 
-        let casePda = await program.account.case.fetch(testCasePda);
-        expect(casePda.solutions.every((elem) => elem.likes === 0));
-        expect(casePda.solutions.length).to.eq(2);
+        // Solutions have no likes
+        let solutionPda = await program.account.solution.fetch(solution1Pda);
+        expect(solutionPda.likes).to.eq(0);
+        solutionPda = await program.account.solution.fetch(solution2Pda);
+        expect(solutionPda.likes).to.eq(0);
       });
 
       it("Can like a solution", async () => {
         await program.methods
-          .likeSolution(SOLUTION_1)
-          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .likeSolution()
+          .accounts({ signer: deployer.publicKey, solutionPda: solution1Pda })
           .rpc();
 
-        let casePda = await program.account.case.fetch(testCasePda);
+        // Like count updated
+        let solutionPda = await program.account.solution.fetch(solution1Pda);
+        expect(solutionPda.likes).to.eq(1);
 
-        let target = casePda.solutions.find((elem) => elem.likes > 0);
-
-        expect(target.likes).to.eq(1);
-        expect(target.moves).to.eq(SOLUTION_1);
-
-        let like = await program.account.like.fetch(
-          likePda(deployer.publicKey, testCasePda, program.programId)
+        // Certificate created
+        let likeCertKey = likePda(deployer.publicKey, solution1Pda, pid);
+        let likeCertPda = await program.account.likeCertificate.fetch(
+          likeCertKey
         );
 
-        expect(like.case.toString()).to.eq(testCasePda.toString());
-        expect(JSON.stringify(like.learningStatus)).to.eq(`{"notLearnt":{}}`);
-        expect(like.solutionIndex).to.eq(0);
-        expect(like.user.toString()).to.eq(deployer.publicKey.toString());
+        expect(likeCertPda).to.not.be.null;
+        expect(JSON.stringify(likeCertPda.learningStatus)).to.be.eq(
+          `{"notLearnt":{}}`
+        );
       });
 
       it("Can't like a solution again", async () => {
         try {
           await program.methods
-            .likeSolution(SOLUTION_1)
-            .accounts({ signer: deployer.publicKey, case: testCasePda })
+            .likeSolution()
+            .accounts({ signer: deployer.publicKey, solutionPda: solution1Pda })
             .rpc();
 
           assert.fail("It needs to fail!");
         } catch (e) {
-          expect(e.error.errorCode.code).to.be.eq("AlreadyLiked");
+          expect(e.logs.join("").includes("already in use")).to.be.true;
         }
       });
 
-      it("Can change like of solution within case", async () => {
-        let casePda = await program.account.case.fetch(testCasePda);
-
-        let target = casePda.solutions.find((elem) => elem.likes > 0);
-        expect(target.likes).to.eq(1);
-        expect(target.moves).to.eq(SOLUTION_1);
-
-        await program.methods
-          .likeSolution(SOLUTION_2)
-          .accounts({ signer: deployer.publicKey, case: testCasePda })
-          .rpc();
-
-        casePda = await program.account.case.fetch(testCasePda);
-
-        target = casePda.solutions.find((elem) => elem.likes > 0);
-        expect(target.likes).to.eq(1);
-        expect(target.moves).to.eq(SOLUTION_2);
-      });
-
       it("Can remove a like", async () => {
-        let casePda = await program.account.case.fetch(testCasePda);
-
-        let target = casePda.solutions.find((elem) => elem.likes > 0);
-        expect(target.likes).to.eq(1);
-        expect(target.moves).to.eq(SOLUTION_2);
+        // Like exists
+        let likeCert = await program.account.likeCertificate.fetchNullable(
+          likePda(deployer.publicKey, solution1Pda, pid)
+        );
+        expect(likeCert).to.not.be.null;
 
         await program.methods
           .removeLike()
-          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .accounts({ signer: deployer.publicKey, solutionPda: solution1Pda })
           .rpc();
 
-        casePda = await program.account.case.fetch(testCasePda);
+        // Like doesn't exist anymore
+        likeCert = await program.account.likeCertificate.fetchNullable(
+          likePda(deployer.publicKey, solution1Pda, pid)
+        );
+        expect(likeCert).to.be.null;
 
-        target = casePda.solutions.find((elem) => elem.moves == SOLUTION_2);
-        expect(target.likes).to.eq(0);
+        // Like count updated
+        let solutionPda = await program.account.solution.fetch(solution1Pda);
+        expect(solutionPda.likes).to.eq(0);
       });
 
       it("Can't remove a like if it's not liked", async () => {
-        let casePda = await program.account.case.fetch(testCasePda);
-
-        // No liked case
-        expect(casePda.solutions.filter((elem) => elem.likes > 0).length).to.eq(
-          0
-        );
+        // Nobody liked it (must suck)
+        let solutionPda = await program.account.solution.fetch(solution1Pda);
+        expect(solutionPda.likes).to.eq(0);
 
         try {
           await program.methods
             .removeLike()
-            .accounts({ signer: deployer.publicKey, case: testCasePda })
+            .accounts({ signer: deployer.publicKey, solutionPda: solution1Pda })
             .rpc();
         } catch (e) {
           expect(e.error.errorCode.code).to.eq("AccountNotInitialized");
@@ -470,100 +486,75 @@ describe("backend", () => {
       });
 
       it("Can like an already liked solution (another user)", async () => {
-        let casePda = await program.account.case.fetch(testCasePda);
-        let target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
-        expect(target.likes).to.eq(0);
-
         // Like SOLUTION_1
         await program.methods
-          .likeSolution(SOLUTION_1)
-          .accounts({ signer: deployer.publicKey, case: testCasePda })
+          .likeSolution()
+          .accounts({ signer: deployer.publicKey, solutionPda: solution1Pda })
           .rpc();
 
-        casePda = await program.account.case.fetch(testCasePda);
-        target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
-        expect(target.likes).to.eq(1);
+        let solutionPda = await program.account.solution.fetch(solution1Pda);
+        expect(solutionPda.likes).to.eq(1);
 
         // Like SOLUTION_1 again (other user)
         await program.methods
-          .likeSolution(SOLUTION_1)
-          .accounts({ signer: regularKeypair.publicKey, case: testCasePda })
+          .likeSolution()
+          .accounts({
+            signer: regularKeypair.publicKey,
+            solutionPda: solution1Pda,
+          })
           .signers([regularKeypair])
           .rpc();
 
-        casePda = await program.account.case.fetch(testCasePda);
-        target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
-        expect(target.likes).to.eq(2);
-      });
-
-      it("Can like another solution within case (another user)", async () => {
-        let casePda = await program.account.case.fetch(testCasePda);
-        let target = casePda.solutions.find((elem) => elem.moves == SOLUTION_1);
-        expect(target.likes).to.eq(2);
-
-        // Like SOLUTION_2
-        await program.methods
-          .likeSolution(SOLUTION_2)
-          .accounts({ signer: privilegedKeypair1.publicKey, case: testCasePda })
-          .signers([privilegedKeypair1])
-          .rpc();
-
-        casePda = await program.account.case.fetch(testCasePda);
-        expect(casePda.solutions.filter((elem) => elem.likes > 0).length).to.eq(
-          2
-        );
-      });
-
-      it("Can't like a solution that doesn't exist", async () => {
-        try {
-          await program.methods
-            .likeSolution("benbenben")
-            .accounts({ signer: deployer.publicKey, case: testCasePda })
-            .rpc();
-
-          assert.fail("It needs to fail!");
-        } catch (e) {
-          expect(e.error.errorCode.code).to.be.eq("SolutionDoesntExist");
-        }
+        solutionPda = await program.account.solution.fetch(solution1Pda);
+        expect(solutionPda.likes).to.eq(2);
       });
 
       it("Can set learning status to learning", async () => {
         await program.methods
           .setLearningStatus({ learning: {} })
-          .accounts({ case: testCasePda })
+          .accounts({ solutionPda: solution1Pda })
           .rpc();
 
-        let like = await program.account.like.fetch(
-          likePda(deployer.publicKey, testCasePda, program.programId)
+        let likeCertKey = likePda(deployer.publicKey, solution1Pda, pid);
+        let likeCertPda = await program.account.likeCertificate.fetch(
+          likeCertKey
         );
 
-        expect(JSON.stringify(like.learningStatus)).to.eq(`{"learning":{}}`);
+        expect(JSON.stringify(likeCertPda.learningStatus)).to.eq(
+          `{"learning":{}}`
+        );
       });
 
       it("Can set learning status to learnt", async () => {
         await program.methods
           .setLearningStatus({ learnt: {} })
-          .accounts({ case: testCasePda })
+          .accounts({ solutionPda: solution1Pda })
           .rpc();
 
-        let like = await program.account.like.fetch(
-          likePda(deployer.publicKey, testCasePda, program.programId)
+        let likeCertKey = likePda(deployer.publicKey, solution1Pda, pid);
+        let likeCertPda = await program.account.likeCertificate.fetch(
+          likeCertKey
         );
 
-        expect(JSON.stringify(like.learningStatus)).to.eq(`{"learnt":{}}`);
+        expect(JSON.stringify(likeCertPda.learningStatus)).to.eq(
+          `{"learnt":{}}`
+        );
       });
 
       it("Can set learning status to not learnt again", async () => {
         await program.methods
           .setLearningStatus({ notLearnt: {} })
-          .accounts({ case: testCasePda })
+          .accounts({ solutionPda: solution1Pda })
           .rpc();
 
-        let like = await program.account.like.fetch(
-          likePda(deployer.publicKey, testCasePda, program.programId)
+        let likeCertKey = likePda(deployer.publicKey, solution1Pda, pid);
+        let likeCertPda = await program.account.likeCertificate.fetch(
+          likeCertKey
         );
 
-        expect(JSON.stringify(like.learningStatus)).to.eq(`{"notLearnt":{}}`);
+        expect(JSON.stringify(likeCertPda.learningStatus)).to.eq(
+          `{"notLearnt":{}}`
+        );
       });
     });
   });
@@ -597,10 +588,10 @@ describe("backend", () => {
       setup: `L R' L B' L' U' B L`,
     };
 
-    let ollCasePda = casePda(ollCase.set, ollCase.id, program.programId);
-    let pllCasePda = casePda(pllCase.set, pllCase.id, program.programId);
-    let f2lCasePda = casePda(f2lCase.set, f2lCase.id, program.programId);
-    let l4eCasePda = casePda(l4eCase.set, l4eCase.id, program.programId);
+    let ollCasePda = casePda(ollCase.set, ollCase.id, pid);
+    let pllCasePda = casePda(pllCase.set, pllCase.id, pid);
+    let f2lCasePda = casePda(f2lCase.set, f2lCase.id, pid);
+    let l4eCasePda = casePda(l4eCase.set, l4eCase.id, pid);
 
     before(async () => {
       // Let's add a PLL, OLL, and F2L case.
@@ -660,32 +651,73 @@ describe("backend", () => {
       it("Can add a different solution to the OLL case", async () => {
         await program.methods
           .addSolution("R U' L' U R' U' L")
-          .accounts({ signer: deployer.publicKey, case: ollCasePda })
+          .accounts({
+            signer: deployer.publicKey,
+            case: ollCasePda,
+            solutionPda: solutionKey(ollCasePda, "R U' L' U R' U' L", pid),
+          })
           .rpc();
       });
 
       it("Can add a different solution to the PLL case", async () => {
         await program.methods
           .addSolution("F U R' D' R U R' D R U2 F'")
-          .accounts({ signer: deployer.publicKey, case: pllCasePda })
+          .accounts({
+            signer: deployer.publicKey,
+            case: pllCasePda,
+            solutionPda: solutionKey(
+              pllCasePda,
+              "F U R' D' R U R' D R U2 F'",
+              pid
+            ),
+          })
           .rpc();
       });
 
       it("Can add a different solution to the F2L case", async () => {
         await program.methods
           .addSolution("U' R' F R F'")
-          .accounts({ signer: deployer.publicKey, case: f2lCasePda })
+          .accounts({
+            signer: deployer.publicKey,
+            case: f2lCasePda,
+            solutionPda: solutionKey(f2lCasePda, "U' R' F R F'", pid),
+          })
           .rpc();
       });
 
       it("Can add a different solution to the L4E case", async () => {
+        await program.methods
+          .addSolution("L' U R L' R U' R' U' R' U' R")
+          .accounts({
+            signer: deployer.publicKey,
+            case: l4eCasePda,
+            solutionPda: solutionKey(
+              l4eCasePda,
+              "L' U R L' R U' R' U' R' U' R",
+              pid
+            ),
+          })
+          .rpc();
+
+        // No error
+      });
+
+      it("Can't add the same solution again", async () => {
         try {
           await program.methods
             .addSolution("L' U R L' R U' R' U' R' U' R")
-            .accounts({ signer: deployer.publicKey, case: l4eCasePda })
+            .accounts({
+              signer: deployer.publicKey,
+              case: l4eCasePda,
+              solutionPda: solutionKey(
+                l4eCasePda,
+                "L' U R L' R U' R' U' R' U' R",
+                pid
+              ),
+            })
             .rpc();
         } catch (e) {
-          console.log(e);
+          expect(e.logs.join(" ").includes("already in use")).to.be.true;
         }
       });
 
@@ -694,7 +726,12 @@ describe("backend", () => {
           .addSolution("R L' B R' L U'")
           .accounts({
             signer: deployer.publicKey,
-            case: casePda("CMLL", "0", program.programId),
+            case: casePda("CMLL", "0", pid),
+            solutionPda: solutionKey(
+              casePda("CMLL", "0", pid),
+              "R L' B R' L U'",
+              pid
+            ),
           })
           .rpc();
       });
@@ -704,7 +741,12 @@ describe("backend", () => {
           .addSolution("R L' U2 D2 R' L F2 B2")
           .accounts({
             signer: deployer.publicKey,
-            case: casePda("CLL", "0", program.programId),
+            case: casePda("CLL", "0", pid),
+            solutionPda: solutionKey(
+              casePda("CLL", "0", pid),
+              "R L' U2 D2 R' L F2 B2",
+              pid
+            ),
           })
           .rpc();
       });
@@ -715,7 +757,11 @@ describe("backend", () => {
         try {
           await program.methods
             .addSolution("R U' L' U R' U'")
-            .accounts({ signer: deployer.publicKey, case: ollCasePda })
+            .accounts({
+              signer: deployer.publicKey,
+              case: ollCasePda,
+              solutionPda: solutionKey(ollCasePda, "R U' L' U R' U'", pid),
+            })
             .rpc();
 
           assert.fail("It needs to fail!");
@@ -728,7 +774,15 @@ describe("backend", () => {
         try {
           await program.methods
             .addSolution("F U R' D' R U R' D R U2")
-            .accounts({ signer: deployer.publicKey, case: pllCasePda })
+            .accounts({
+              signer: deployer.publicKey,
+              case: pllCasePda,
+              solutionPda: solutionKey(
+                pllCasePda,
+                "F U R' D' R U R' D R U2",
+                pid
+              ),
+            })
             .rpc();
 
           assert.fail("It needs to fail!");
@@ -741,7 +795,11 @@ describe("backend", () => {
         try {
           await program.methods
             .addSolution("U' R' F R F' D")
-            .accounts({ signer: deployer.publicKey, case: f2lCasePda })
+            .accounts({
+              signer: deployer.publicKey,
+              case: f2lCasePda,
+              solutionPda: solutionKey(f2lCasePda, "U' R' F R F' D", pid),
+            })
             .rpc();
 
           assert.fail("It needs to fail!");
