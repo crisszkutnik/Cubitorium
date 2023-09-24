@@ -1,8 +1,15 @@
-import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
+import {
+  selectCasesBySet,
+  useCaseStore,
+} from '../../../modules/store/caseStore';
 import { AlgorithmCase } from './components/algorithmCase/AlgorithmCase';
 
-export function RightPanel() {
-  const cases = useCaseStore(selectCases);
+interface Props {
+  selectedSubtype: string;
+}
+
+export function RightPanel({ selectedSubtype }: Props) {
+  const cases = useCaseStore(selectCasesBySet(selectedSubtype));
 
   return (
     <div className="flex flex-col w-3/4 ml-6">

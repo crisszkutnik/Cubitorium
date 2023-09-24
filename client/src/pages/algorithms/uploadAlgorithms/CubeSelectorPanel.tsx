@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import {
-  selectSets2,
+  selectSets,
   useAlgorithmsStore,
 } from '../../../modules/store/algorithmsStore';
 import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
-  const sets2 = useAlgorithmsStore(selectSets2);
+  const sets2 = useAlgorithmsStore(selectSets);
   const cases = useCaseStore(selectCases);
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
