@@ -5,15 +5,17 @@ import { EncodedGlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
-import { getPKFromStringOrObject } from './utils';
+import { getPKFromStringOrObject, getSolutionPda } from './utils';
 import { Privilege } from '../types/privilege.interface';
 import { CaseAccount } from '../types/case.interface';
+import { SolutionAccount } from '../types/solution.interface';
 
 export enum PDATypes {
   UserInfo = 'user-info',
   GlobalConfig = 'global-config',
   Case = 'case',
   Treasury = 'treasury',
+  Solution = 'solution',
 }
 
 export enum AccountName {
@@ -219,33 +221,20 @@ class Web3Layer extends Web3Connection {
     return this.getPdaWithSeeds(PDATypes.Treasury);
   }
 
-  async solutionSolvesCase(
-    casePublicKey: string | PublicKey,
-    solution: string,
-  ) {
-    try {
-      const tx = await this.program.methods
-        .solutionSolvesCase(solution)
-        .accounts({
-          case: getPKFromStringOrObject(casePublicKey),
-        })
-        .transaction();
-      await this.signAndSendTx(tx);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   async addSolution(casePublicKey: string | PublicKey, solution: string) {
     const tx = await this.program.methods
       .addSolution(solution)
       .accounts({
         case: getPKFromStringOrObject(casePublicKey),
+        solutionPda: getSolutionPda(casePublicKey, solution, this.programId),
       })
       .transaction();
 
     await this.signAndSendTx(tx);
+  }
+
+  async loadSolutions(): Promise<SolutionAccount[]> {
+    return this.program.account.solution.all();
   }
 }
 

@@ -8,12 +8,19 @@ import {
   TableRow,
   TableCell,
 } from '@nextui-org/react';
+import { PublicKey } from '@solana/web3.js';
+import {
+  selectSolutionsForCase,
+  useSolutionStore,
+} from '../../../../../../modules/store/solutionStore';
 
 interface Props {
-  solutions: string[];
+  casePk: PublicKey;
 }
 
-export function AlgorithmTable({ solutions }: Props) {
+export function AlgorithmTable({ casePk }: Props) {
+  const solutions = useSolutionStore(selectSolutionsForCase(casePk));
+
   const getRows = () => {
     if (solutions.length === 0) {
       return [];
@@ -21,7 +28,7 @@ export function AlgorithmTable({ solutions }: Props) {
 
     const rows = solutions.slice(0, 4).map((s, index) => (
       <TableRow key={index}>
-        <TableCell className="p2 text-lg">{s}</TableCell>
+        <TableCell className="p2 text-lg">{s.account.moves}</TableCell>
       </TableRow>
     ));
 

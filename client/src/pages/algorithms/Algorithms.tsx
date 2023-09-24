@@ -7,6 +7,7 @@ import { TopSelector } from '../../page-components/algorithms/TopSelector';
 import { RightPanel } from '../../page-components/algorithms/rightPanel/RightPanel';
 import { Loading } from '../Loading';
 import { useCaseStore } from '../../modules/store/caseStore';
+import { useSolutionStore } from '../../modules/store/solutionStore';
 
 export function Algorithms() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -18,15 +19,21 @@ export function Algorithms() {
     state.loadIfNotLoaded,
   ]);
 
+  const [solutionsLoadingState, loadSolutionsIfNotLoaded] = useSolutionStore(
+    (state) => [state.loadingState, state.loadIfNotLoaded],
+  );
+
   useEffect(() => {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
+    loadSolutionsIfNotLoaded();
   }, []);
 
   const hasAllRequiredData = () => {
     return (
       setsLoadingState === LoadingState.LOADED &&
-      caseLoadingState === LoadingState.LOADED
+      caseLoadingState === LoadingState.LOADED &&
+      solutionsLoadingState === LoadingState.LOADED
     );
   };
 

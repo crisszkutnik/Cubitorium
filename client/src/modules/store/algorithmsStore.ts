@@ -42,9 +42,9 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
         set({ sets: parsed });
       } catch (_) {
         _;
+      } finally {
+        set({ loadingState: LoadingState.LOADED });
       }
-
-      set({ loadingState: LoadingState.LOADED });
     },
     updateSets: async (name: string, cases: string[]) => {
       const { sets, loadingState } = get();
