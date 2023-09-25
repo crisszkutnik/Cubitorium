@@ -1,0 +1,41 @@
+case_id, setup, solution
+1, R U R' U R U2' R2' F' r U R U' r' F y', y F' r U R' U' r' F R2 U2 R' U' R U' R'
+2, R U R D R' U' R D' R2' U R U2' R' U' R U' R' y, y' F R' F' r U R U' r2 F2 r U L' U L U'
+3, R' U' R' D' R U R' D R' U R' U R U2' R', U' R U2 R' U' R U R' U2 R' F R2 U' R' U' R U R' F' U2
+4, R' U' F U' R2' U R2' U F' R2' U2' R' y, y' U2 R' D R2 U' R2 D' R U' R' D R2 U2 R2 D' R
+5, R2' F2' r U r' F R2' U2' B' R B R' y, y' U' R' U2 R2 U R2 U R U2 R' F R U R U' R' F' U
+6, R U2' R' U F2' R U2' R' U2' R' F2' R2' U R' y, y' R U2 R' U' R U R' U' F' R U R' U' R' F R2 U' R' U2
+7, R U2' R2' U' R U' R' U2' F R U R U' R' F' y, y' U2 R' D' R U2 R' D R U R U2 R' U R U' R' U' R U' R' U'
+8, F U R U' R' U R U2' R' U' R U R' F' y2, y2 F R U' R' U R U2 R' U' R U R' U' F'
+9, R' U' F R' F' R U' R U R' F U R U' R' F' R, R F R2 U' R2 U' R2 U2 R2 U' F' R'
+10, R' U' F' R U R' U' R' F R2' U2' R' U2' R y, y' R' U2 R U2 R2 F' R U R U' R' F U R
+11, R U R' U R U' R' U' R' F' R U2' R U2' R' F y', y U f R2 S' U' R2 U' R2 U R2 F' U2
+12, F U' R U' R' U R U R' U2' R U2' R' U F', U' R D' R U2 R' U2 R U' R' U' R U R' D R' U
+13, R2' D R' U2' R D' R2' U' R2' D R' U' R D' R2' y2, y2 U R' U2 R U R' U' F' R U R' U' R' F R U2 R U
+14, R U R' U R2' D R' U' R D' R2' U R U2' R' y, y' R U2 R' U' R2 D R' U R D' R2 U' R U' R'
+15, R2' D' R U2' R' D R2' U R2' D' R U R' D R2' y2, R' U2 R U R' U R2 y R U' R' U' R U2 R' U' F' y U
+16, R' U2' R' D R' U R D' R U R2' U2' R' y, y' U2 R' U2 R U R2 D' R U' R' D R2 U R' U R
+17, L U' R' U L' U R2' U R2' U R U' R U' R' y2, y2 U2 F R' F' R U2 R U2 R' U' R' F2 r U r' F R
+18, L' U R U' L U' R2' U' R2' U' R' U R' U R y2, y2 R' U' R U' R' U F' R U R' U' R' F R2 U' R' U R U2
+19, R2' U R' U' R' U2' R' U2' R U R' D R' U R D', U' F R U' R' U' R U2 R' U' F' U R U R' U R U2 R' U2
+20, F U R U2' R' U R U R' F' R U2' R' U' R U' R' y', y U R2 D' r U2 r' D R' U R2 U R2 U2 R' U2
+21, L U' R' U L' U R U R' U R, R' U' R U' R' U' L U' R U L'
+22, L' U R U' L U' R' U' R U' R', R U R' U R U r' F R' F' r
+23, r' U r U r' U' r U R2' F R F' R y', y R' F R' F' R2 U' r' U r U' r' U' r
+24, r U' r' U' r U r' U' l R U' R' U l' y, y' R U R2 F R F' r U' r' U r U r'
+25, F R' U R U2' R2' U' R U2' R' U' R2' U F', y' R' U' R y U' R U' R' U R l U' R' U l'
+26, R U R' L' U2' R U R' U2' L R U2' R' U' R U' R' y, y' U2 R U' R2 U' F2 U' R2 U R2 U F2 R2 U R' U2
+27, F U R U' R' U R U' R' U R U' R' F' y', y F R U R' U' R U R' U' R U R' U' F'
+28, x' U' R U' R' U R' F2' R U' R U R' U x, x' U' R U' R' U R' F2 R U' R U R' U x
+29, R' U' R U' L U' R' U L' U2' R2' U2' R' U' R U' R', R' U2 R U R' U R U R' U' R U R' F' R U R' U' R' F R2 U
+30, R U R' U L' U R U' L U2' R2' U2' R U R' U R, R' U' R U' R' U2 R2 U2 L' U R' U' L U' R U' R'
+31, L U2' R' U R U2' L' R' U R U' R' U2' R U R' U R y, y' U R' U' F' U F R U' F U R U' R' U R U' R' F' U'
+32, R' F R' F' R2' U R' U' R y U' R U' R' y, y' R U R' U y' R' U R U' R2 F R F' R
+33, R U2' R' U' R U R' U' R U' R', R U R' U R U' R' U R U2 R'
+34, R' U2' R U R' U' R U R' U R, R' U' R U' R' U R U' R' U2 R
+35, R' U' R U' R' U R U' R' U2' R y, y' R' U2 R U R' U' R U R' U R
+36, R U R' U R U' R' U R U2' R' y, y' R U2 R' U' R U R' U' R U' R'
+37, R U2' R' U' R U' R' U' R' U' R U' R' U2' R y, y' R' U2 R U R' U R U R U R' U R U2 R'
+38, R' U2' R U R' U R U R U R' U R U2' R' y', y R U2 R' U' R U' R' U' R' U' R U' R' U2 R
+39, R' U' R U' R' U2' R U R U2' R' U' R U' R', R U R' U R U2 R' U' R' U2 R U R' U R
+40, R' U' R U' R U R2' U R U' R U R' U' R U R' U' R U' R', R U R' U R U' R' U R U' R' U R' U' R2 U' R' U R' U R

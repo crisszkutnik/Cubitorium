@@ -1,5 +1,5 @@
-pub mod cube;
 pub mod moves;
+pub mod puzzles;
 
-pub use cube::*;
 pub use moves::*;
+pub use puzzles::*;

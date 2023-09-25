@@ -1,16 +1,22 @@
-import { ScrambleDisplay } from "../../../../../components/ScrambleDisplay";
+import { ScrambleDisplay } from '../../../../../components/ScrambleDisplay';
+import { Case } from '../../../../../modules/types/case.interface';
 
-export function Info() {
+interface Props {
+  caseData: Case;
+}
+
+export function Info({ caseData }: Props) {
   return (
     <div className="w-1/5 flex flex-col items-center text-center">
-      <ScrambleDisplay scramble="F R' F' R" height="h-36" />
+      <ScrambleDisplay scramble={caseData.setup} height="h-36" />
       <div>
-        <h1 className="font-semibold text-accent-dark text-3xl">F2L 1</h1>
-        <p>Free pairs</p>
+        <h1 className="font-semibold text-accent-dark text-3xl">
+          {caseData.id}
+        </h1>
       </div>
       <div className="mt-3">
         <h2 className="font-semibold text-accent-dark text-xl">Setup</h2>
-        <p>F R' F' R</p>
+        <p>{caseData.setup}</p>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 pub mod constants;
-pub mod cube_move_def;
+pub mod move_def;
 pub mod error;
 pub mod instructions;
 pub mod state;
@@ -56,6 +56,22 @@ pub mod backend {
     /// Add a solution to a case (permissionless)
     pub fn add_solution(ctx: Context<AddSolution>, solution: String) -> Result<()> {
         add_solution::handler(ctx, solution)
+    }
+
+    /// Adds a like to a solution or changes existing like (user)
+    /// A user can only like one solution per case
+    pub fn like_solution(ctx: Context<LikeSolution>) -> Result<()> {
+        like_solution::handler(ctx)
+    }
+
+    /// Removes a like from a solution entirely (user)
+    pub fn remove_like(ctx: Context<RemoveLike>) -> Result<()> {
+        remove_like::handler(ctx)
+    }
+
+    /// Sets learning status. Needs to like solution first
+    pub fn set_learning_status(ctx: Context<SetLearningStatus>, status: LearningStatus) -> Result<()> {
+        set_learning_status::handler(ctx, status)
     }
 
     //////////// User profiles ////////////

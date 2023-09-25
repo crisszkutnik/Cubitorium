@@ -22,6 +22,12 @@ pub enum PrivilegeError {
 }
 
 #[error_code]
+pub enum TreasuryError {
+    #[msg("Treasury is broke - please fund it or Cubitorium dies")]
+    TreasuryNeedsFunds,
+}
+
+#[error_code]
 pub enum CubeError {
     #[msg("Cube is not solved for the required subset")]
     UnsolvedCube,
@@ -34,6 +40,9 @@ pub enum CubeError {
 
     #[msg("The case does not exist in this set")]
     InvalidCase,
+
+    #[msg("The given set is not supported yet (validator code missing)")]
+    UnsupportedSet,
 }
 
 #[error_code]
@@ -43,4 +52,22 @@ pub enum ConfigError {
 
     #[msg("Could not serialize existing config. Mayhem!")]
     ConfigSerializationError,
+}
+
+#[error_code]
+pub enum LikeError {
+    #[msg("User has already liked this case")]
+    AlreadyLiked,
+
+    #[msg("The given solution doesn't exist for the given case")]
+    SolutionDoesntExist,
+}
+
+#[error_code]
+pub enum CaseError {
+    #[msg("Case has over MAX_SOLUTIONS_ALLOWED solutions.")]
+    MaxSolutionsAllowed,
+
+    #[msg("Catastrophic failure - world has ended")]
+    Cataclysm,
 }
