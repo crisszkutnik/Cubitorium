@@ -7,6 +7,7 @@ import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { useAlertContext } from '../../../components/context/AlertContext';
 import { useSolutionStore } from '../../../modules/store/solutionStore';
+import { getPuzzleType } from '../../../modules/store/algorithmsStore';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -55,7 +56,7 @@ export function ResolutionInput({ activeCase }: Props) {
         <ScrambleDisplay
           height="h-60 mb-4"
           width="w-fit"
-          event={'3x3'}
+          event={getPuzzleType(activeCase?.account.set || '')}
           scramble={activeCase?.account.setup + ' ' + userSolution}
         ></ScrambleDisplay>
       </div>

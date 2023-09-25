@@ -7,37 +7,53 @@ import {
   useState,
 } from 'react';
 import {
-  selectSets,
+  PuzzleType,
+  PuzzleTypeKey,
+  PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../../../modules/store/algorithmsStore';
 import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
 import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
 import { CaseAccount } from '../../../modules/types/case.interface';
+import { SetCase } from '../../../modules/types/globalConfig.interface';
 
 interface Props {
   activeCase: CaseAccount | undefined;
   setActiveCase: Dispatch<SetStateAction<CaseAccount | undefined>>;
 }
 
+// Este componente es un asco la verdad
+
 export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
-  const sets2 = useAlgorithmsStore(selectSets);
+  const [sets, setsMap] = useAlgorithmsStore((state) => [
+    state.sets,
+    state.setsMap,
+  ]);
   const cases = useCaseStore(selectCases);
 
+  const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>('3x3');
+
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    sets2.length > 0 ? sets2[0].set_name : '',
+    sets.length > 0 ? sets[0].set_name : '',
   );
 
   const [selectedCase, setSelectedCase] = useState<string>(
-    sets2.length > 0 ? sets2[0].case_names[0] : '',
+    sets.length > 0 ? sets[0].case_names[0] : '',
   );
+
+  const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const puzzle = event.target.value as PuzzleTypeKey;
+    setSelectedPuzzle(puzzle);
+    setSelectedCategory(setsMap[puzzle][0].set_name);
+    setSelectedCase(setsMap[puzzle][0].case_names[0]);
+  };
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
     setSelectedCategory(value);
-    const newCase =
-      sets2.find((s) => s.set_name === value)?.case_names[0] || '';
-    setSelectedCase(newCase);
+    const newCase = cases.find((c) => c.account.set === value);
+    setSelectedCase(newCase?.account.id || '');
   };
 
   const handleCaseChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -57,26 +73,30 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
       <h1 className="font-bold text-accent-dark text-2xl">Select case</h1>
       <ScrambleDisplay
         height="h-60 mb-8"
-        event={'3x3'}
+        event={selectedPuzzle}
         scramble={activeCase?.account.setup}
       ></ScrambleDisplay>
 
       <Select
         labelPlacement="outside"
-        defaultSelectedKeys={['3x3']}
+        defaultSelectedKeys={[PuzzleType['3x3']]}
         color="primary"
         label="Puzzle type"
+        onChange={handlePuzzleChange}
         classNames={{
           label: 'text-accent-dark font-semibold text-lg',
         }}
       >
-        <SelectItem key={'3x3'} value={'3x3'}>
-          3x3
-        </SelectItem>
+        {PuzzleTypeKeys.map((str) => (
+          <SelectItem key={str} value={str}>
+            {str}
+          </SelectItem>
+        ))}
       </Select>
+
       <Select
         labelPlacement="outside"
-        defaultSelectedKeys={[sets2.length > 0 ? sets2[0].set_name : '']}
+        selectedKeys={[selectedCategory]}
         color="primary"
         label="Algorithm category"
         onChange={handleCategoryChange}
@@ -84,30 +104,25 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
           label: 'text-accent-dark font-semibold text-lg',
           base: 'mt-10',
         }}
+        items={setsMap[selectedPuzzle] as SetCase[]}
       >
-        {sets2.map((set) => (
-          <SelectItem key={set.set_name}>{set.set_name}</SelectItem>
-        ))}
+        {(set) => <SelectItem key={set.set_name}>{set.set_name}</SelectItem>}
       </Select>
+
       <Select
         labelPlacement="outside"
         color="primary"
         label="Algorithm case"
-        defaultSelectedKeys={[
-          casesForSelectedCategory.length > 0
-            ? casesForSelectedCategory[0].account.id
-            : '',
-        ]}
+        selectedKeys={[selectedCase]}
         onChange={handleCaseChange}
         disabled={casesForSelectedCategory.length === 0}
         classNames={{
           label: 'text-accent-dark font-semibold text-lg',
           base: 'mt-10',
         }}
+        items={casesForSelectedCategory}
       >
-        {casesForSelectedCategory.map((c) => (
-          <SelectItem key={c.account.id}>{c.account.id}</SelectItem>
-        ))}
+        {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
       </Select>
     </div>
   );
