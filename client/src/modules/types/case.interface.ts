@@ -4,7 +4,7 @@ export interface Case {
   set: string;
   id: string;
   setup: string;
-  solutions: string[];
+  solutions: number;
 }
 
 export interface CaseAccount {

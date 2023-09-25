@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { useAlertContext } from '../../../components/context/AlertContext';
-import { useCaseStore } from '../../../modules/store/caseStore';
+import { useSolutionStore } from '../../../modules/store/solutionStore';
+import { getPuzzleType } from '../../../modules/store/algorithmsStore';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -21,7 +22,7 @@ export function ResolutionInput({ activeCase }: Props) {
   const { control, handleSubmit } = useForm<Inputs>();
   const [userSolution, setUserSolution] = useState('');
   const { success, error } = useAlertContext();
-  const addSolution = useCaseStore((state) => state.addSolution);
+  const addSolution = useSolutionStore((state) => state.addSolution);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUserSolution(e.target.value);
@@ -55,7 +56,7 @@ export function ResolutionInput({ activeCase }: Props) {
         <ScrambleDisplay
           height="h-60 mb-4"
           width="w-fit"
-          event={'3x3'}
+          event={getPuzzleType(activeCase?.account.set || '')}
           scramble={activeCase?.account.setup + ' ' + userSolution}
         ></ScrambleDisplay>
       </div>

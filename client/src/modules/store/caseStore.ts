@@ -7,7 +7,6 @@ interface CaseStoreState {
   cases: CaseAccount[];
   addCase: (set: string, id: string, setup: string) => Promise<void>;
   loadCases: () => Promise<void>;
-  addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
   loadingState: LoadingState;
   setLoadingState: (loadingState: LoadingState) => void;
   loadIfNotLoaded: () => Promise<void>;
@@ -15,6 +14,12 @@ interface CaseStoreState {
 
 export const selectCases = (state: CaseStoreState) => {
   return state.cases;
+};
+
+export const selectCasesBySet = (set: string) => {
+  return (state: CaseStoreState) => {
+    return state.cases.filter((c) => c.account.set === set);
+  };
 };
 
 export const useCaseStore = createWithEqualityFn<CaseStoreState>(
@@ -39,17 +44,6 @@ export const useCaseStore = createWithEqualityFn<CaseStoreState>(
         _;
       }
       set({ loadingState: LoadingState.LOADED });
-    },
-    addSolution: async (selectedCase: CaseAccount, solution: string) => {
-      await web3Layer.addSolution(selectedCase.publicKey, solution);
-      selectedCase.account.solutions.push(solution);
-
-      const c = get().cases;
-      if (c) {
-        set({
-          cases: [...c],
-        });
-      }
     },
     loadingState: LoadingState.NOT_LOADED,
     setLoadingState: (loadingState: LoadingState) => {

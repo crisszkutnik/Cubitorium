@@ -3,43 +3,38 @@ import { web3Layer } from '../web3/web3Layer';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { LoadingState } from '../types/loadingState.enum';
 
-class PuzzleSet {
-  name: String;
-  algorithms: String[];
-  constructor(name: String, algorithms: String[]) {
-    this.name = name;
-    this.algorithms = algorithms;
-  }
+export const PuzzleType = {
+  '2x2': '2x2',
+  '3x3': '3x3',
+  Pyraminx: 'Pyraminx',
+} as const;
 
-}
+export type PuzzleTypeKey = keyof typeof PuzzleType;
 
-class Puzzle {
-  name: String;
-  sets: PuzzleSet[]
-  constructor(name: String, sets: PuzzleSet[]) {
-    this.name = name;
-    this.sets = sets;
-  }
-}
+export const PuzzleTypeKeys = Object.keys(PuzzleType) as PuzzleTypeKey[];
 
 interface UseAlgorithmsStoreState {
-  algorithmsType: string[];
-  algorithmsSubtypes: Record<string, string[]>;
   loadSets: () => Promise<void>;
   updateSets: (names: string, cases: string[]) => Promise<void>;
   sets: SetCase[];
+  setsMap: Record<PuzzleTypeKey, SetCase[]>;
   loadingState: LoadingState;
   setLoadingState: (loadingState: LoadingState) => void;
   loadIfNotLoaded: () => Promise<void>;
 }
 
-export const selectSets2 = (state: UseAlgorithmsStoreState) => {
+export const selectSets = (state: UseAlgorithmsStoreState) => {
   return state.sets;
 };
 
 export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
   (set, get) => ({
     sets: [],
+    setsMap: {
+      '2x2': [],
+      '3x3': [],
+      Pyraminx: [],
+    },
     loadIfNotLoaded: async () => {
       const { loadSets, loadingState } = get();
 
@@ -58,12 +53,24 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
         }
 
         const parsed: SetCase[] = JSON.parse(sets.setsJson);
-        set({ sets: parsed });
+
+        const setsMap: Record<PuzzleTypeKey, SetCase[]> = {
+          '2x2': [],
+          '3x3': [],
+          Pyraminx: [],
+        };
+
+        parsed.forEach((c) => {
+          const key = getPuzzleType(c.set_name);
+          setsMap[key].push(c);
+        });
+
+        set({ sets: parsed, setsMap });
       } catch (_) {
         _;
+      } finally {
+        set({ loadingState: LoadingState.LOADED });
       }
-
-      set({ loadingState: LoadingState.LOADED });
     },
     updateSets: async (name: string, cases: string[]) => {
       const { sets, loadingState } = get();
@@ -74,8 +81,6 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
         await web3Layer.appendSetToConfig(name, cases);
       }
     },
-    algorithmsType: [],
-    algorithmsSubtypes: {},
     loadingState: LoadingState.NOT_LOADED,
     setLoadingState: (loadingState: LoadingState) => {
       set({ loadingState });
@@ -83,3 +88,18 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
   }),
   Object.is,
 );
+
+export function getPuzzleType(set: string) {
+  const sets2x2 = ['CLL', 'EG-1', 'EG-2'];
+  const setsPyra = ['L4E'];
+
+  if (sets2x2.includes(set)) {
+    return PuzzleType['2x2'];
+  }
+
+  if (setsPyra.includes(set)) {
+    return PuzzleType['Pyraminx'];
+  }
+
+  return PuzzleType['3x3'];
+}

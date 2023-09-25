@@ -2,7 +2,7 @@
 seeds = true
 skip-lint = false
 [programs.localnet]
-backend = "8ptgSjCeuciKorgFjNhE1kpFrSnG2s5A1gEBBcczgVGH"
+backend = "EDhKz6TfaLMzZpFB5dSdyGeLHT6TppjGdyPc8Vn1QyNq"
 
 [registry]
 url = "https://api.apr.dev"
