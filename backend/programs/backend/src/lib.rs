@@ -1,15 +1,15 @@
 use anchor_lang::prelude::*;
 
 pub mod constants;
-pub mod move_def;
 pub mod error;
 pub mod instructions;
+pub mod move_def;
 pub mod state;
 pub mod utils;
 
 pub use crate::{instructions::*, state::*};
 
-declare_id!("8ptgSjCeuciKorgFjNhE1kpFrSnG2s5A1gEBBcczgVGH");
+declare_id!("EDhKz6TfaLMzZpFB5dSdyGeLHT6TppjGdyPc8Vn1QyNq");
 
 #[program]
 pub mod backend {
@@ -70,7 +70,10 @@ pub mod backend {
     }
 
     /// Sets learning status. Needs to like solution first
-    pub fn set_learning_status(ctx: Context<SetLearningStatus>, status: LearningStatus) -> Result<()> {
+    pub fn set_learning_status(
+        ctx: Context<SetLearningStatus>,
+        status: LearningStatus,
+    ) -> Result<()> {
         set_learning_status::handler(ctx, status)
     }
 

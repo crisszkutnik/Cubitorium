@@ -1,7 +1,9 @@
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import {
-  selectSets2,
+  PuzzleType,
+  PuzzleTypeKey,
+  PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
 import { Selector } from '../../components/Selector';
@@ -11,16 +13,24 @@ enum QueryParams {
   SUBTYPE = 'subtype',
 }
 
-/*
-  OBS: Part of this file is hardcoded because right now we are
-  only supporting 3x3 cubes
-*/
+interface Props {
+  selectedType: string;
+  setSelectedType: Dispatch<SetStateAction<string>>;
+  selectedSubtype: string;
+  setSelectedSubtype: Dispatch<SetStateAction<string>>;
+}
 
-export function TopSelector() {
-  const sets2 = useAlgorithmsStore(selectSets2);
+export function TopSelector({
+  selectedType,
+  selectedSubtype,
+  setSelectedType,
+  setSelectedSubtype,
+}: Props) {
+  const [sets, setsMap] = useAlgorithmsStore((state) => [
+    state.sets,
+    state.setsMap,
+  ]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedType, setSelectedType] = useState<string>('3x3');
-  const [selectedSubtype, setSelectedSubtype] = useState<string>('');
 
   useEffect(() => {
     const queryType = searchParams.get(QueryParams.TYPE);
@@ -37,25 +47,18 @@ export function TopSelector() {
     if (typeParamChanged || subtypeParamChanged) {
       setSearchParams(searchParams);
     }
-  }, [searchParams, sets2]);
+  }, [searchParams, sets]);
 
-  const getSubtypeValue = (type: string | null) => {
-    /*
-    
-    let arr;
-
-    (if (type) {
-      arr = algorithmsSubtypes[type];
-    } else {
-      arr = algorithmsSubtypes[algorithmsType[0]];
-    }
-
-    return arr ? arr[0] : undefined;*/
-    if (sets2.length === 0) {
+  const getSubtypeValue = (type: PuzzleTypeKey | null) => {
+    if (sets.length === 0) {
       return '';
     }
-    type;
-    return sets2[0].set_name;
+
+    if (type === null) {
+      return sets[0].set_name;
+    }
+
+    return setsMap[type][0].set_name;
   };
 
   const shouldUpdateTypeParam = (
@@ -63,8 +66,7 @@ export function TopSelector() {
     params: URLSearchParams,
   ) => {
     if (!queryType) {
-      // params.set(QueryParams.TYPE, algorithmsType[0]);
-      params.set(QueryParams.TYPE, '3x3');
+      params.set(QueryParams.TYPE, PuzzleType['3x3']);
       return true;
     }
 
@@ -85,7 +87,7 @@ export function TopSelector() {
       return false;
     }
 
-    const value = getSubtypeValue(queryType);
+    const value = getSubtypeValue(queryType as PuzzleTypeKey | null);
 
     if (value) {
       params.set(QueryParams.SUBTYPE, value);
@@ -98,7 +100,7 @@ export function TopSelector() {
   const onSelectorChange = (newValue: string) => {
     searchParams.set(QueryParams.TYPE, newValue);
 
-    const value = getSubtypeValue(newValue);
+    const value = getSubtypeValue(newValue as PuzzleTypeKey);
 
     if (value) {
       searchParams.set(QueryParams.SUBTYPE, value);
@@ -114,12 +116,20 @@ export function TopSelector() {
     setSearchParams(searchParams);
   };
 
+  const subselectors = useMemo(() => {
+    const ret: Record<string, string[]> = {};
+
+    PuzzleTypeKeys.forEach((key) => {
+      ret[key] = setsMap[key].map((s) => s.set_name);
+    });
+
+    return ret;
+  }, [setsMap]);
+
   return (
     <Selector
-      selectors={['3x3']}
-      subselectors={{
-        '3x3': sets2.length === 0 ? [] : sets2.flatMap((s) => s.set_name),
-      }}
+      selectors={PuzzleTypeKeys}
+      subselectors={subselectors}
       selectedSelector={selectedType}
       selectedSubselector={selectedSubtype}
       onSelectorChange={onSelectorChange}

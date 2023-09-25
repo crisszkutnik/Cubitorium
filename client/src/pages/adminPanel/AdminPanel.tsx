@@ -6,6 +6,9 @@ import { shallow } from 'zustand/shallow';
 import { PrivilegedUsers } from './privilegedUsers/PrivilegedUsers';
 import { useAlertContext } from '../../components/context/AlertContext';
 import { AddCase } from './addCase/AddCase';
+import { useEffect } from 'react';
+import { LoadingState } from '../../modules/types/loadingState.enum';
+import { Loading } from '../Loading';
 
 interface Input {
   names: string;
@@ -13,8 +16,13 @@ interface Input {
 }
 
 export function AdminPanel() {
-  const [updateSets, sets] = useAlgorithmsStore(
-    (state) => [state.updateSets, state.sets],
+  const [updateSets, sets, loadingState, loadIfNotLoaded] = useAlgorithmsStore(
+    (state) => [
+      state.updateSets,
+      state.sets,
+      state.loadingState,
+      state.loadIfNotLoaded,
+    ],
     shallow,
   );
   const { success, error } = useAlertContext();
@@ -30,6 +38,18 @@ export function AdminPanel() {
       error('Failed to update sets. Check that input is a JSON string!');
     }
   };
+
+  useEffect(() => {
+    loadIfNotLoaded();
+  }, []);
+
+  const hasAllRequiredData = () => {
+    return loadingState === LoadingState.LOADED;
+  };
+
+  if (!hasAllRequiredData()) {
+    return <Loading />;
+  }
 
   return (
     <DefaultLayout column={true}>
