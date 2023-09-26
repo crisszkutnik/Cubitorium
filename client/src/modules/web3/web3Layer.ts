@@ -9,6 +9,10 @@ import { getPKFromStringOrObject, getSolutionPda } from './utils';
 import { Privilege } from '../types/privilege.interface';
 import { CaseAccount } from '../types/case.interface';
 import { SolutionAccount } from '../types/solution.interface';
+import {
+  LikeCertificate,
+  LikeCertificateAccount,
+} from '../types/likeCertificate.interface';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -16,6 +20,7 @@ export enum PDATypes {
   Case = 'case',
   Treasury = 'treasury',
   Solution = 'solution',
+  LikeCertificate = 'like-certificate',
 }
 
 export enum AccountName {
@@ -235,6 +240,43 @@ class Web3Layer extends Web3Connection {
 
   async loadSolutions(): Promise<SolutionAccount[]> {
     return this.program.account.solution.all();
+  }
+
+  async likeSolution(solutionPda: PublicKey) {
+    const tx = await this.program.methods
+      .likeSolution()
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadLike(likePda: PublicKey): Promise<LikeCertificateAccount> {
+    const account = (await this.program.account.likeCertificate.fetch(
+      likePda,
+    )) as LikeCertificate;
+
+    return {
+      account,
+      publicKey: likePda,
+    };
+  }
+
+  async removeLike(solutionPda: PublicKey) {
+    const tx = await this.program.methods
+      .removeLike()
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadLikes(): Promise<LikeCertificateAccount[]> {
+    return this.program.account.likeCertificate.all();
   }
 }
 

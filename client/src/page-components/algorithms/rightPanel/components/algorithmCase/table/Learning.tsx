@@ -13,7 +13,6 @@ import {
   selectSolutionsForCase,
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
-import { Like } from './Like';
 
 interface Props {
   casePk: PublicKey;
@@ -30,22 +29,12 @@ export function AlgorithmTable({ casePk }: Props) {
     const rows = solutions.slice(0, 4).map((s, index) => (
       <TableRow key={index}>
         <TableCell className="p2 text-lg">{s.account.moves}</TableCell>
-        <TableCell>
-          <Like
-            casePk={casePk}
-            solutionPk={s.publicKey}
-            solution={s.account.moves}
-          />
-        </TableCell>
       </TableRow>
     ));
 
     while (rows.length < 4) {
       rows.push(
         <TableRow key={rows.length}>
-          <TableCell className="p2 text-lg">
-            <p className="invisible">''</p>
-          </TableCell>
           <TableCell className="p2 text-lg">
             <p className="invisible">''</p>
           </TableCell>
@@ -61,7 +50,6 @@ export function AlgorithmTable({ casePk }: Props) {
       <Table className="bg-accent-primary/10" hideHeader removeWrapper>
         <TableHeader>
           <TableColumn>asd</TableColumn>
-          <TableColumn>Likes</TableColumn>
         </TableHeader>
         <TableBody emptyContent="No one has uploaded a solution for this case yet. Be the first!">
           {getRows()}

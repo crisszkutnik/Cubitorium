@@ -43,3 +43,18 @@ export function getSolutionPda(
     pid,
   )[0];
 }
+
+export const getLikePda = (
+  user: PublicKey,
+  solutionPda: PublicKey,
+  pid: PublicKey,
+) => {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(PDATypes.LikeCertificate),
+      user.toBuffer(),
+      solutionPda.toBuffer(),
+    ],
+    pid,
+  )[0];
+};
