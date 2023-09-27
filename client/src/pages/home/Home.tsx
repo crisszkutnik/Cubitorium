@@ -2,26 +2,36 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 
 export function Home() {
   return (
-    <div>
+    <div className="relative h-screen -mt-6">
+
+    {/* BACKGROUND */}
+    <div className="absolute inset-0 bg-[url('/home-background.jpg')] bg-cover bg-center opacity-10"></div>
+
+      <div className="relative z-10">
+      {/* Welcome to cubitorium */}
       <h1 className="text-4xl py-5 text-accent-dark font-bold text-center mt-6">
         <img className="mx-auto block -mt-2 h-40" src="/public/Logo.png" alt="Logo" />
         Welcome to Cubitorium
       </h1>
 
-      <div className="flex flex-col items-center mt-3 mb-3">
-        <p className="text-sm text-xm max-w-sm text-gray-400 text-center">
+      {/* Description */}
+      <div className="flex flex-col items-center mt-1 mb-3">
+        <p className="text-sm text-xm max-w-sm text-gray-900 text-center">
           Cubitorium is a decentralized Web3 solution created to assist the
           Speedcubers community. Here, you will find several tools to improve
           your skills in this global sport practiced in more than 100 countries
           in the world.
         </p>
 
-        <div className="mt-3 flex items-center">
-          <img src="/rubik_gif.gif" alt="Rubik's Cube" className="h-10" />
-          <p className="mr-4 ml-4">Experience the best way to...</p>
+      {/* Experience the best way to... */}
+        <div className="mt-5 flex items-center">
+          <p className="mr-4 ml-4 text-lg">Experience the best way to...</p>
         </div>
       </div>
 
+      {/* Items / Accordions  - things that cubitorium does*/}
+
+      {/* Cube Solving Skills */}
       <Accordion variant="splitted" className="mx-auto text-center max-w-sm" disabledKeys={["4"]} >
         <AccordionItem
           key="1"
@@ -40,6 +50,8 @@ export function Home() {
           </p>
         </AccordionItem>
 
+        
+      {/* Learn About New Algorithms */}
         <AccordionItem
           key="2"
           aria-label="2"
@@ -51,11 +63,13 @@ export function Home() {
           }
         >
           <p className="text-sm text-left text-gray-500 mr-25 -mt-3 mb-2">
-            Checking our great <b>Algorithms</b> page in which you could find
+            Checking our Algorithms page in which you could find
             all the uploaded algorithms by the community.
           </p>
         </AccordionItem>
 
+
+      {/* Contribute to the community */}
         <AccordionItem
           key="3"
           aria-label="3"
@@ -70,15 +84,18 @@ export function Home() {
             Creating and posting your own algorithms
           </p>
         </AccordionItem>
-
+          
+        {/* Coming Soon! */}
         <AccordionItem
           key="4"
           aria-label="Accordion 4"
-          title="(Coming Soon!) We are working with an advanced, optimized and high-level performant Machine Learning model to improve this entire page"
+          title="(Coming Soon!) "
         >
-          3
+        
         </AccordionItem>
       </Accordion>
+       {/* Background */}
+      </div>
     </div>
   );
 }
