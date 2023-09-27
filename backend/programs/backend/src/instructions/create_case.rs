@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{state::*, constants::*, utils::*, error::{CubeError, TreasuryError}};
+use crate::{state::*, constants::*, utils::*, error::{CubeError, CaseError, TreasuryError}};
 
 #[derive(Accounts)]
 #[instruction(set: String, id: String)]
@@ -37,6 +37,10 @@ pub fn handler(
     id: String,
     setup: String,
 ) -> Result<()> {
+    require!(set.len() < MAX_SET_NAME_LENGTH, CaseError::MaxSetNameLength);
+    require!(id.len() < MAX_CASE_ID_LENGTH, CaseError::MaxCaseIdLength);
+    require!(setup.len() < MAX_SETUP_LENGTH, CaseError::MaxSetupLength);
+
     // Refund lamports
     let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set));
     require!(

@@ -19,7 +19,7 @@ pub const MAX_LOCATION_LENGTH: usize = 100;
 
 pub const MAX_SET_NAME_LENGTH: usize = 20;
 
-pub const MAX_SETUP_LENGTH: usize = 100;
+pub const MAX_SETUP_LENGTH: usize = 150;
 
 pub const MAX_SOLUTIONS_ALLOWED: u8 = 200;
 
