@@ -2,6 +2,8 @@
 
 #![allow(non_snake_case)]
 
+use anchor_lang::prelude::*;
+
 use crate::{move_def::{pyra_move_def::{EP as P_EP, EO as P_EO, XO}, cube_move_def::*}, error::CubeError};
 use super::{Cube, Pyra};
 
@@ -90,22 +92,26 @@ pub fn apply_to_pyra(
 }
 
 /// Given a move, applies corresponding move to cube
-pub fn move_cube(mov: usize, cube: &mut Cube) {
+pub fn move_cube(mov: usize, cube: &mut Cube) -> Result<()> {
     *cube = apply_to_cube(
         cube.clone(),
-        *CP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
-        *EP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
-        *CO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
-        *EO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
-        *XP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *CP.get(mov).ok_or(CubeError::InvalidMove)?,
+        *EP.get(mov).ok_or(CubeError::InvalidMove)?,
+        *CO.get(mov).ok_or(CubeError::InvalidMove)?,
+        *EO.get(mov).ok_or(CubeError::InvalidMove)?,
+        *XP.get(mov).ok_or(CubeError::InvalidMove)?,
     );
+
+    Ok(())
 }
 
-pub fn move_pyra(mov: usize, pyra: &mut Pyra) {
+pub fn move_pyra(mov: usize, pyra: &mut Pyra) -> Result<()> {
     *pyra = apply_to_pyra(
         pyra.clone(),
-        *P_EP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
-        *XO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
-        *P_EO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *P_EP.get(mov).ok_or(CubeError::InvalidMove)?,
+        *XO.get(mov).ok_or(CubeError::InvalidMove)?,
+        *P_EO.get(mov).ok_or(CubeError::InvalidMove)?,
     );
+
+    Ok(())
 }

@@ -79,31 +79,31 @@ impl Cube {
             
             // Direction
             match mov.chars().nth(1) {
-                Some('\'') => move_cube(base_move + 1, self.borrow_mut()),
+                Some('\'') => move_cube(base_move + 1, self.borrow_mut())?,
                 Some('2')=> {
-                    move_cube(base_move, self.borrow_mut());
-                    move_cube(base_move, self.borrow_mut());
+                    move_cube(base_move, self.borrow_mut())?;
+                    move_cube(base_move, self.borrow_mut())?;
                 },
                 Some('w')=> {
                     match mov.chars().nth(2) {
                         Some('\'') => {
-                            move_cube(base_move + 1, self.borrow_mut());
-                            move_cube(opp_slice(wide_to_slice(base_move)?)?, self.borrow_mut());
+                            move_cube(base_move + 1, self.borrow_mut())?;
+                            move_cube(opp_slice(wide_to_slice(base_move)?)?, self.borrow_mut())?;
                         },
                         Some('2') => {
-                            move_cube(base_move, self.borrow_mut());
-                            move_cube(wide_to_slice(base_move)?, self.borrow_mut());
-                            move_cube(base_move, self.borrow_mut());
-                            move_cube(wide_to_slice(base_move)?, self.borrow_mut());
+                            move_cube(base_move, self.borrow_mut())?;
+                            move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
+                            move_cube(base_move, self.borrow_mut())?;
+                            move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
                         }
                         None => {
-                            move_cube(base_move, self.borrow_mut());
-                            move_cube(wide_to_slice(base_move)?, self.borrow_mut());
+                            move_cube(base_move, self.borrow_mut())?;
+                            move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
                         },
                         _ => err!(CubeError::InvalidMove)?,
                     }
                 },
-                None => move_cube(base_move, self.borrow_mut()),
+                None => move_cube(base_move, self.borrow_mut())?,
                 _ => err!(CubeError::InvalidMove)?,
             }
         }
@@ -189,11 +189,15 @@ impl Cube {
     }
 
     pub fn check_solved_for_set(&self, set: &str) -> Result<()> {
+        if set.len() > 4 && &set[0..4] == "ZBLL" {
+            self.is_solved()?;
+            return Ok(());
+        }
+
         match set {
             "F2L" => self.is_f2l_solved()?,
             "OLL" => self.is_oll_solved()?,
             "PLL" => self.is_solved()?,
-            "ZBLL" => self.is_solved()?,
             "CMLL" => self.is_cmll_solved()?,
             "CLL" => self.are_corners_solved()?,
             "EG-1" => self.are_corners_solved()?,
