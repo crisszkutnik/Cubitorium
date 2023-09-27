@@ -2,7 +2,7 @@
 
 #![allow(non_snake_case)]
 
-use crate::move_def::{pyra_move_def::{EP as P_EP, EO as P_EO, XO}, cube_move_def::*};
+use crate::{move_def::{pyra_move_def::{EP as P_EP, EO as P_EO, XO}, cube_move_def::*}, error::CubeError};
 use super::{Cube, Pyra};
 
 /// Rotate four elements
@@ -40,7 +40,8 @@ pub fn apply_to_cube(
     cp_indices: [usize; 4],
     ep_indices: [usize; 4],
     co_mask_opt: Option<[u8; 8]>,
-    eo_mask_opt: Option<[u8; 12]>
+    eo_mask_opt: Option<[u8; 12]>,
+    xp_indices_opt: Option<[usize; 4]>,
 ) -> Cube {
     // Cycle all four arrays
     apply_permutation(&mut cube.co, cp_indices);
@@ -55,6 +56,11 @@ pub fn apply_to_cube(
 
     if let Some(eo_mask) = eo_mask_opt {
         cube.eo = apply_orientation(&cube.eo, &eo_mask, 2).try_into().unwrap();
+    }
+
+    // Update centers if needed
+    if let Some(xp_indices) = xp_indices_opt {
+        apply_permutation(&mut cube.xp, xp_indices);
     }
 
     cube
@@ -87,18 +93,19 @@ pub fn apply_to_pyra(
 pub fn move_cube(mov: usize, cube: &mut Cube) {
     *cube = apply_to_cube(
         cube.clone(),
-        CP[mov],
-        EP[mov],
-        CO[mov],
-        EO[mov],
+        *CP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *EP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *CO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *EO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *XP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
     );
 }
 
 pub fn move_pyra(mov: usize, pyra: &mut Pyra) {
     *pyra = apply_to_pyra(
         pyra.clone(),
-        P_EP[mov],
-        XO[mov],
-        P_EO[mov],
+        *P_EP.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *XO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
+        *P_EO.get(mov).ok_or(CubeError::InvalidMove).unwrap(),
     );
 }
