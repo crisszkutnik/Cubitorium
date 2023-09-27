@@ -1,13 +1,40 @@
 import { Accordion, AccordionItem } from "@nextui-org/react";
+import { useState, useEffect } from "react";
 
 export function Home() {
+  // Background changer
+
+  const backgroundImages = ["hm-bg-0.jpg", "hm-bg-1.jpg", "hm-bg-2.jpg"];
+  const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
+
+  useEffect(() => {
+    // change background
+    const changeBackground = () => {
+      // Obtener el próximo índice de fondo en la secuencia
+      const nextIndex = (currentBackgroundIndex + 1) % backgroundImages.length;
+      setCurrentBackgroundIndex(nextIndex);
+    };
+
+    // change every 5 seconds (5000 ms)
+    const backgroundInterval = setInterval(changeBackground, 1000);
+
+    // clear interval when unmounted
+    return () => {
+      clearInterval(backgroundInterval);
+    };
+  }, [currentBackgroundIndex]);
+
+  // get currentBackground
+  const currentBackground = backgroundImages[currentBackgroundIndex];
+  
   return (
     <div className="relative h-screen -mt-6">
 
     {/* BACKGROUND */}
-    <div className="absolute inset-0 bg-[url('/home-background.jpg')] bg-cover bg-center opacity-10"></div>
-
+    <div className={`absolute bg-cover bg-center opacity-10 inset-0 bg-[url('/${currentBackground}')]`}></div>
+  
       <div className="relative z-10">
+        
       {/* Welcome to cubitorium */}
       <h1 className="text-4xl py-5 text-accent-dark font-bold text-center mt-6">
         <img className="mx-auto block -mt-2 h-40" src="/public/Logo.png" alt="Logo" />
