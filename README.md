@@ -19,6 +19,8 @@
      ```
      Se deberia hacer el deploy en tu instancia local de Solana
    - Sobre la carpeta `client` correr `yarn dev` e ir a la URL que salga en pantalla. Agregar la ruta `/test` y se deberia mostrar un boton para conectarse a una wallet (por ahora solo funciona con Phantom). Una vez conectado, hay dos campos para enviar informacion de usuario a Solana. Si se guarda correctamente, la misma se deberia mostrar en pantalla
+6. (OPCIONAL) Llenar el backend de data
+   - Correr el comando `yarn init-backend` para cargar dos perfiles, casos, soluciones, y algunos likes y estados de aprendizaje. Modificar el archivo en `backend/init-backend/init-backend.ts` a gusto para cargar los casos o las cosas que uno desee. Demora unos segundos / un minuto.
 
 ## Contributors
 

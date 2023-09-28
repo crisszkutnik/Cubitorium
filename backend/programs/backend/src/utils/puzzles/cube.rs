@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 use std::{borrow::BorrowMut, str::SplitWhitespace};
 
-use crate::error::CubeError;
+use crate::{error::CubeError, utils::{wide_to_slice, opp_slice}};
 
 use super::super::move_cube;
 
@@ -17,6 +17,8 @@ pub struct Cube {
     pub eo: [u8; 12],
     /// Edge permutation vector
     pub ep: [u8; 12],
+    /// Center position vector
+    pub xp: [u8; 6],
 }
 
 impl Cube {
@@ -29,6 +31,7 @@ impl Cube {
             cp: [1,2,3,4,5,6,7,8],
             eo: [0; 12],
             ep: [1,2,3,4,5,6,7,8,9,10,11,12],
+            xp: [1,2,3,4,5,6],
         }
     }
 
@@ -46,31 +49,62 @@ impl Cube {
         // Iterate through every move and apply it if valid
         let moves: SplitWhitespace = moves.split_whitespace();
         for mov in moves {
-            if ![
-                "R","U","F","L","D","B",
-                "R'","U'","F'","L'","D'","B'",
-                "R2","U2","F2","L2","D2","B2",
-            ].contains(&mov) {
-                return Err(error!(CubeError::InvalidMove));
+            // Check for rotations (UTTERLY questionable mental health)
+            match mov {
+                "x" => { self.apply_moves("L' Rw")?; continue; },
+                "y" => { self.apply_moves("U Dw'")?; continue; },
+                "z" => { self.apply_moves("F Bw'")?; continue; },
+                "x\'" => { self.apply_moves("L Rw'")?; continue; },
+                "y\'" => { self.apply_moves("U' Dw")?; continue; },
+                "z\'" => { self.apply_moves("F' Bw")?; continue; },
+                "x2" => { self.apply_moves("L2 Rw2")?; continue; },
+                "y2" => { self.apply_moves("U2 Dw2")?; continue; },
+                "z2" => { self.apply_moves("F2 Bw2")?; continue; },
+                _ => (),
             }
 
             // Letter into index (shifted ASCII value)
-            // B=66, D=68, F=70, L=76, R=82, U=85
-            // B=0,  D=2,  F=4,  L=10, R=16, U=19
-            let base_move: usize = mov.chars().nth(0).unwrap() as usize - 66;
+            // B=66, D=68, E=69, F=70, L=76, M=77, R=82, S=83, U=85
+            // B=0,  D=2, *E=6,  F=4,  L=10,*M=14, R=16,*S=20, U=22
+
+            let mut base_move: usize = (mov.chars().nth(0).unwrap() as usize)
+                .checked_sub(66)
+                .ok_or(CubeError::InvalidMove)?;
+
+            // E, M, S need to be shifted 3 more places. U gets shifted too for being odd and annoying.
+            // Since they are the only numbers here that are 1 mod 2 we can save a comparison
+            // Guido D. did this like this to avoid writing a single "if" statement and preserve O(1) indexing
+            // He does not regret writing the following line
+            base_move += 3 * (base_move % 2);
+            
             // Direction
-            if let Some(dir) = mov.chars().nth(1) {
-                match dir {
-                    '\'' => move_cube(base_move + 1, self.borrow_mut()),
-                    '2' => {
-                        move_cube(base_move, self.borrow_mut());
-                        move_cube(base_move, self.borrow_mut());
-                    },
-                    _ => (),
-                }
-            }
-            else {
-                move_cube(base_move, self.borrow_mut());
+            match mov.chars().nth(1) {
+                Some('\'') => move_cube(base_move + 1, self.borrow_mut())?,
+                Some('2')=> {
+                    move_cube(base_move, self.borrow_mut())?;
+                    move_cube(base_move, self.borrow_mut())?;
+                },
+                Some('w')=> {
+                    match mov.chars().nth(2) {
+                        Some('\'') => {
+                            move_cube(base_move + 1, self.borrow_mut())?;
+                            move_cube(opp_slice(wide_to_slice(base_move)?)?, self.borrow_mut())?;
+                        },
+                        Some('2') => {
+                            move_cube(base_move, self.borrow_mut())?;
+                            move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
+                            move_cube(base_move, self.borrow_mut())?;
+                            move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
+                        }
+                        None => {
+                            move_cube(base_move, self.borrow_mut())?;
+                            move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
+                        },
+                        _ => err!(CubeError::InvalidMove)?,
+                    }
+                },
+                None => move_cube(base_move, self.borrow_mut())?,
+                _ => err!(CubeError::InvalidMove)?,
             }
         }
 
@@ -83,7 +117,8 @@ impl Cube {
             self.co == [0,0,0,0,0,0,0,0] &&
             self.cp == [1,2,3,4,5,6,7,8] &&
             self.eo == [0,0,0,0,0,0,0,0,0,0,0,0] &&
-            self.ep == [1,2,3,4,5,6,7,8,9,10,11,12]
+            self.ep == [1,2,3,4,5,6,7,8,9,10,11,12] &&
+            self.xp == [1,2,3,4,5,6]
         ) {
             return Err(error!(CubeError::UnsolvedCube));
         }
@@ -97,7 +132,8 @@ impl Cube {
             self.co        == [0,0,0,0,0,0,0,0] &&
             self.cp[4..8]  == [5,6,7,8] &&
             self.eo        == [0,0,0,0,0,0,0,0,0,0,0,0] &&
-            self.ep[4..12] == [5,6,7,8,9,10,11,12]
+            self.ep[4..12] == [5,6,7,8,9,10,11,12] &&
+            self.xp        == [1,2,3,4,5,6]
         ) {
             return Err(error!(CubeError::UnsolvedCube));
         }
@@ -111,7 +147,8 @@ impl Cube {
             self.co[4..8]  == [0,0,0,0] &&
             self.cp[4..8]  == [5,6,7,8] &&
             self.eo[4..12] == [0,0,0,0,0,0,0,0] &&
-            self.ep[4..12] == [5,6,7,8,9,10,11,12]
+            self.ep[4..12] == [5,6,7,8,9,10,11,12] &&
+            self.xp        == [1,2,3,4,5,6]
         ) {
             return Err(error!(CubeError::UnsolvedCube));
         }
@@ -129,7 +166,9 @@ impl Cube {
             self.eo[11]    == 0 &&
             self.ep[4..8]  == [5,6,7,8] &&
             self.ep[9]     == 10 &&
-            self.ep[11]    == 12
+            self.ep[11]    == 12 &&
+            self.xp[2]     == 3 &&
+            self.xp[4]     == 5
         ) {
             return Err(error!(CubeError::UnsolvedCube));
         }
@@ -150,11 +189,15 @@ impl Cube {
     }
 
     pub fn check_solved_for_set(&self, set: &str) -> Result<()> {
+        if set.len() > 4 && &set[0..4] == "ZBLL" {
+            self.is_solved()?;
+            return Ok(());
+        }
+
         match set {
             "F2L" => self.is_f2l_solved()?,
             "OLL" => self.is_oll_solved()?,
             "PLL" => self.is_solved()?,
-            "ZBLL" => self.is_solved()?,
             "CMLL" => self.is_cmll_solved()?,
             "CLL" => self.are_corners_solved()?,
             "EG-1" => self.are_corners_solved()?,

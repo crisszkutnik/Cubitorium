@@ -290,6 +290,7 @@ describe("backend", () => {
           cp: [2, 1, 4, 3, 5, 6, 7, 8],
           eo: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           ep: [2, 3, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          xp: [1, 2, 3, 4, 5, 6],
         });
         expect(pdaCase.pyraState).to.be.null;
 
@@ -564,14 +565,14 @@ describe("backend", () => {
     let ollCase = {
       set: `OLL`,
       id: `40`,
-      setup: `R U2 R' U' R U' R'`,
+      setup: `M E M' E' S2 M S M' S' S2 R U2 R' U' R U' R'`,
     };
 
     // A Perm
     let pllCase = {
       set: `PLL`,
       id: `Aa`,
-      setup: `R' F R' B2 R F' R' B2 R2`,
+      setup: `Rw U Rw' U' Rw' F Rw2 U' Rw' U' Rw U Rw' F' U x y z`,
     };
 
     // 3 move insert
@@ -588,6 +589,14 @@ describe("backend", () => {
       setup: `L R' L B' L' U' B L`,
     };
 
+    // Deranged case to test all moves
+    // A.K.A. the "the quick brown fox jumps over the lazy dog"
+    let brownFox = {
+      set: `PLL`,
+      id: `FOX`,
+      setup: `R2 Rw Bw2 y2 z' U' Rw2 Bw' Lw' R Dw' y D Bw L2 z2 Lw Lw2 Fw Uw' D2 L' B F' D' z L x' Uw2 Dw2 R' x2 Rw' B2 y' U2 F x Fw2 B' Uw Fw' U Dw x y'`,
+    };
+
     let ollCasePda = casePda(ollCase.set, ollCase.id, pid);
     let pllCasePda = casePda(pllCase.set, pllCase.id, pid);
     let f2lCasePda = casePda(f2lCase.set, f2lCase.id, pid);
@@ -598,7 +607,7 @@ describe("backend", () => {
 
       // We need to edit config first to allow this to happen
       await program.methods
-        .appendSetToConfig("PLL", ["Aa"])
+        .appendSetToConfig("PLL", ["Aa", "FOX"])
         .accounts({ admin: deployer.publicKey })
         .rpc();
       await program.methods
@@ -645,6 +654,12 @@ describe("backend", () => {
         .createCase("CLL", "0", "")
         .accounts({ signer: deployer.publicKey })
         .rpc();
+
+      // Brown fox case
+      await program.methods
+        .createCase(brownFox.set, brownFox.id, brownFox.setup)
+        .accounts({ signer: deployer.publicKey })
+        .rpc();
     });
 
     describe(`Happy path`, async () => {
@@ -661,13 +676,13 @@ describe("backend", () => {
 
       it("Can add a different solution to the PLL case", async () => {
         await program.methods
-          .addSolution("F U R' D' R U R' D R U2 F'")
+          .addSolution("F D L' U' L D L' U L D2 F' z2 y'")
           .accounts({
             signer: deployer.publicKey,
             case: pllCasePda,
             solutionPda: solutionKey(
               pllCasePda,
-              "F U R' D' R U R' D R U2 F'",
+              "F D L' U' L D L' U L D2 F' z2 y'",
               pid
             ),
           })
@@ -750,6 +765,23 @@ describe("backend", () => {
           })
           .rpc();
       });
+
+      it("Tests that all moves work", async () => {
+        await program.methods
+          .addSolution(
+            "F R2 D' F' B L' U' L' U R U2 R2 B2 U2 D F2 U2 B2 U L2 U F2"
+          )
+          .accounts({
+            signer: deployer.publicKey,
+            case: casePda("PLL", "FOX", pid),
+            solutionPda: solutionKey(
+              casePda("PLL", "FOX", pid),
+              "F R2 D' F' B L' U' L' U R U2 R2 B2 U2 D F2 U2 B2 U L2 U F2",
+              pid
+            ),
+          })
+          .rpc();
+      });
     });
 
     describe(`Unhappy path`, async () => {
@@ -805,6 +837,23 @@ describe("backend", () => {
           assert.fail("It needs to fail!");
         } catch (e) {
           assert.equal(e.error.errorCode.code, `UnsolvedCube`);
+        }
+      });
+
+      it("Can't add a solution if notation is invalid", async () => {
+        try {
+          await program.methods
+            .addSolution("B E N B A R O N")
+            .accounts({
+              signer: deployer.publicKey,
+              case: f2lCasePda,
+              solutionPda: solutionKey(f2lCasePda, "B E N B A R O N", pid),
+            })
+            .rpc();
+
+          assert.fail("It needs to fail!");
+        } catch (e) {
+          assert.equal(e.error.errorCode.code, `InvalidMove`);
         }
       });
     });

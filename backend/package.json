@@ -3,7 +3,8 @@
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
     "test": "DEPLOYER_KEY=$(solana-keygen pubkey ~/.config/solana/id.json) anchor test",
-    "build": "DEPLOYER_KEY=$(solana-keygen pubkey ~/.config/solana/id.json) anchor build"
+    "build": "DEPLOYER_KEY=$(solana-keygen pubkey ~/.config/solana/id.json) anchor build",
+    "init-backend": "yarn test --run init-backend/ --skip-local-validator"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.28.0"

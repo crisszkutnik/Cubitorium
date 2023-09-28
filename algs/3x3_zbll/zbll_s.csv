@@ -2,22 +2,22 @@ case_id, setup, solution
 1, L' R U' L U R' U2' L' U2' L, U2 R' U2 R U F R' U R U' F' U'
 2, R U2' R' U' R2' D R' U R D' R' U2' R' y', y U' R U R' U R U' R2 F' R U R U' R' F R U' R' U'
 3, R D R' U' R D' R2' U' R U2' R' U' R, R' U R U2 R' U R2 D R' U R D' R'
-4, R U2' R2' D' R U2' R' D R2' U' R' U R U' R' y2, y2 S' U2 L' U2 L U2 L F' L' f U
+4, R U2' R2' D' R U2' R' D R2' U' R' U R U' R' y2, y2 S' U2 L' U2 L U2 L F' L' Fw U
 5, L' U R U' L U2' R' U' L' U R U' R' L, U R' F R U R' U' R' F' D' R U R' D R2 U
 6, R U B' U R2' U' R2' U' B R' U R' U R y, y' U F' R U R' U R U2 R' F U R U' R' U2 R U' R'
 7, R2' F2' U' R F2' R' U F' R U R U' R' F' U R y', y U' R' U L' U2 R U' R' U2 R U2 L U L' U L U2
-8, U' R2' D r' U2' r D' R2' U' R U' R' y2, y2 R U R' U R2 D r' U2 r D' R2 U
+8, U' R2' D Rw' U2' Rw D' R2' U' R U' R' y2, y2 R U R' U R2 D Rw' U2 Rw D' R2 U
 9, R' U' R U' R U R D R' U' R D' R U2' R y, y' U2 R U R' U' R U R2 D' R U R' D R U R U2 R' U'
 10, R2' D R' U2' R D' R2' U' R U' R' y2, y2 R U R' U R2 D R' U2 R D' R2
 11, R U R' F' R U2' R' U2' R' F R2' U' R', U' R' D' R U2 R' D R U' R U R' U2 R U R'
 12, R U2' R' U R U L U' R' U L' U R U' R', R U2 R D R' U2 R D' R' U R' U R U2 R'
 13, R' D' R U2' R' D R2' U' R' U2' R U R' U R U R' y2, y2 U2 R U R' U' R2 U' L' U R2 U' L U' R U2 R' U2
-14, x' R U' R' D R2' U l' U R' U' R U R' U' F' y', y F U R U' R' U l F' R U' R2 D' R U l'
+14, x' R U' R' D R2' U Lw' U R' U' R U R' U' F' y', y F U R U' R' U Lw F' R U' R2 D' R U Lw'
 15, R' U2' F' R U R' U' R' F R2' U R' U R y', y R' U' F2 U' R2 U R2 U F2 R2 U2 R' U2
 16, R U R' U' L' U2' R U' R' U2' L U' R U2' R' y2, y2 R U2 R' U' R U R' U' R U R D R' U2 R D' R2
 17, R U2' R' L' U2' R U' R' U2' R L U2' R' y', y U2 F R' U R U F' R' U F U F' R U'
 18, R U R2' D R2' D' R2' U' R2' D R2' D' R, U' F R' U2 R F' R' F U2 F' R U
-19, R U2' R' U' R U2' R' U R U' R' U' R U R2' D' R U' R' D R, R' F r2 R2 U2 r U r' U2 R r2 F' R2 U'
+19, R U2' R' U' R U2' R' U R U' R' U' R U R2' D' R U' R' D R, R' F Rw2 R2 U2 Rw U Rw' U2 R Rw2 F' R2 U'
 20, R U R' U L' U2' R U L U2' R' U L' U L y', y U2 F R U R' U' R' F' U2 R U R U' R' U R' U R U'
 21, R' U' R U' R' U R' D' R U' R' D R U2' R y, y' R' U2 R' D' R U R' D R U' R U R' U R
 22, R2' D' R2' U2' R' F2' U F2' U R2' D R' y', y U R U R' U R U' R D R' U R D' R' U2 R' U
@@ -33,17 +33,17 @@ case_id, setup, solution
 32, D R' U' R D' R U' R' U R2' U R' U' R2' y, y' D' R2 U R U' R2 U' R U R' D R' U R
 33, R' U' R2' U2' R2' D U' R2' U' R2' U R2' D' R2' U' R y', y R' U' R' U R2 D' U2 R U R' U' D R' U2
 34, F R U' R' U R U R2' F' R U R U R' U' R U' R', U2 L U' R' U L' R' U' R' U' R' U R U R2 U2
-35, L' U R U' L R U R U R U' R' U' R2', R2 D r' U2 r D' R' U' R' U R U2 R' U'
+35, L' U R U' L R U R U R U' R' U' R2', R2 D Rw' U2 Rw D' R' U' R' U R U2 R' U'
 36, R U R U' R2' D U2' R' U' R D' U R y, y' R' U' D R' U R U2 D' R2 U R' U' R'
 37, R U2' R' U2' L' U R U' R' L, L' R U R' U' L U2 R U2 R'
 38, R U' R' U2' R U' R2' D' R U' R' D R y', y R' D' R U R' D R2 U R' U2 R U R'
 39, R' U2' R' D' R U R' D R2' U' R' U2' R y', y U' L' R' U2 R U R' U2 L U R U R' U R U'
-40, S U2' R U2' R' U2' R' F R f', f R' F' R U2 R U2 R' U2 S'
-41, L' R U' L U R' U' L' U2' R U' L U R' y', y U2 M F R' F' r U R2 D R' U' R D' R2 U
+40, S U2' R U2' R' U2' R' F R Fw', Fw R' F' R U2 R U2 R' U2 S'
+41, L' R U' L U R' U' L' U2' R U' L U R' y', y U2 M F R' F' Rw U R2 D R' U' R D' R2 U
 42, F R U R' F R' F' U2' R2' U R2' U R F' y', y L U' R' U L' U R' D' R U2 R' D R2
-43, R' U' R U' R2' D' r U2' r' D R2' y2, y2 R2 D' r U2 r' D R2 U R' U R
+43, R' U' R U' R2' D' Rw U2' Rw' D R2' y2, y2 R2 D' Rw U2 Rw' D R2 U R' U R
 44, R U R' U' R2' U R U R' U' D R' U' R D' R, R' D R' U R D' U R U' R' U' R2 U R U' R'
-45, R U R' U R U2' R2' L U L' U' R U2' L U2' L' y', y R U R2 F' r U R U' r' F U R U2 R' U2
+45, R U R' U R U2' R2' L U L' U' R U2' L U2' L' y', y R U R2 F' Rw U R U' Rw' F U R U2 R' U2
 46, R' U2' R' D' R U2' R' D R U' R U' R' U2' R, R' U2 R U R' U R' D' R U2 R' D R U2 R
 47, R' U' R U R' F R U R' U' R' F' R2', R2 F R U R U' R' F' R U' R' U R
 48, R' U' R U' R2' D' R U2' R' D R2' y2, y2 R2 D' R U2 R' D R2 U R' U R
@@ -54,7 +54,7 @@ case_id, setup, solution
 53, L' U' L U R U' L' U R' U R U' L U R' y, y' R' U2 R2 U R' F' R U R' U' R' F R2 U' R2 U R
 54, R U2' R' U2' L' U' L U' R U L' U R' U2' L y2, y2 U2 F R U R' U R U2 R U2 R2 U' R2 U' R2 F'
 55, R' U2' L U' R U L' R' U R U' R' U2' R y', y U' R' U2 R U R' U' R F U' R' U' R U F' U2
-56, R U2' R' U' R U L' R' U R U' L U2' R' y, y' U' r F' U2 F r' U2 R' U' R' U R' U R2 U
+56, R U2' R' U' R U L' R' U R U' L U2' R' y, y' U' Rw F' U2 F Rw' U2 R' U' R' U R' U R2 U
 57, R U2' L' U R' U' L U' R U' R' y2, y2 R U R' U L' U R U' L U2 R'
 58, R U2' R2' U' R2' U' R' F U' R' U' R U F', F U' R' U R U F' R U R2 U R2 U2 R'
 59, R' U' R U' L U' R' U L' U2' R, R' U2 L U' R U L' U R' U R
