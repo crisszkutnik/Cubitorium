@@ -1,36 +1,44 @@
 import { useRef, useState, useEffect } from "react";
 import { CasesSelector } from "./CasesSelector";
 import { ButtonWrapper } from "../../components/ButtonWrapper";
+import { shallow } from 'zustand/shallow';
+
 import {
-  selectSets2,
+  selectSets,
+  PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
+import { selectCases, useCaseStore } from "../../modules/store/caseStore";
 
 export function PracticeSelector() {
-  const sets2 = useAlgorithmsStore(selectSets2);
+  const setsMap = useAlgorithmsStore(
+    (state) => state.setsMap,
+    shallow,
+  );
 
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (sets2.length > 0) {
-      setSelectedType(sets2[0].set_name);
+    console.log(setsMap);
+    if (setsMap[PuzzleTypeKeys[0]].length > 0) {
+      setSelectedType(PuzzleTypeKeys[0]);
     }
-  }, [sets2]);
+  }, [setsMap]);
 
-  const [selectedType, setSelectedType] = useState('3x3');
-  const [selectedSubtype, setSelectedSubtype] = useState<string>('');
+  const [selectedType, setSelectedType] = useState(PuzzleTypeKeys[0]);
+  const [selectedSubtype, setSelectedSubtype] = useState("");
   const [showCases, setShowCases] = useState(false);
 
 
   // when type changes
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSubtype('');
+    setSelectedSubtype(event.target.value);
   };
 
   
   // when subtype changes
   const handleSubtypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSubtype('');
+    setSelectedSubtype(event.target.value);
   };
 
   const handleShowCases = () => {
@@ -46,17 +54,16 @@ export function PracticeSelector() {
         <p className="text-accent-dark font-semibold">Puzzle</p>
         <select
           className="px-2 py-2 rounded border border-gray-300" value={selectedType} onChange={handleTypeChange}>
-          {sets2.map((puzzle) => (
-            <option key={puzzle.set_name}>{puzzle.set_name}</option>
+          {PuzzleTypeKeys.map((puzzle) => (
+            <option key={puzzle}>{puzzle}</option>
           ))}
         </select>
         <p className="text-accent-dark font-semibold">Algorithm Set</p>
         <select
           className="px-2 py-2 rounded border border-gray-300 mb-4" value={selectedSubtype} onChange={handleSubtypeChange}>
-          {/*sets2.filter(set => set.set_name == selectedType)[0].case_names.map((set) => (
-            <option key={set}>{set}</option>
-          ))*/}
-          <option key={'a'}>{'a'}</option>
+          {setsMap[selectedType].map((set) => (
+            <option key={set.set_name}>{set.set_name}</option>
+          ))}
         </select>
         <ButtonWrapper variant="ghost" onClick={handleShowCases} text="Select Specific Cases" />
         {showCases && <CasesSelector></CasesSelector>}
