@@ -1,0 +1,36 @@
+case_id, setup, solution
+DS1, R U R' U R U R', R U' R' U' R U' R'
+DS2, L' U' L U' L' U' L, L' U L U L' U L
+DS3, L' U L U' L R' L' R, R' L R L' U L' U' L
+DS4, L R U R' U' L', L U R U' R' L'
+DS5, R' L' U' L U R, R' U' L' U L R
+DF1, L R' L' R U' L R' L' R U' L R' L' R, R' L R L' U R' L R L' U R' L R L'
+DF2, R' L R L' U' R' L R L', L R' L' R U L R' L' R
+DF3, L R' L' R U L R' L' R, R' L R L' U' R' L R L'
+DF4, R U R' L R' L' R U, U' R' L R L' R U' R'
+DF5, L' U L R U R' U, U' R U' R' L' U' L
+DF6, R U' R' L' U' L U', U L' U L R U R'
+US1, L' U L U', U L' U' L
+US2, R U' R' U, U' R U R'
+US3, R' L R L', L R' L' R
+US4, L R' L' R, R' L R L'
+US5, L' U' L' R' L' R, R' L R L2' U L
+US6, R U R2' L R L', L R' L' R2 U' R'
+US7, R U R', R U' R'
+US8, L' U' L, L' U L
+UF1, L R' L' R U' R U' R', R U R' U R' L R L'
+UF2, R' L R L' U L' U L, L' U' L U' L R' L' R
+UF3, R U' R' U L' U' L U', U L' U L U' R U R'
+UF4, L' U L U' R U R' U, U' R U' R' U L' U' L
+UF5, L' U' L U' R U' R', R U R' U L' U L
+UF6, R U R' U L' U L, L' U' L U' R U' R'
+UF7, L' U' L U' L R' L' R U', U R' L R L' U L' U L
+UF8, R U R' U R' L R L' U, U' L R' L' R U' R U' R'
+NP1, L R' L' R' U R' U', U R U' R2' L R L'
+NP2, R' L R L2' U' L U, U' L' U L2 R' L' R
+NP3, R U' R' U' L' U L U, U' L' U' L U R U R'
+NP4, L' U L U R U' R' U', U R U R' U' L' U' L
+NP5, R U' R' U R U R' U', U R U' R' U' R U R'
+NP6, L' U L U' L' U' L U, U' L' U L U L' U' L
+NP7, R U R' L' U' L U, U' L' U L R U' R'
+NP8, L' U' L R U R' U', U R U' R' L' U L

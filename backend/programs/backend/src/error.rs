@@ -68,6 +68,15 @@ pub enum CaseError {
     #[msg("Case has over MAX_SOLUTIONS_ALLOWED solutions.")]
     MaxSolutionsAllowed,
 
+    #[msg("Set name too long")]
+    MaxSetNameLength,
+
+    #[msg("Case id too long")]
+    MaxCaseIdLength,
+
+    #[msg("Setup length too long")]
+    MaxSetupLength,
+
     #[msg("Catastrophic failure - world has ended")]
     Cataclysm,
 }

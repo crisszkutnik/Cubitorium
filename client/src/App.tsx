@@ -11,6 +11,7 @@ import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
+import { Home } from './pages/home/Home';
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -35,7 +36,7 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/" element={<h1>Hello final-thesis</h1>} />
+          <Route path="/" element={<Home />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
           <Route path="/algorithms/upload" element={<AlgorithmsUpload />} />

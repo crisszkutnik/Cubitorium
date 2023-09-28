@@ -1,0 +1,41 @@
+case_id, setup, solution
+AS1, F U' R2 U' R' U2 R U' R2 F', F R2 U R' U2 R U R2 U F'
+AS2, R2 F2 L U2 L U L' U L y2, y2 L' U' L U' L' U2 L' F2 R2
+AS3, R2 B2 R' U' R' F R' F' R U2, U2 R' F R F' R U R B2 R2
+AS4, L2 B2 L U2 L U2 L F' L' F U2, U2 F' L F L' U2 L' U2 L' B2 L2
+AS5, R' F R' F2 R U R U R' U R, R' U' R U' R' U' R' F2 R F' R
+AS6, R U' R' F R' F' R' F2 R2 y2, y2 R2 F2 R F R F' R U R'
+H1, R2 F R2 F2 U2 F' R2, R2 F U2 F2 R2 F' R2
+H2, R2 U2 R U2 B2 R2 y', y R2 B2 U2 R' U2 R2
+H3, R' F' U R' F R2 U2 R' U R, R' U' R U2 R2 F' R U' F R
+H4, R B' U R' U' R B2 U2 R' y, y' R U2 B2 R' U R U' B R'
+L1, F' L' F L' U' L U L' B2 L2 U', U L2 B2 L U' L' U L F' L F
+L2, R' F' R U R U' R' F' R2 F2 y2, y2 F2 R2 F R U R' U' R' F R
+L3, R2 F2 U R' U2 R U2 R' U R2 y2, y2 R2 U' R U2 R' U2 R U' F2 R2
+L4, x2 F U R U R' F' R U2 L U' R y, y' R' U L' U2 R' F R U' R' U' F' x2
+L5, R2 B2 R' U R' U' R' F R F' y', y F R' F' R U R U' R B2 R2
+L6, R2 F2 R F' R U R U' R' F y2, y2 F' R U R' U' R' F R' F2 R2
+Pi1, F R U' R U R' U2 R' U F', F U' R U2 R U' R' U R' F'
+Pi2, F R2 F2 R U' R2 U2 R', R U2 R2 U R' F2 R2 F'
+Pi3, U2 F2 R2 F' R2 U' R2 U' R2 U R2 F' U', U F R2 U' R2 U R2 U R2 F R2 F2 U2
+Pi4, R2 F2 R' U R' U R U R' F R' F' R y2, y2 R' F R F' R U' R' U' R U' R F2 R2
+Pi5, U' R' U2 R U' R2 F2 R F R U, U' R' F' R' F2 R2 U R' U2 R U
+Pi6, U R' F' R' F2 R2 U R' U2 R U', U R' U2 R U' R2 F2 R F R U'
+S1, U F R2 U R' U2 R U R2 U F' U, U' F U' R2 U' R' U2 R U' R2 F' U'
+S2, R' U' R U' R' U2 R' F2 R2 y, y' R2 F2 R U2 R U R' U R
+S3, R2 F2 R F R F' R U R', R U' R' F R' F' R' F2 R2
+S4, R2 B2 R' U2 R' U2 R' F R F', F R' F' R U2 R U2 R B2 R2
+S5, F R F' U R2 F' R U' R, R' U R' F R2 U' F R' F'
+S6, R' F R F' R U R B2 R2, R2 B2 R' U' R' F R' F' R
+T1, U' B2 R2 F R U R' U' R' F R U', U R' F' R U R U' R' F' R2 B2 U
+T2, F U2 R' U R U2 R F' y', y F R' U2 R' U' R U2 F'
+T3, R' U R' F R2 U2 R' U' R, R' U R U2 R2 F' R U' R
+T4, R' U' R' F R F' U R' F2 R2, R2 F2 R U' F R' F' R U R
+T5, R' F R' F' R F' R U R' U2 R y, y' R' U2 R U' R' F R' F R F' R
+T6, R' F2 R' F2 R U2 R y', y R' U2 R' F2 R F2 R
+U1, R' U R' F U' R U' R' U2 R2, R2 U2 R U R' U F' R U' R
+U2, B2 R2 F' U R U' R' F' y, y' F R U R' U' F R2 B2
+U3, R' F' U' R U2 R' U F R, R' F' U' R U2 R' U F R
+U4, L' U R' U2 L U2 F' U F R, R' F' U' F U2 L' U2 R U' L
+U5, F R' F' R U R U' R B2 R2 y2, y2 R2 B2 R' U R' U' R' F R F'
+U6, F' L F L' U' R' F R' F2 R2 y2, y2 R2 F2 R F' R U L F' L' F

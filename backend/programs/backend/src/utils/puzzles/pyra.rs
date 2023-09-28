@@ -43,7 +43,10 @@ impl Pyra {
         // Iterate through every move and apply it if valid
         let moves: SplitWhitespace = moves.split_whitespace();
         for mov in moves {
-            if !["R","U","L","B","R'","U'","L'","B'"].contains(&mov) {
+            if ![
+                    "R","U","L","B","R'","U'","L'","B'",
+                    "R2","U2","L2","B2","R2'","U2'","L2'","B2'",
+                ].contains(&mov) {
                 return Err(error!(CubeError::InvalidMove));
             }
 
@@ -53,8 +56,13 @@ impl Pyra {
             let base_move: usize = mov.chars().nth(0).unwrap() as usize - 66;
             
             match mov.chars().nth(1).is_some() {
-                true => move_pyra(base_move + 1, self.borrow_mut()), // Can only be '
-                false => move_pyra(base_move, self.borrow_mut()),
+                true => {
+                    match mov.chars().nth(2).is_some() {
+                        true => move_pyra(base_move, self.borrow_mut())?, // R2'
+                        false => move_pyra(base_move + 1, self.borrow_mut())?, // R2 or R' (same for Pyra)
+                    }
+                },
+                false => move_pyra(base_move, self.borrow_mut())?, // R
             }
         }
 

@@ -1,0 +1,42 @@
+case_id, setup, solution
+1, F R' F' R, U R U' R'
+2, R' F R F', F R' F' R
+3, F' U F, F' U' F
+4, R U' R', R U R'
+5, R U R' U2' R U' R' U, U' R U R' U2 R U' R'
+6, F' U' F U2' F' U F U', U' Rw U' R' U R U Rw'
+7, R U R' U2' R U2' R' U, U' R U2 R' U' R U2 R'
+8, Rw' U' R2 U' R2' U2' Rw, Dw R' U2 R U R' U2 R y
+9, F' U F U' R U R' U, U' R U' R' U F' U' F
+10, R U' R' U' R U' R' U, U' R U R' U R U R'
+11, F' U F U' R U2' R' U, y' R U2 R2 U' R2 U' R' y
+12, R U R' U2' R U R' U' R U R', R U' R' U R U' R' U2 R U' R'
+13, Rw U2' R' U R U' R' U M, y' U R' U R U' R' U' R y
+14, R U' R' U' R U R' U, U' R U' R' U R U R'
+15, R U R' U' R U R' U2' R U' R', R' D' R U' R' D R U R U' R'
+16, F' U F U2' R U R', R U' R' U2 F' U' F
+17, R U' R' U R U2' R', R U2 R' U' R U R'
+18, R U R' U' R U R' F R' F' R, y' R' U2 R U R' U' R y
+19, R U R' U' R U2' R' U', U R U2 R' U R U' R'
+20, R U R' F R' F' R2' U R' U, y' U' R' U2 R U' R' U R y
+21, R U' R' U2' R U R', U2 R U R' U R U' R'
+22, F' L' U2' L F, Rw U' Rw' U2 Rw U Rw'
+23, R U' R' U R U' R' U2' R U' R', U R U' R' U' R U' R' U R U' R'
+24, R U R' F R U R' U' F', F U R U' R' F' R U' R'
+25, F' R U R' U' R' F R, U' R' F R F' R U R'
+26, F' U' F U R U R' U', U R U' R' F R' F' R
+27, R U R' U' R U R', R U' R' U R U' R'
+28, R' F R F' U R U' R', R U R' U' F R' F' R
+29, F R' F' R F R' F' R, R' F R F' U R U' R'
+30, R U' R' U R U' R', R U R' U' R U R'
+31, R U R' F R' F' R U, U' R' F R F' R U' R'
+32, R U' R' U R U' R' U R U' R', U R U' R' U R U' R' U R U' R'
+33, R U R' U2' R U R' U, U' R U' R' U2 R U' R'
+34, R U' R' U2' R U' R' U', U R U R' U2 R U R'
+35, F' U F U' R U' R' U, U' R U R' U F' U' F
+36, R U' R' U2' F R' F' R U2', U F' U' F U' R U R'
+37, R U' R U2' F R2' F' U2' R2', R2 U2 F R2 F' U2 R' U R'
+38, R U' R' U R U2' R' U R U' R', R U' R' U' R U R' U2 R U' R'
+39, R U' R' U' R U R' U2' R U' R', R U' R' U R U2 R' U R U' R'
+40, R U R' F U R U' R' F' R U R', Rw U' Rw' U2 Rw U Rw' R U R'
+41, R F U R U' R' F' U' R', R U' R' Rw U' Rw' U2 Rw U Rw'
