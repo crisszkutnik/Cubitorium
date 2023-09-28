@@ -1,7 +1,21 @@
 import { ButtonWrapper } from "../../components/ButtonWrapper";
 import { TwistyPlayer } from "./TwistyPlayer";
+import { shallow } from 'zustand/shallow';
+import { useCaseStore } from "../../modules/store/caseStore"
+import { PuzzleTypeKey } from "../../modules/store/algorithmsStore"
+import { Case } from "../../modules/types/case.interface"
 
-export function CasesSelector() {
+interface Props {
+    selectedPuzzle: PuzzleTypeKey;
+    selectedSet: string;
+}
+
+export function CasesSelector({selectedPuzzle, selectedSet}: Props) {
+
+    const cases = useCaseStore(
+        (state) => state.cases,
+        shallow,
+    );
 
     function handleShowCases() {
     }
@@ -13,22 +27,26 @@ export function CasesSelector() {
                 <ButtonWrapper variant="ghost" onClick={handleShowCases} text="Select All" />
             </div>
             <div className="flex flex-col gap-2">
-                <Case/>
-                <Case/>
-                <Case/>
-                <Case/>
+                {cases.filter((c) => c.account.set === selectedSet).map((c) => (
+                    <ItemCase selectedPuzzle={selectedPuzzle} caseDetail={c.account}/>
+                ))}
             </div>
         </div>
     );
 }
 
-export function Case() {
+interface CaseProps {
+    selectedPuzzle: PuzzleTypeKey;
+    caseDetail: Case;
+}
+
+export function ItemCase({selectedPuzzle, caseDetail}: CaseProps) {
     function handleShowCases() {
     }
     return (
         <div className="flex flew-row items-center w-full border-2 border-accent-dark rounded p-2 cursor-pointer" onClick={handleShowCases}>
-            <TwistyPlayer puzzle="3x3x3" algorithm="R U2 R' U' R U' R'" size="60"></TwistyPlayer>
-            <p className="pl-2">Aa</p>
+            <TwistyPlayer puzzle={selectedPuzzle} algorithm={caseDetail.setup} size="60"></TwistyPlayer>
+            <p className="pl-2">{caseDetail.id}</p>
         </div>
     );
 }

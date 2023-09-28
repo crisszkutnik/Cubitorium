@@ -47,7 +47,7 @@ export function StopWatch() {
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-col items-center bg-gray-300 rounded-lg w-3/4">
         <div className="flex flex-row items-center w-full p-6 border-b-4">
-          <TwistyPlayer puzzle="3x3x3" algorithm="R U2 R' U' R U' R'" size="100"></TwistyPlayer>
+          <TwistyPlayer puzzle="2x2" algorithm="R U2 R' U' R U' R'" size="100"></TwistyPlayer>
           <h1 className="text-3xl font-bold w-full text-center">R U2 R’ U’ R U’ R’</h1>
         </div>
         <p className="text-9xl text-white font-bold py-8">

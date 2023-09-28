@@ -18,7 +18,7 @@ export const Performance = () => {
           </thead>
           <tbody>
             <tr>
-                <td className="justify-center w-1/6"><TwistyPlayer puzzle="3x3x3" algorithm="R U2 R' U' R U' R'" size="70"></TwistyPlayer></td>
+                <td className="justify-center w-1/6"><TwistyPlayer puzzle="3x3" algorithm="R U2 R' U' R U' R'" size="70"></TwistyPlayer></td>
                 <td className="text-center">Aa</td>
                 <td className="text-center">0.00</td>
                 <td className="text-center">0.00</td>
