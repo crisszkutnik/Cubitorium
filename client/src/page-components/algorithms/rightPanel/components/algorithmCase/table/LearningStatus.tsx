@@ -13,8 +13,6 @@ import {
 } from '../../../../../../modules/types/likeCertificate.interface';
 import { useAlertContext } from '../../../../../../components/context/AlertContext';
 import { useLikeStore } from '../../../../../../modules/store/likeStore';
-import { useEffect } from 'react';
-
 interface Props {
   casePk: string | PublicKey;
   solution: string;
@@ -26,10 +24,6 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
   const [setLearningStatus] = useLikeStore((state) => [
     state.setLearningStatus,
   ]);
-
-  useEffect(() => {
-    console.log(likeAccount);
-  }, []);
 
   const getColourAndText = (status: string | undefined) => {
     switch (status) {

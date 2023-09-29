@@ -26,20 +26,17 @@ interface Props {
 // Este componente es un asco la verdad
 
 export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
-  const [sets, setsMap] = useAlgorithmsStore((state) => [
-    state.sets,
-    state.setsMap,
-  ]);
+  const [setsMap] = useAlgorithmsStore((state) => [state.setsMap]);
   const cases = useCaseStore(selectCases);
 
   const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>('3x3');
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    sets.length > 0 ? sets[0].set_name : '',
+    setsMap['3x3'][0]?.set_name || '',
   );
 
   const [selectedCase, setSelectedCase] = useState<string>(
-    sets.length > 0 ? sets[0].case_names[0] : '',
+    setsMap['3x3'][0]?.case_names[0] || '',
   );
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
