@@ -5,13 +5,20 @@ import { EncodedGlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
-import { getPKFromStringOrObject, getSolutionPda } from './utils';
+import {
+  getPKFromStringOrObject,
+  getParsedLearningStatus,
+  getRawLearningStatus,
+  getSolutionPda,
+} from './utils';
 import { Privilege } from '../types/privilege.interface';
 import { CaseAccount } from '../types/case.interface';
 import { SolutionAccount } from '../types/solution.interface';
 import {
+  LearningStatus,
   LikeCertificate,
   LikeCertificateAccount,
+  ParsedLikeCertificatAccount,
 } from '../types/likeCertificate.interface';
 
 export enum PDATypes {
@@ -253,14 +260,20 @@ class Web3Layer extends Web3Connection {
     await this.signAndSendTx(tx);
   }
 
-  async loadLike(likePda: PublicKey): Promise<LikeCertificateAccount> {
+  async loadLike(likePda: PublicKey): Promise<ParsedLikeCertificatAccount> {
     const account = (await this.program.account.likeCertificate.fetch(
       likePda,
     )) as LikeCertificate;
 
     return {
-      account,
       publicKey: likePda,
+      account: {
+        ...account,
+        parsedLearningStatus: getParsedLearningStatus(
+          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+          account.learningStatus as any,
+        ),
+      },
     };
   }
 
@@ -275,8 +288,34 @@ class Web3Layer extends Web3Connection {
     await this.signAndSendTx(tx);
   }
 
-  async loadLikes(): Promise<LikeCertificateAccount[]> {
-    return this.program.account.likeCertificate.all();
+  async loadLikes(): Promise<ParsedLikeCertificatAccount[]> {
+    const accs =
+      (await this.program.account.likeCertificate.all()) as LikeCertificateAccount[];
+
+    return accs.map((acc) => ({
+      ...acc,
+      account: {
+        ...acc.account,
+        parsedLearningStatus: getParsedLearningStatus(
+          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+          acc.account as any,
+        ),
+      },
+    }));
+  }
+
+  async setLearningStatus(
+    learningStatus: LearningStatus,
+    solutionPda: PublicKey,
+  ) {
+    const tx = await this.program.methods
+      .setLearningStatus(getRawLearningStatus(learningStatus))
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
   }
 }
 

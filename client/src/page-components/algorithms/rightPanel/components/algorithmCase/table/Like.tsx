@@ -7,6 +7,7 @@ import {
   useLikeStore,
 } from '../../../../../../modules/store/likeStore';
 import { useAlertContext } from '../../../../../../components/context/AlertContext';
+import { LearningStatus } from './LearningStatus';
 
 interface Props {
   casePk: string | PublicKey;
@@ -52,15 +53,24 @@ export function Like({ casePk, solutionPk, solution }: Props) {
   };
 
   return (
-    <button
-      onClick={onClick}
-      className="flex flex-col items-center justify-center w-12"
-    >
-      <FontAwesomeIcon
-        className={likeAccount ? 'text-amber-400' : 'text-black'}
-        icon={likeAccount ? faStarSolid : faStarRegular}
-      />
-      <p>{likeAccount ? 'Liked' : 'Like'}</p>
-    </button>
+    <div className="flex">
+      <button
+        onClick={onClick}
+        className="flex flex-col items-center justify-center mr-4"
+      >
+        <FontAwesomeIcon
+          className={likeAccount ? 'text-amber-400' : 'text-black'}
+          icon={likeAccount ? faStarSolid : faStarRegular}
+        />
+        <p>{likeAccount ? 'Liked' : 'Like'}</p>
+      </button>
+      {likeAccount && (
+        <LearningStatus
+          casePk={casePk}
+          solution={solution}
+          likeAccount={likeAccount}
+        />
+      )}
+    </div>
   );
 }

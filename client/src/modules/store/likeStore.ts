@@ -2,15 +2,19 @@ import { createWithEqualityFn } from 'zustand/traditional';
 import { LoadingState } from '../types/loadingState.enum';
 import { web3Layer } from '../web3/web3Layer';
 import { PublicKey } from '@solana/web3.js';
-import { LikeCertificateAccount } from '../types/likeCertificate.interface';
+import {
+  LearningStatus,
+  ParsedLikeCertificatAccount,
+} from '../types/likeCertificate.interface';
 import {
   getLikePda,
   getPKFromStringOrObject,
+  getRawLearningStatus,
   getSolutionPda,
 } from '../web3/utils';
 
 interface LikeStoreState {
-  likesMap: Record<string, LikeCertificateAccount>;
+  likesMap: Record<string, ParsedLikeCertificatAccount>;
   loadingState: LoadingState;
   setLoadingState: (loadingState: LoadingState) => void;
   loadLikes: () => Promise<void>;
@@ -23,10 +27,15 @@ interface LikeStoreState {
     casePublicKey: string | PublicKey,
     solution: string,
   ) => Promise<void>;
+  setLearningStatus: (
+    casePublicKey: string | PublicKey,
+    solution: string,
+    learningStatus: LearningStatus,
+  ) => Promise<void>;
 }
 
 export const selectLikeForSolution = (solutionPda: string | PublicKey) => {
-  return (state: LikeStoreState): LikeCertificateAccount | undefined => {
+  return (state: LikeStoreState): ParsedLikeCertificatAccount | undefined => {
     try {
       const key = getLikePda(
         web3Layer.loggedUserPK,
@@ -54,7 +63,7 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
 
         const likes = await web3Layer.loadLikes();
 
-        const likesMap: Record<string, LikeCertificateAccount> = {};
+        const likesMap: Record<string, ParsedLikeCertificatAccount> = {};
 
         likes.forEach((l) => (likesMap[l.publicKey.toString()] = l));
 
@@ -116,6 +125,35 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
 
       const likesMap = { ...get().likesMap };
       delete likesMap[key.toString()];
+
+      set({ likesMap });
+    },
+    setLearningStatus: async (
+      casePublicKey: string | PublicKey,
+      solution: string,
+      learningStatus: LearningStatus,
+    ) => {
+      const solutionPda = getSolutionPda(
+        casePublicKey,
+        solution,
+        web3Layer.programId,
+      );
+
+      await web3Layer.setLearningStatus(learningStatus, solutionPda);
+
+      const key = getLikePda(
+        web3Layer.loggedUserPK,
+        solutionPda,
+        web3Layer.programId,
+      );
+
+      const likesMap = { ...get().likesMap };
+
+      const mapKey = key.toString();
+
+      likesMap[mapKey].account.learningStatus =
+        getRawLearningStatus(learningStatus);
+      likesMap[mapKey].account.parsedLearningStatus = learningStatus;
 
       set({ likesMap });
     },

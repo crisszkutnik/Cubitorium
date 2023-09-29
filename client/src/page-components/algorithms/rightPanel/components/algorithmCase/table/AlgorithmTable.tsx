@@ -29,8 +29,8 @@ export function AlgorithmTable({ casePk }: Props) {
 
     const rows = solutions.slice(0, 4).map((s, index) => (
       <TableRow key={index}>
-        <TableCell className="p2 text-lg">{s.account.moves}</TableCell>
-        <TableCell>
+        <TableCell className="p2 text-lg w-4/6">{s.account.moves}</TableCell>
+        <TableCell className="flex">
           <Like
             casePk={casePk}
             solutionPk={s.publicKey}
@@ -58,7 +58,7 @@ export function AlgorithmTable({ casePk }: Props) {
 
   return (
     <div className="w-4/5 flex flex-col">
-      <Table className="bg-accent-primary/10" hideHeader removeWrapper>
+      <Table className="bg-accent-primary/10 rounded" hideHeader removeWrapper>
         <TableHeader>
           <TableColumn>asd</TableColumn>
           <TableColumn>Likes</TableColumn>
