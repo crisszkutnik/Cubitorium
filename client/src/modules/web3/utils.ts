@@ -2,6 +2,12 @@ import { Transaction, VersionedTransaction } from '@coral-xyz/anchor';
 import { hash } from '@coral-xyz/anchor/dist/cjs/utils/sha256';
 import { PublicKey } from '@solana/web3.js';
 import { PDATypes } from './web3Layer';
+import {
+  RawLearningStatus,
+  LikeCertificate,
+  LikeCertificateAccount,
+  LearningStatus,
+} from '../types/likeCertificate.interface';
 
 export const txVersion = (tx: Transaction | VersionedTransaction) => {
   // VersionedTransaction has this getter with possible values 'legacy' and 0
@@ -43,3 +49,53 @@ export function getSolutionPda(
     pid,
   )[0];
 }
+
+export const getLikePda = (
+  user: PublicKey,
+  solutionPda: PublicKey,
+  pid: PublicKey,
+) => {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(PDATypes.LikeCertificate),
+      user.toBuffer(),
+      solutionPda.toBuffer(),
+    ],
+    pid,
+  )[0];
+};
+
+export const getParsedLearningStatus = (
+  likeAccount: LikeCertificate | LikeCertificateAccount,
+): LearningStatus => {
+  const acc = 'account' in likeAccount ? likeAccount.account : likeAccount;
+
+  if (!acc || !acc.learningStatus) {
+    return LearningStatus.NotLearnt;
+  }
+
+  if ('learnt' in acc.learningStatus) {
+    return LearningStatus.Learnt;
+  }
+
+  if ('learning' in acc.learningStatus) {
+    return LearningStatus.Learning;
+  }
+
+  return LearningStatus.NotLearnt;
+};
+
+export const getRawLearningStatus = (
+  status: LearningStatus,
+): RawLearningStatus => {
+  switch (status) {
+    case LearningStatus.Learnt:
+      return { learnt: {} };
+
+    case LearningStatus.Learning:
+      return { learning: {} };
+
+    case LearningStatus.NotLearnt:
+      return { notLearnt: {} };
+  }
+};

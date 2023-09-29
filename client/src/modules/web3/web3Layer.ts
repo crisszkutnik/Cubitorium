@@ -5,10 +5,21 @@ import { EncodedGlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
-import { getPKFromStringOrObject, getSolutionPda } from './utils';
+import {
+  getPKFromStringOrObject,
+  getParsedLearningStatus,
+  getRawLearningStatus,
+  getSolutionPda,
+} from './utils';
 import { Privilege } from '../types/privilege.interface';
 import { CaseAccount } from '../types/case.interface';
 import { SolutionAccount } from '../types/solution.interface';
+import {
+  LearningStatus,
+  LikeCertificate,
+  LikeCertificateAccount,
+  ParsedLikeCertificatAccount,
+} from '../types/likeCertificate.interface';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -16,6 +27,7 @@ export enum PDATypes {
   Case = 'case',
   Treasury = 'treasury',
   Solution = 'solution',
+  LikeCertificate = 'like-certificate',
 }
 
 export enum AccountName {
@@ -235,6 +247,75 @@ class Web3Layer extends Web3Connection {
 
   async loadSolutions(): Promise<SolutionAccount[]> {
     return this.program.account.solution.all();
+  }
+
+  async likeSolution(solutionPda: PublicKey) {
+    const tx = await this.program.methods
+      .likeSolution()
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadLike(likePda: PublicKey): Promise<ParsedLikeCertificatAccount> {
+    const account = (await this.program.account.likeCertificate.fetch(
+      likePda,
+    )) as LikeCertificate;
+
+    return {
+      publicKey: likePda,
+      account: {
+        ...account,
+        parsedLearningStatus: getParsedLearningStatus(
+          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+          account.learningStatus as any,
+        ),
+      },
+    };
+  }
+
+  async removeLike(solutionPda: PublicKey) {
+    const tx = await this.program.methods
+      .removeLike()
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadLikes(): Promise<ParsedLikeCertificatAccount[]> {
+    const accs =
+      (await this.program.account.likeCertificate.all()) as LikeCertificateAccount[];
+
+    return accs.map((acc) => ({
+      ...acc,
+      account: {
+        ...acc.account,
+        parsedLearningStatus: getParsedLearningStatus(
+          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+          acc.account as any,
+        ),
+      },
+    }));
+  }
+
+  async setLearningStatus(
+    learningStatus: LearningStatus,
+    solutionPda: PublicKey,
+  ) {
+    const tx = await this.program.methods
+      .setLearningStatus(getRawLearningStatus(learningStatus))
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
   }
 }
 
