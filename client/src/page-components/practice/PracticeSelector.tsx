@@ -1,74 +1,123 @@
-import { useRef, useState, useEffect } from "react";
-import { CasesSelector } from "./CasesSelector";
-import { ButtonWrapper } from "../../components/ButtonWrapper";
-import { shallow } from 'zustand/shallow';
-
 import {
-  selectSets,
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  PuzzleType,
   PuzzleTypeKey,
   PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
+import { selectCases, useCaseStore } from '../../modules/store/caseStore';
+import { Select, SelectItem } from '@nextui-org/react';
+import { CaseAccount } from '../../modules/types/case.interface';
+import { SetCase } from '../../modules/types/globalConfig.interface';
 
-export function PracticeSelector() {
-  const setsMap = useAlgorithmsStore(
-    (state) => state.setsMap,
-    shallow,
+interface Props {
+  selectedPuzzle: PuzzleTypeKey;
+  setSelectedPuzzle: Dispatch<SetStateAction<PuzzleTypeKey>>;
+  activeCases: CaseAccount[] | undefined;
+  setActiveCases: Dispatch<SetStateAction<CaseAccount[] | undefined>>;
+}
+
+export function PracticeSelector({ activeCases, 
+  setActiveCases, 
+  selectedPuzzle, 
+  setSelectedPuzzle}: Props) {
+
+  const [sets, setsMap] = useAlgorithmsStore((state) => [
+    state.sets,
+    state.setsMap,
+  ]);
+
+  const cases = useCaseStore(selectCases);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    sets.length > 0 ? sets[0].set_name : '',
   );
 
-  const container = useRef<HTMLDivElement>(null);
+  const [selectedCases, setSelectedCases] = useState<Set<string>>();
+
+  const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const puzzle = event.target.value as PuzzleTypeKey;
+    setSelectedPuzzle(puzzle);
+    setSelectedCategory(setsMap[puzzle][0].set_name);
+    setSelectedCases(new Set(setsMap[puzzle][0].case_names));
+  };
+
+  const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    setSelectedCategory(value);
+    const newCases = cases.filter((c) => c.account.set === value).map((c) => c.account.id);
+    setSelectedCases(new Set(newCases));
+  };
+
+  const handleCaseChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCases(new Set(e.target.value.split(",")));
+  };
+
+  const casesForSelectedCategory = useMemo(() => {
+    return cases.filter((c) => c.account.set === selectedCategory);
+  }, [selectedCategory, cases]);
 
   useEffect(() => {
-    console.log(setsMap);
-    if (setsMap[PuzzleTypeKeys[0]].length > 0) {
-      setSelectedPuzzle(PuzzleTypeKeys[0]);
-    }
-  }, [setsMap]);
-
-  const [selectedPuzzle, setSelectedPuzzle] = useState(PuzzleTypeKeys[0]);
-  const [selectedSet, setSelectedSet] = useState("");
-  const [showCases, setShowCases] = useState(false);
-
-
-  // when type changes
-  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPuzzle(event.target.value as PuzzleTypeKey);
-    setSelectedSet(setsMap[event.target.value as PuzzleTypeKey][0].set_name)
-  };
-
-  
-  // when subtype changes
-  const handleSubtypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSet(event.target.value);
-  };
-
-  const handleShowCases = () => {
-    setShowCases(!showCases);
-  };
+    setActiveCases(cases.filter((c) => selectedCases?.has(c.account.id)));
+  }, [selectedCategory, selectedCases]);
 
   return (
-    <div ref={container} className="basis-1/4 h-fit">
-      <div className="bg-gray-100 flex flex-col px-5 py-5 rounded-md">
-        <h1 className="font-bold text-accent-dark mb-5 text-2xl">
-          Select your cube
-        </h1>
-        <p className="text-accent-dark font-semibold">Puzzle</p>
-        <select
-          className="px-2 py-2 rounded border border-gray-300" value={selectedPuzzle} onChange={handleTypeChange}>
-          {PuzzleTypeKeys.map((puzzle) => (
-            <option key={puzzle}>{puzzle}</option>
-          ))}
-        </select>
-        <p className="text-accent-dark font-semibold">Algorithm Set</p>
-        <select
-          className="px-2 py-2 rounded border border-gray-300 mb-4" value={selectedSet} onChange={handleSubtypeChange}>
-          {setsMap[selectedPuzzle].map((set) => (
-            <option key={set.set_name}>{set.set_name}</option>
-          ))}
-        </select>
-        <ButtonWrapper variant="ghost" onClick={handleShowCases} text="Select Specific Cases" />
-        {showCases && <CasesSelector selectedPuzzle={selectedPuzzle} selectedSet={selectedSet}></CasesSelector>}
-      </div>
+    <div className="w-1/4 h-fit drop-shadow bg-white rounded flex flex-col px-5 py-5">
+      <h1 className="font-bold text-accent-dark text-2xl mb-10">Select case</h1>
+      <Select
+        labelPlacement="outside"
+        defaultSelectedKeys={[PuzzleType['3x3']]}
+        color="primary"
+        label="Puzzle type"
+        onChange={handlePuzzleChange}
+        classNames={{
+          label: 'text-accent-dark font-semibold text-lg',
+        }}
+      >
+        {PuzzleTypeKeys.map((str) => (
+          <SelectItem key={str} value={str}>
+            {str}
+          </SelectItem>
+        ))}
+      </Select>
+
+      <Select
+        labelPlacement="outside"
+        selectedKeys={[selectedCategory]}
+        color="primary"
+        label="Algorithm set"
+        onChange={handleCategoryChange}
+        classNames={{
+          label: 'text-accent-dark font-semibold text-lg',
+          base: 'mt-10',
+        }}
+        items={setsMap[selectedPuzzle] as SetCase[]}
+      >
+        {(set) => <SelectItem key={set.set_name}>{set.set_name}</SelectItem>}
+      </Select>
+
+      <Select
+        labelPlacement="outside"
+        selectionMode="multiple"
+        color="primary"
+        label="Algorithm cases"
+        selectedKeys={selectedCases}
+        onChange={handleCaseChange}
+        disabled={casesForSelectedCategory.length === 0}
+        classNames={{
+          label: 'text-accent-dark font-semibold text-lg',
+          base: 'mt-10',
+        }}
+        items={casesForSelectedCategory}
+      >
+        {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
+      </Select>
     </div>
   );
 }
