@@ -89,7 +89,7 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
   Object.is,
 );
 
-export function getPuzzleType(set: string) {
+export function getPuzzleType(set: string): PuzzleTypeKey {
   const sets2x2 = ['CLL', 'EG-1', 'EG-2'];
   const setsPyra = ['L4E'];
 
