@@ -12,6 +12,7 @@ import {
 } from '../../../modules/store/algorithmsStore';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { AllAlgorithmsTable } from '../../../page-components/algorithms/allAlgorithms/AllAlgorithmsTable';
+import { useLikeStore } from '../../../modules/store/likeStore';
 
 export function AllAlgorithms() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -39,6 +40,11 @@ export function AllAlgorithms() {
 
   const [loadAlgorithmsIfNotLoaded, algorithmsLoadingState] =
     useAlgorithmsStore((state) => [state.loadIfNotLoaded, state.loadingState]);
+
+  const [loadLikesIfNotLoaded, likesLoadingState] = useLikeStore((state) => [
+    state.loadIfNotLoaded,
+    state.loadingState,
+  ]);
 
   useEffect(() => {
     const queryParamCase = searchParams.get('case');
@@ -77,6 +83,7 @@ export function AllAlgorithms() {
     loadCasesIfNotLoaded();
     loadSolutionsIfNotLoaded();
     loadAlgorithmsIfNotLoaded();
+    loadLikesIfNotLoaded();
   }, []);
 
   const onChangeCase = (newCase: string, newSet: string) => {
@@ -90,6 +97,7 @@ export function AllAlgorithms() {
       casesLoadingState === LoadingState.LOADED &&
       solutionsLoadingState === LoadingState.LOADED &&
       algorithmsLoadingState === LoadingState.LOADED &&
+      likesLoadingState === LoadingState.LOADED &&
       caseAccount !== undefined
     );
   };
@@ -111,7 +119,7 @@ export function AllAlgorithms() {
       </p>
       <Top caseAccount={caseAccount} onCaseChange={onChangeCase} />
       <div>
-        <AllAlgorithmsTable solutions={solutions} />
+        <AllAlgorithmsTable selectedCase={caseAccount} solutions={solutions} />
       </div>
     </DefaultLayout>
   );
