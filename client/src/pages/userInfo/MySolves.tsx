@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
-  selectSolutionsForCase,
+  selectSolutionsByCaseAndAuthor,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
 import { LoadingState } from '../../modules/types/loadingState.enum';
@@ -23,10 +23,12 @@ import {
 } from '../../modules/store/caseStore';
 import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
 import { shallow } from 'zustand/shallow';
+import { useUserStore } from '../../modules/store/userStore';
 
 export function MySolves() {
   const [selectedSet, setSelectedSet] = useState('');
   const [selectedCase, setSelectedCase] = useState('');
+  const loggedUserPk = useUserStore((state) => state.loggedUserPk);
 
   const [caseAccount, loadCasesIfNotLoaded, casesLoadingState] = useCaseStore(
     (state) => [
@@ -39,7 +41,10 @@ export function MySolves() {
   const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
     useSolutionStore(
       (state) => [
-        selectSolutionsForCase(caseAccount?.publicKey || '')(state),
+        selectSolutionsByCaseAndAuthor(
+          caseAccount?.publicKey || '',
+          loggedUserPk || '',
+        )(state),
         state.loadIfNotLoaded,
         state.loadingState,
       ],
@@ -90,7 +95,7 @@ export function MySolves() {
             <TableColumn>Date submitted</TableColumn>
             <TableColumn hideHeader>Likes and learning status</TableColumn>
           </TableHeader>
-          <TableBody>
+          <TableBody emptyContent="You haven't submitted a solution for this case!">
             {solutions.map(({ publicKey, account }, index) => (
               <TableRow key={index}>
                 <TableCell>{account.moves}</TableCell>

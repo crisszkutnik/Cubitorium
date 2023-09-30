@@ -15,11 +15,27 @@ interface SolutionStoreState {
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
 }
 
-export function selectSolutionsForCase(casePublicKey: PublicKey | string) {
+export function selectSolutionsByCase(casePublicKey: PublicKey | string) {
   const pk = getStringFromPKOrObject(casePublicKey);
 
   return (state: SolutionStoreState) => {
     return state.solutions.filter((s) => s.account.case.toString() === pk);
+  };
+}
+
+export function selectSolutionsByCaseAndAuthor(
+  casePublicKey: PublicKey | string,
+  authorPublicKey: PublicKey | string,
+) {
+  const casePk = getStringFromPKOrObject(casePublicKey);
+  const authorPk = getStringFromPKOrObject(authorPublicKey);
+
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter(
+      (s) =>
+        s.account.case.toString() === casePk &&
+        s.account.author.toString() === authorPk,
+    );
   };
 }
 
