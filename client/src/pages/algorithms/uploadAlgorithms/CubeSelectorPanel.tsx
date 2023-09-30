@@ -62,7 +62,13 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
   }, [selectedCategory, cases]);
 
   useEffect(() => {
-    setActiveCase(cases.find((c) => c.account.id === selectedCase));
+    setActiveCase(
+      cases.find((c) => {
+        return (
+          c.account.id === selectedCase && c.account.set === selectedCategory
+        );
+      }),
+    );
   }, [selectedCategory, selectedCase]);
 
   return (
