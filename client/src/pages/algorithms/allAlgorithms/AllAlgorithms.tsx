@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DefaultLayout } from '../../../components/layout/DefaultLayout';
-import { Top } from './Top';
+import { Top } from '../../../page-components/algorithms/allAlgorithms/Top';
 import { useSearchParams } from 'react-router-dom';
 import { useCaseStore } from '../../../modules/store/caseStore';
 import { LoadingState } from '../../../modules/types/loadingState.enum';
@@ -11,6 +11,7 @@ import {
   useAlgorithmsStore,
 } from '../../../modules/store/algorithmsStore';
 import { CaseAccount } from '../../../modules/types/case.interface';
+import { AllAlgorithmsTable } from '../../../page-components/algorithms/allAlgorithms/AllAlgorithmsTable';
 
 export function AllAlgorithms() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -84,14 +85,6 @@ export function AllAlgorithms() {
     setSearchParams(searchParams);
   };
 
-  const getRowClass = (index: number) => {
-    if (index % 2 === 0) {
-      return 'bg-accent-primary/10';
-    }
-
-    return 'bg-accent-primary/5';
-  };
-
   const hasAllRequiredData = () => {
     return (
       casesLoadingState === LoadingState.LOADED &&
@@ -118,24 +111,7 @@ export function AllAlgorithms() {
       </p>
       <Top caseAccount={caseAccount} onCaseChange={onChangeCase} />
       <div>
-        <table className="text-left w-full">
-          <thead className="bg-accent-primary text-white">
-            <tr>
-              <th className="p-2 pl-4">Algorithm</th>
-              <th className="p-2"></th>
-              <th className="p-2">Votes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {solutions.map((s, index) => (
-              <tr key={index} className={getRowClass(index)}>
-                <td className="p-2 pl-4">{s.account.moves}</td>
-                <td className="p-2"></td>
-                <td className="p-2">{s.account.likes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AllAlgorithmsTable solutions={solutions} />
       </div>
     </DefaultLayout>
   );

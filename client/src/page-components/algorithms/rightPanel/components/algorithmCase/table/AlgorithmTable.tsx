@@ -13,7 +13,7 @@ import {
   selectSolutionsForCase,
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
-import { Like } from './Like';
+import { Like } from '../../../../../../components/like/Like';
 
 interface Props {
   casePk: PublicKey;

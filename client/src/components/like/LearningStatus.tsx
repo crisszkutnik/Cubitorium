@@ -10,9 +10,9 @@ import { PublicKey } from '@solana/web3.js';
 import {
   LearningStatus as LearningStatusEnum,
   ParsedLikeCertificatAccount,
-} from '../../../../../../modules/types/likeCertificate.interface';
-import { useAlertContext } from '../../../../../../components/context/AlertContext';
-import { useLikeStore } from '../../../../../../modules/store/likeStore';
+} from '../../modules/types/likeCertificate.interface';
+import { useAlertContext } from '../context/AlertContext';
+import { useLikeStore } from '../../modules/store/likeStore';
 interface Props {
   casePk: string | PublicKey;
   solution: string;
