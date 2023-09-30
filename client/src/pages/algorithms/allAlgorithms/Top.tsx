@@ -96,7 +96,6 @@ export function Top({ caseAccount, onCaseChange }: Props) {
           labelPlacement="outside"
           color="primary"
           label="Algorithm case"
-          // selectedKeys={[caseAccount?.account.id || '']}
           selectedKeys={[getDefaultSelectedCase()]}
           items={casesForSelectedSet}
           onChange={caseChangeHandler}
