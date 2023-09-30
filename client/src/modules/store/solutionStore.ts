@@ -3,7 +3,7 @@ import { LoadingState } from '../types/loadingState.enum';
 import { SolutionAccount } from '../types/solution.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { PublicKey } from '@solana/web3.js';
-import { getPKFromStringOrObject } from '../web3/utils';
+import { getStringFromPKOrObject } from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
 
 interface SolutionStoreState {
@@ -16,10 +16,10 @@ interface SolutionStoreState {
 }
 
 export function selectSolutionsForCase(casePublicKey: PublicKey | string) {
-  const pk = getPKFromStringOrObject(casePublicKey);
+  const pk = getStringFromPKOrObject(casePublicKey);
 
   return (state: SolutionStoreState) => {
-    return state.solutions.filter((s) => s.account.case.equals(pk));
+    return state.solutions.filter((s) => s.account.case.toString() === pk);
   };
 }
 

@@ -1,6 +1,6 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { DefaultLayout } from "./DefaultLayout";
-import { Fragment } from "react";
+import { NavLink, useLocation } from 'react-router-dom';
+import { DefaultLayout } from './DefaultLayout';
+import { Fragment } from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -11,26 +11,26 @@ export function UserInfoLayout({ children }: Props) {
 
   const options = [
     {
-      text: "My info",
-      path: "/userinfo",
+      text: 'My info',
+      path: '/userinfo',
     },
     {
-      text: "My solves",
-      path: "/userinfo/solves",
+      text: 'My submitted solves',
+      path: '/userinfo/solves',
     },
   ];
 
   const getExtraClasses = (path: string, index: number) => {
-    let ret = "";
+    let ret = '';
 
     if (pathname === path) {
-      ret += " text-accent-primary bg-accent-primary/10";
+      ret += ' text-accent-primary bg-accent-primary/10';
     }
 
     if (index === 0) {
-      ret += " rounded-t";
+      ret += ' rounded-t';
     } else if (index === options.length - 1) {
-      ret += " rounded-b";
+      ret += ' rounded-b';
     }
 
     return ret;
@@ -44,7 +44,7 @@ export function UserInfoLayout({ children }: Props) {
             <NavLink
               to={path}
               className={
-                "pl-3 py-3 w-full font-semibold hover:text-accent-primary hover:bg-accent-primary/10" +
+                'pl-3 py-3 w-full font-semibold hover:text-accent-primary hover:bg-accent-primary/10' +
                 getExtraClasses(path, index)
               }
             >
@@ -56,7 +56,7 @@ export function UserInfoLayout({ children }: Props) {
           </Fragment>
         ))}
       </div>
-      <div className={"flex w-5/6 ml-4"}>{children}</div>
+      <div className={'flex w-5/6 ml-4'}>{children}</div>
     </DefaultLayout>
   );
 }
