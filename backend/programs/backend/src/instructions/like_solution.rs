@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::*, state::*, error::TreasuryError};
+use crate::{constants::*, error::TreasuryError, state::*};
 
 #[derive(Accounts)]
 pub struct LikeSolution<'info> {
@@ -34,13 +34,20 @@ pub fn handler(ctx: Context<LikeSolution>) -> Result<()> {
     // Add to like count in Solution
     ctx.accounts.solution_pda.likes += 1;
 
+    ctx.accounts.like_certificate.user = ctx.accounts.signer.key();
+    ctx.accounts.like_certificate.solution = ctx.accounts.solution_pda.key();
+
     // Refund rent to Signer
     let like_certificate_rent = ctx.accounts.rent.minimum_balance(LikeCertificate::LEN);
     require!(
         ctx.accounts.treasury.to_account_info().lamports() >= like_certificate_rent,
         TreasuryError::TreasuryNeedsFunds
     );
-    **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= like_certificate_rent;
+    **ctx
+        .accounts
+        .treasury
+        .to_account_info()
+        .try_borrow_mut_lamports()? -= like_certificate_rent;
     **ctx.accounts.signer.try_borrow_mut_lamports()? += like_certificate_rent;
 
     Ok(())

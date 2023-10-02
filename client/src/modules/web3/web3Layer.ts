@@ -18,7 +18,7 @@ import {
   LearningStatus,
   LikeCertificate,
   LikeCertificateAccount,
-  ParsedLikeCertificatAccount,
+  ParsedLikeCertificateAccount,
 } from '../types/likeCertificate.interface';
 
 export enum PDATypes {
@@ -260,7 +260,7 @@ class Web3Layer extends Web3Connection {
     await this.signAndSendTx(tx);
   }
 
-  async loadLike(likePda: PublicKey): Promise<ParsedLikeCertificatAccount> {
+  async loadLike(likePda: PublicKey): Promise<ParsedLikeCertificateAccount> {
     const account = (await this.program.account.likeCertificate.fetch(
       likePda,
     )) as LikeCertificate;
@@ -288,7 +288,7 @@ class Web3Layer extends Web3Connection {
     await this.signAndSendTx(tx);
   }
 
-  async loadLikes(): Promise<ParsedLikeCertificatAccount[]> {
+  async loadLikes(): Promise<ParsedLikeCertificateAccount[]> {
     const accs =
       (await this.program.account.likeCertificate.all()) as LikeCertificateAccount[];
 

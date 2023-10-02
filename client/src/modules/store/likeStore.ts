@@ -4,7 +4,7 @@ import { web3Layer } from '../web3/web3Layer';
 import { PublicKey } from '@solana/web3.js';
 import {
   LearningStatus,
-  ParsedLikeCertificatAccount,
+  ParsedLikeCertificateAccount,
 } from '../types/likeCertificate.interface';
 import {
   getLikePda,
@@ -14,7 +14,7 @@ import {
 } from '../web3/utils';
 
 interface LikeStoreState {
-  likesMap: Record<string, ParsedLikeCertificatAccount>;
+  likesMap: Record<string, ParsedLikeCertificateAccount>;
   loadingState: LoadingState;
   setLoadingState: (loadingState: LoadingState) => void;
   loadLikes: () => Promise<void>;
@@ -35,7 +35,7 @@ interface LikeStoreState {
 }
 
 export const selectLikeForSolution = (solutionPda: string | PublicKey) => {
-  return (state: LikeStoreState): ParsedLikeCertificatAccount | undefined => {
+  return (state: LikeStoreState): ParsedLikeCertificateAccount | undefined => {
     try {
       const key = getLikePda(
         web3Layer.loggedUserPK,
@@ -63,7 +63,7 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
 
         const likes = await web3Layer.loadLikes();
 
-        const likesMap: Record<string, ParsedLikeCertificatAccount> = {};
+        const likesMap: Record<string, ParsedLikeCertificateAccount> = {};
 
         likes.forEach((l) => (likesMap[l.publicKey.toString()] = l));
 
