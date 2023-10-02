@@ -119,7 +119,7 @@ export function AllAlgorithms() {
       </p>
       <Top caseAccount={caseAccount} onCaseChange={onChangeCase} />
       <div>
-        <AllAlgorithmsTable selectedCase={caseAccount} solutions={solutions} />
+        <AllAlgorithmsTable solutions={solutions} />
       </div>
     </DefaultLayout>
   );

@@ -9,14 +9,14 @@ import {
 import { PublicKey } from '@solana/web3.js';
 import {
   LearningStatus as LearningStatusEnum,
-  ParsedLikeCertificatAccount,
+  ParsedLikeCertificateAccount,
 } from '../../modules/types/likeCertificate.interface';
 import { useAlertContext } from '../context/AlertContext';
 import { useLikeStore } from '../../modules/store/likeStore';
 interface Props {
   casePk: string | PublicKey;
   solution: string;
-  likeAccount: ParsedLikeCertificatAccount;
+  likeAccount: ParsedLikeCertificateAccount;
 }
 
 export function LearningStatus({ casePk, solution, likeAccount }: Props) {

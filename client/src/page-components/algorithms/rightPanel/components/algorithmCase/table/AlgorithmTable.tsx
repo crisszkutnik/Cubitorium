@@ -10,7 +10,7 @@ import {
 } from '@nextui-org/react';
 import { PublicKey } from '@solana/web3.js';
 import {
-  selectSolutionsForCase,
+  selectSolutionsByCase,
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
 import { Like } from '../../../../../../components/like/Like';
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function AlgorithmTable({ casePk }: Props) {
-  const solutions = useSolutionStore(selectSolutionsForCase(casePk));
+  const solutions = useSolutionStore(selectSolutionsByCase(casePk));
 
   const getRows = () => {
     if (solutions.length === 0) {

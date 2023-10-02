@@ -13,6 +13,8 @@ export type RawLearningStatus =
 
 export interface LikeCertificate {
   learningStatus: RawLearningStatus;
+  user: PublicKey;
+  solution: PublicKey;
 }
 
 export interface LikeCertificateAccount {
@@ -20,7 +22,7 @@ export interface LikeCertificateAccount {
   publicKey: PublicKey;
 }
 
-export interface ParsedLikeCertificatAccount {
+export interface ParsedLikeCertificateAccount {
   account: LikeCertificate & { parsedLearningStatus: LearningStatus };
   publicKey: PublicKey;
 }

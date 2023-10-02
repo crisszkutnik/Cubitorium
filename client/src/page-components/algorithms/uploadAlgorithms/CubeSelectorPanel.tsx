@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react';
 import {
-  PuzzleType,
   PuzzleTypeKey,
   PuzzleTypeKeys,
   useAlgorithmsStore,
@@ -41,6 +40,11 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const puzzle = event.target.value as PuzzleTypeKey;
+
+    if (!puzzle || puzzle === selectedPuzzle) {
+      return;
+    }
+
     setSelectedPuzzle(puzzle);
     setSelectedCategory(setsMap[puzzle][0].set_name);
     setSelectedCase(setsMap[puzzle][0].case_names[0]);
@@ -48,13 +52,22 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
+
+    if (!value || value === selectedCategory) {
+      return;
+    }
+
     setSelectedCategory(value);
     const newCase = cases.find((c) => c.account.set === value);
     setSelectedCase(newCase?.account.id || '');
   };
 
   const handleCaseChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCase(event.target.value);
+    const { value } = event.target;
+
+    if (value && value !== selectedCase) {
+      setSelectedCase(event.target.value);
+    }
   };
 
   const casesForSelectedCategory = useMemo(() => {
@@ -82,7 +95,7 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
 
       <Select
         labelPlacement="outside"
-        defaultSelectedKeys={[PuzzleType['3x3']]}
+        selectedKeys={[selectedPuzzle]}
         color="primary"
         label="Puzzle type"
         onChange={handlePuzzleChange}

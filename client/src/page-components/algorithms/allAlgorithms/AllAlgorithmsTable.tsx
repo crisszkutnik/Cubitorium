@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { Like } from '../../../components/like/Like';
-import { CaseAccount } from '../../../modules/types/case.interface';
 import { SolutionAccount } from '../../../modules/types/solution.interface';
 import {
   Table,
@@ -12,11 +11,10 @@ import {
 } from '@nextui-org/react';
 
 interface Props {
-  selectedCase: CaseAccount;
   solutions: SolutionAccount[];
 }
 
-export function AllAlgorithmsTable({ solutions, selectedCase }: Props) {
+export function AllAlgorithmsTable({ solutions }: Props) {
   return (
     <Table
       isStriped
@@ -40,7 +38,7 @@ export function AllAlgorithmsTable({ solutions, selectedCase }: Props) {
             </TableCell>
             <TableCell className="w-1/6">
               <Like
-                casePk={selectedCase.publicKey}
+                casePk={account.case}
                 solution={account.moves}
                 solutionPk={publicKey}
               />

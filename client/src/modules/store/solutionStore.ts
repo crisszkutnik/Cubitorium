@@ -3,8 +3,9 @@ import { LoadingState } from '../types/loadingState.enum';
 import { SolutionAccount } from '../types/solution.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { PublicKey } from '@solana/web3.js';
-import { getPKFromStringOrObject } from '../web3/utils';
+import { getLikePda, getStringFromPKOrObject } from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
+import { useLikeStore } from './likeStore';
 
 interface SolutionStoreState {
   solutions: SolutionAccount[];
@@ -15,11 +16,50 @@ interface SolutionStoreState {
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
 }
 
-export function selectSolutionsForCase(casePublicKey: PublicKey | string) {
-  const pk = getPKFromStringOrObject(casePublicKey);
+export function selectSolutionsByCase(casePublicKey: PublicKey | string) {
+  const pk = getStringFromPKOrObject(casePublicKey);
 
   return (state: SolutionStoreState) => {
-    return state.solutions.filter((s) => s.account.case.equals(pk));
+    return state.solutions.filter((s) => s.account.case.toString() === pk);
+  };
+}
+
+export function selectSolutionsByCaseAndAuthor(
+  casePublicKey: PublicKey | string,
+  authorPublicKey: PublicKey | string,
+) {
+  const casePk = getStringFromPKOrObject(casePublicKey);
+  const authorPk = getStringFromPKOrObject(authorPublicKey);
+
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter(
+      (s) =>
+        s.account.case.toString() === casePk &&
+        s.account.author.toString() === authorPk,
+    );
+  };
+}
+
+export function selectLikedSolutionsBySetAndId(
+  casePublicKey: PublicKey | string,
+) {
+  const { likesMap } = useLikeStore.getState();
+
+  const casePk = getStringFromPKOrObject(casePublicKey);
+
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter((s) => {
+      const pk = getLikePda(
+        web3Layer.loggedUserPK,
+        s.publicKey,
+        web3Layer.programId,
+      );
+
+      return (
+        likesMap[pk.toString()] !== undefined &&
+        s.account.case.toString() === casePk
+      );
+    });
   };
 }
 
