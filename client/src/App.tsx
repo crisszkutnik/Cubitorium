@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
 import { Home } from './pages/home/Home';
+import { MyLikes } from './pages/userInfo/MyLikes';
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -44,6 +45,7 @@ function App() {
           <Route path="/userinfo">
             <Route path="" element={<UserInfo />} />
             <Route path="solves" element={<MySolves />} />
+            <Route path="likes" element={<MyLikes />} />
             <Route path=":id" element={<InfoByUserID />} />
           </Route>
         </Routes>

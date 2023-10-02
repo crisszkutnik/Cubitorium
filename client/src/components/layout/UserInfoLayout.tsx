@@ -18,6 +18,10 @@ export function UserInfoLayout({ children }: Props) {
       text: 'My submitted solves',
       path: '/userinfo/solves',
     },
+    {
+      text: 'My liked solutions',
+      path: '/userinfo/likes',
+    },
   ];
 
   const getExtraClasses = (path: string, index: number) => {

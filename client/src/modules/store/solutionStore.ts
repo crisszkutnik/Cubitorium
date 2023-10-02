@@ -3,8 +3,9 @@ import { LoadingState } from '../types/loadingState.enum';
 import { SolutionAccount } from '../types/solution.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { PublicKey } from '@solana/web3.js';
-import { getStringFromPKOrObject } from '../web3/utils';
+import { getLikePda, getStringFromPKOrObject } from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
+import { useLikeStore } from './likeStore';
 
 interface SolutionStoreState {
   solutions: SolutionAccount[];
@@ -36,6 +37,29 @@ export function selectSolutionsByCaseAndAuthor(
         s.account.case.toString() === casePk &&
         s.account.author.toString() === authorPk,
     );
+  };
+}
+
+export function selectLikedSolutionsBySetAndId(
+  casePublicKey: PublicKey | string,
+) {
+  const { likesMap } = useLikeStore.getState();
+
+  const casePk = getStringFromPKOrObject(casePublicKey);
+
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter((s) => {
+      const pk = getLikePda(
+        web3Layer.loggedUserPK,
+        s.publicKey,
+        web3Layer.programId,
+      );
+
+      return (
+        likesMap[pk.toString()] !== undefined &&
+        s.account.case.toString() === casePk
+      );
+    });
   };
 }
 

@@ -144,7 +144,7 @@ export function ThreeLevelSelect({
         labelPlacement="outside"
         selectedKeys={[selectedSet]}
         color="primary"
-        label="Algorithm category"
+        label="Algorithm set"
         onChange={handleSetChange}
         classNames={{
           label: 'text-accent-dark font-semibold text-lg',
