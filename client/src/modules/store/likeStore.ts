@@ -50,6 +50,11 @@ export const selectLikeForSolution = (solutionPda: string | PublicKey) => {
   };
 };
 
+/*
+  SOLAMENTE SE CARGAN LOS LIKES DEL
+  USUARIO LOGUEADO
+*/
+
 export const useLikeStore = createWithEqualityFn<LikeStoreState>(
   (set, get) => ({
     likesMap: {},
@@ -61,7 +66,7 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       try {
         set({ loadingState: LoadingState.LOADING });
 
-        const likes = await web3Layer.loadLikes();
+        const likes = await web3Layer.loadLikesForUser();
 
         const likesMap: Record<string, ParsedLikeCertificateAccount> = {};
 

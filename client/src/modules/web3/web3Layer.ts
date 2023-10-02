@@ -288,9 +288,15 @@ class Web3Layer extends Web3Connection {
     await this.signAndSendTx(tx);
   }
 
-  async loadLikes(): Promise<ParsedLikeCertificateAccount[]> {
-    const accs =
-      (await this.program.account.likeCertificate.all()) as LikeCertificateAccount[];
+  async loadLikesForUser(): Promise<ParsedLikeCertificateAccount[]> {
+    const accs = (await this.program.account.likeCertificate.all([
+      {
+        memcmp: {
+          offset: 8 + 1,
+          bytes: this.loggedUserPK.toBase58(),
+        },
+      },
+    ])) as LikeCertificateAccount[];
 
     return accs.map((acc) => ({
       ...acc,
