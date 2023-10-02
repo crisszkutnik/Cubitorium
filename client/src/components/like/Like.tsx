@@ -5,8 +5,8 @@ import { PublicKey } from '@solana/web3.js';
 import {
   selectLikeForSolution,
   useLikeStore,
-} from '../../../../../../modules/store/likeStore';
-import { useAlertContext } from '../../../../../../components/context/AlertContext';
+} from '../../modules/store/likeStore';
+import { useAlertContext } from '../context/AlertContext';
 import { LearningStatus } from './LearningStatus';
 
 interface Props {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
-  selectSolutionsByCaseAndAuthor,
+  selectLikedSolutionsBySetAndId,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
 import { LoadingState } from '../../modules/types/loadingState.enum';
@@ -23,13 +23,11 @@ import {
 } from '../../modules/store/caseStore';
 import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
 import { shallow } from 'zustand/shallow';
-import { useUserStore } from '../../modules/store/userStore';
 import { useLikeStore } from '../../modules/store/likeStore';
 
-export function MySolves() {
+export function MyLikes() {
   const [selectedSet, setSelectedSet] = useState('');
   const [selectedCase, setSelectedCase] = useState('');
-  const loggedUserPk = useUserStore((state) => state.loggedUserPk);
 
   const [caseAccount, loadCasesIfNotLoaded, casesLoadingState] = useCaseStore(
     (state) => [
@@ -47,10 +45,7 @@ export function MySolves() {
   const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
     useSolutionStore(
       (state) => [
-        selectSolutionsByCaseAndAuthor(
-          caseAccount?.publicKey || '',
-          loggedUserPk || '',
-        )(state),
+        selectLikedSolutionsBySetAndId(caseAccount?.publicKey || '')(state),
         state.loadIfNotLoaded,
         state.loadingState,
       ],

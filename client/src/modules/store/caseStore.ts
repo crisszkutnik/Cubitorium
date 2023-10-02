@@ -22,6 +22,14 @@ export const selectCasesBySet = (set: string) => {
   };
 };
 
+export const selectCaseBySetAndId = (set: string, caseId: string) => {
+  return (state: CaseStoreState) => {
+    return state.cases.find(
+      ({ account: acc }) => acc.set === set && acc.id === caseId,
+    );
+  };
+};
+
 export const useCaseStore = createWithEqualityFn<CaseStoreState>(
   (set, get) => ({
     cases: [],
