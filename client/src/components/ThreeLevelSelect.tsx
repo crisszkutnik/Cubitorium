@@ -30,11 +30,11 @@ export function ThreeLevelSelect({
   );
 
   const [selectedSet, setSelectedSet] = useState(
-    setsMap[selectedPuzzle][0].set_name,
+    setsMap[selectedPuzzle][0].setName,
   );
 
   const [selectedCase, setSelectedCase] = useState(
-    setsMap[selectedPuzzle][0].case_names[0],
+    setsMap[selectedPuzzle][0].caseNames[0],
   );
 
   const casesForSelectedSet = useMemo(() => {
@@ -62,8 +62,8 @@ export function ThreeLevelSelect({
       return;
     }
 
-    const newSet = setsMap[puzzle][0].set_name;
-    const newCaseId = setsMap[puzzle][0].case_names[0];
+    const newSet = setsMap[puzzle][0].setName;
+    const newCaseId = setsMap[puzzle][0].caseNames[0];
 
     setSelectedPuzzle(puzzle);
     setSelectedSet(newSet);
@@ -152,7 +152,7 @@ export function ThreeLevelSelect({
         }}
         items={setsMap[selectedPuzzle] as SetCase[]}
       >
-        {(set) => <SelectItem key={set.set_name}>{set.set_name}</SelectItem>}
+        {(set) => <SelectItem key={set.setName}>{set.setName}</SelectItem>}
       </Select>
 
       <Select
