@@ -1,6 +1,6 @@
 import { DefaultLayout } from '../../../components/layout/DefaultLayout';
-import { CubeSelectorPanel } from './CubeSelectorPanel';
-import { ResolutionInput } from './ResolutionInput';
+import { CubeSelectorPanel } from '../../../page-components/algorithms/uploadAlgorithms/CubeSelectorPanel';
+import { ResolutionInput } from '../../../page-components/algorithms/uploadAlgorithms/ResolutionInput';
 import { useAlgorithmsStore } from '../../../modules/store/algorithmsStore';
 import { useCaseStore } from '../../../modules/store/caseStore';
 import { Loading } from '../../Loading';
