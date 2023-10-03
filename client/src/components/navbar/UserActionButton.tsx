@@ -10,6 +10,10 @@ import {
   loggedUserSelector,
   useUserStore,
 } from '../../modules/store/userStore';
+import {
+  selectPrivilegeForUser,
+  usePrivilegeStore,
+} from '../../modules/store/privilegeStore';
 
 export function UserActionButton() {
   const [open, setOpen] = useState(false);
@@ -18,6 +22,9 @@ export function UserActionButton() {
   const navigate = useNavigate();
   const wallet = useAnchorWallet();
   const user = useUserStore(loggedUserSelector);
+  const privilege = usePrivilegeStore(
+    selectPrivilegeForUser(wallet?.publicKey),
+  );
 
   const onClick = () => {
     setOpen(!open);
@@ -44,6 +51,7 @@ export function UserActionButton() {
     {
       text: 'Admin panel',
       onClick: () => clickAction('/adminpanel'),
+      requiresAuth: true,
     },
   ];
 
@@ -78,20 +86,28 @@ export function UserActionButton() {
             style={{ bottom: `-${dropdownMargin}px` }}
             className="flex absolute bg-white flex-col w-full bottom-0"
           >
-            {values.map(({ text, onClick }, index) => (
-              <button
-                key={index}
-                className={
-                  'py-2 hover:bg-accent-primary hover:text-white' +
-                  (index !== values.length - 1
-                    ? ' border-b border-black/5'
-                    : '')
+            {values
+              .filter((v) => {
+                if (v.requiresAuth && !privilege) {
+                  return false;
                 }
-                onClick={onClick}
-              >
-                {text}
-              </button>
-            ))}
+
+                return true;
+              })
+              .map(({ text, onClick }, index) => (
+                <button
+                  key={index}
+                  className={
+                    'py-2 hover:bg-accent-primary hover:text-white' +
+                    (index !== values.length - 1
+                      ? ' border-b border-black/5'
+                      : '')
+                  }
+                  onClick={onClick}
+                >
+                  {text}
+                </button>
+              ))}
             <WalletDisconnectButton />
           </div>
         )}
