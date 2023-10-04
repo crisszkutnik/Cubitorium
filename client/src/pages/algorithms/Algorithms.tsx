@@ -8,6 +8,7 @@ import { RightPanel } from '../../page-components/algorithms/rightPanel/RightPan
 import { Loading } from '../Loading';
 import { useCaseStore } from '../../modules/store/caseStore';
 import { useSolutionStore } from '../../modules/store/solutionStore';
+import { useLikeStore } from '../../modules/store/likeStore';
 
 export function Algorithms() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -23,6 +24,11 @@ export function Algorithms() {
     (state) => [state.loadingState, state.loadIfNotLoaded],
   );
 
+  const [likesLoadingState, loadLikesIfNotLoaded] = useLikeStore((state) => [
+    state.loadingState,
+    state.loadIfNotLoaded,
+  ]);
+
   const [selectedType, setSelectedType] = useState<string>('3x3');
   const [selectedSubtype, setSelectedSubtype] = useState<string>('');
 
@@ -30,13 +36,15 @@ export function Algorithms() {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
     loadSolutionsIfNotLoaded();
+    loadLikesIfNotLoaded();
   }, []);
 
   const hasAllRequiredData = () => {
     return (
       setsLoadingState === LoadingState.LOADED &&
       caseLoadingState === LoadingState.LOADED &&
-      solutionsLoadingState === LoadingState.LOADED
+      solutionsLoadingState === LoadingState.LOADED &&
+      likesLoadingState === LoadingState.LOADED
     );
   };
 

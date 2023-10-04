@@ -6,12 +6,18 @@ import {
   fundAccounts,
   likePda,
   privilegePda,
+  setPda,
   solutionKey,
 } from "./utils";
 import { keypairs } from "./test-keys";
 
 import { assert, expect } from "chai";
-import { CASE_BASE_LEN, GLOBAL_CONFIG_TAG, TREASURY_TAG } from "./constants";
+import {
+  CASE_BASE_LEN,
+  GLOBAL_CONFIG_TAG,
+  SET_TAG,
+  TREASURY_TAG,
+} from "./constants";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -154,53 +160,89 @@ describe("backend", () => {
       expect(config).to.be.null;
 
       await program.methods
-        .initGlobalConfig("[]")
+        .initGlobalConfig()
         .accounts({ admin: privilegedKeypair1.publicKey })
         .signers([privilegedKeypair1])
         .rpc();
 
       config = await program.account.globalConfig.fetch(globalConfig);
       expect(config).to.not.be.null;
-      expect(config.setsJson).to.equal("[]");
+      expect(config.sets).to.be.empty;
     });
 
     it("Can edit global config", async () => {
-      await program.methods
-        .appendSetToConfig("OLL", ["0", "1", "2", "40"])
-        .accounts({ admin: privilegedKeypair1.publicKey })
-        .signers([privilegedKeypair1])
-        .rpc();
+      let ollSetPda = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(SET_TAG), Buffer.from("OLL")],
+        pid
+      )[0];
+
+      try {
+        await program.methods
+          .appendSetToConfig("OLL", ["0", "1", "2", "40"])
+          .accounts({
+            admin: privilegedKeypair1.publicKey,
+            existingSet: null,
+            newSet: ollSetPda,
+          })
+          .signers([privilegedKeypair1])
+          .rpc();
+      } catch (e) {
+        console.log(e);
+      }
 
       let config = await program.account.globalConfig.fetchNullable(
         globalConfig
       );
       expect(config).to.not.be.null;
-      expect(config.setsJson).to.equal(
-        `[{"set_name":"OLL","case_names":["0","1","2","40"]}]`
-      );
+      expect(config.sets[0].toString()).to.equal(ollSetPda.toString());
+
+      let ollSet = await program.account.set.fetchNullable(ollSetPda);
+      expect(ollSet).to.not.be.null;
+      expect(ollSet.setName).to.eq("OLL");
+      expect(ollSet.caseNames).to.eq(`["0","1","2","40"]`);
     });
 
     it("Can append to existing set in global config", async () => {
-      await program.methods
-        .appendSetToConfig("OLL", ["14"])
-        .accounts({ admin: privilegedKeypair1.publicKey })
-        .signers([privilegedKeypair1])
-        .rpc();
+      let ollSetPda = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(SET_TAG), Buffer.from("OLL")],
+        pid
+      )[0];
+
+      try {
+        await program.methods
+          .appendSetToConfig("OLL", ["14"])
+          .accounts({
+            admin: privilegedKeypair1.publicKey,
+            newSet: null,
+            existingSet: ollSetPda,
+          })
+          .signers([privilegedKeypair1])
+          .rpc();
+      } catch (e) {
+        console.log(e);
+      }
 
       let config = await program.account.globalConfig.fetchNullable(
         globalConfig
       );
       expect(config).to.not.be.null;
-      expect(config.setsJson).to.equal(
-        `[{"set_name":"OLL","case_names":["0","1","14","2","40"]}]`
-      );
+      expect(config.sets[0].toString()).to.equal(ollSetPda.toString());
+
+      let ollSet = await program.account.set.fetchNullable(ollSetPda);
+      expect(ollSet).to.not.be.null;
+      expect(ollSet.setName).to.eq("OLL");
+      expect(ollSet.caseNames).to.eq(`["0","1","14","2","40"]`);
     });
 
     it("Cannot set global config as non-admin", async () => {
       try {
         await program.methods
           .appendSetToConfig("oops", [])
-          .accounts({ admin: regularKeypair.publicKey })
+          .accounts({
+            admin: regularKeypair.publicKey,
+            existingSet: null,
+            newSet: null,
+          })
           .signers([regularKeypair])
           .rpc();
 
@@ -244,7 +286,7 @@ describe("backend", () => {
 
           assert.fail("It needs to fail!");
         } catch (e) {
-          expect(e.error.errorCode.code).to.eq(`InvalidSet`);
+          expect(e.error.errorCode.code).to.eq(`AccountNotInitialized`);
         }
       });
 
@@ -606,26 +648,50 @@ describe("backend", () => {
       // Let's add a PLL, OLL, and F2L case.
 
       // We need to edit config first to allow this to happen
-      await program.methods
-        .appendSetToConfig("PLL", ["Aa", "FOX"])
-        .accounts({ admin: deployer.publicKey })
-        .rpc();
-      await program.methods
-        .appendSetToConfig("F2L", ["1"])
-        .accounts({ admin: deployer.publicKey })
-        .rpc();
-      await program.methods
-        .appendSetToConfig("L4E", ["1"])
-        .accounts({ admin: deployer.publicKey })
-        .rpc();
-      await program.methods
-        .appendSetToConfig("CMLL", ["0"])
-        .accounts({ admin: deployer.publicKey })
-        .rpc();
-      await program.methods
-        .appendSetToConfig("CLL", ["0"])
-        .accounts({ admin: deployer.publicKey })
-        .rpc();
+      try {
+        await program.methods
+          .appendSetToConfig("PLL", ["Aa", "FOX"])
+          .accounts({
+            admin: deployer.publicKey,
+            newSet: setPda("PLL", pid),
+            existingSet: null,
+          })
+          .rpc();
+        await program.methods
+          .appendSetToConfig("F2L", ["1"])
+          .accounts({
+            admin: deployer.publicKey,
+            newSet: setPda("F2L", pid),
+            existingSet: null,
+          })
+          .rpc();
+        await program.methods
+          .appendSetToConfig("L4E", ["1"])
+          .accounts({
+            admin: deployer.publicKey,
+            newSet: setPda("L4E", pid),
+            existingSet: null,
+          })
+          .rpc();
+        await program.methods
+          .appendSetToConfig("CMLL", ["0"])
+          .accounts({
+            admin: deployer.publicKey,
+            newSet: setPda("CMLL", pid),
+            existingSet: null,
+          })
+          .rpc();
+        await program.methods
+          .appendSetToConfig("CLL", ["0"])
+          .accounts({
+            admin: deployer.publicKey,
+            newSet: setPda("CLL", pid),
+            existingSet: null,
+          })
+          .rpc();
+      } catch (e) {
+        console.log("C&A - ADV: ", e);
+      }
 
       // Adding the cases now!
       await program.methods

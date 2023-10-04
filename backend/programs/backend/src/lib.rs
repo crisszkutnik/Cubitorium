@@ -28,8 +28,8 @@ pub mod backend {
     }
 
     /// Init global config PDA
-    pub fn init_global_config(ctx: Context<InitGlobalConfig>, content: String) -> Result<()> {
-        init_global_config::handler(ctx, content)
+    pub fn init_global_config(ctx: Context<InitGlobalConfig>) -> Result<()> {
+        init_global_config::handler(ctx)
     }
 
     /// Appends new set with its cases to global config
@@ -46,11 +46,11 @@ pub mod backend {
     /// Creates a case (only privileged user)
     pub fn create_case(
         ctx: Context<CreateCase>,
-        set: String,
+        set_name: String,
         id: String,
         setup: String,
     ) -> Result<()> {
-        create_case::handler(ctx, set, id, setup)
+        create_case::handler(ctx, set_name, id, setup)
     }
 
     /// Add a solution to a case (permissionless)

@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react';
 import {
-  PuzzleType,
   PuzzleTypeKey,
   PuzzleTypeKeys,
   useAlgorithmsStore,
@@ -26,38 +25,49 @@ interface Props {
 // Este componente es un asco la verdad
 
 export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
-  const [sets, setsMap] = useAlgorithmsStore((state) => [
-    state.sets,
-    state.setsMap,
-  ]);
+  const [setsMap] = useAlgorithmsStore((state) => [state.setsMap]);
   const cases = useCaseStore(selectCases);
 
   const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>('3x3');
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    sets.length > 0 ? sets[0].set_name : '',
+    setsMap['3x3'][0]?.setName || '',
   );
 
   const [selectedCase, setSelectedCase] = useState<string>(
-    sets.length > 0 ? sets[0].case_names[0] : '',
+    setsMap['3x3'][0]?.caseNames[0] || '',
   );
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const puzzle = event.target.value as PuzzleTypeKey;
+
+    if (!puzzle || puzzle === selectedPuzzle) {
+      return;
+    }
+
     setSelectedPuzzle(puzzle);
-    setSelectedCategory(setsMap[puzzle][0].set_name);
-    setSelectedCase(setsMap[puzzle][0].case_names[0]);
+    setSelectedCategory(setsMap[puzzle][0].setName);
+    setSelectedCase(setsMap[puzzle][0].caseNames[0]);
   };
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
+
+    if (!value || value === selectedCategory) {
+      return;
+    }
+
     setSelectedCategory(value);
     const newCase = cases.find((c) => c.account.set === value);
     setSelectedCase(newCase?.account.id || '');
   };
 
   const handleCaseChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCase(event.target.value);
+    const { value } = event.target;
+
+    if (value && value !== selectedCase) {
+      setSelectedCase(event.target.value);
+    }
   };
 
   const casesForSelectedCategory = useMemo(() => {
@@ -65,7 +75,13 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
   }, [selectedCategory, cases]);
 
   useEffect(() => {
-    setActiveCase(cases.find((c) => c.account.id === selectedCase));
+    setActiveCase(
+      cases.find((c) => {
+        return (
+          c.account.id === selectedCase && c.account.set === selectedCategory
+        );
+      }),
+    );
   }, [selectedCategory, selectedCase]);
 
   return (
@@ -79,7 +95,7 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
 
       <Select
         labelPlacement="outside"
-        defaultSelectedKeys={[PuzzleType['3x3']]}
+        selectedKeys={[selectedPuzzle]}
         color="primary"
         label="Puzzle type"
         onChange={handlePuzzleChange}
@@ -106,7 +122,7 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
         }}
         items={setsMap[selectedPuzzle] as SetCase[]}
       >
-        {(set) => <SelectItem key={set.set_name}>{set.set_name}</SelectItem>}
+        {(set) => <SelectItem key={set.setName}>{set.setName}</SelectItem>}
       </Select>
 
       <Select

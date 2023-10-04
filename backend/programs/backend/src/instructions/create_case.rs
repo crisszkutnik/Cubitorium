@@ -1,9 +1,11 @@
 use anchor_lang::prelude::*;
 
-use crate::{state::*, constants::*, utils::*, error::{CubeError, CaseError, TreasuryError}};
+use miniserde::json;
+
+use crate::{state::*, constants::*, utils::*, error::{CubeError, CaseError, ConfigError, TreasuryError}};
 
 #[derive(Accounts)]
-#[instruction(set: String, id: String)]
+#[instruction(set_name: String, id: String)]
 pub struct CreateCase<'info> {
     /// Privileged user
     #[account(mut)]
@@ -18,14 +20,14 @@ pub struct CreateCase<'info> {
     /// Case to be created
     #[account(
         init,
-        seeds = [CASE_TAG.as_ref(), set.as_ref(), id.as_ref()], bump,
-        space = Case::BASE_LEN + Case::extra_size_for_set(&set),
+        seeds = [CASE_TAG.as_ref(), set_name.as_ref(), id.as_ref()], bump,
+        space = Case::BASE_LEN + Case::extra_size_for_set(&set_name),
         payer = signer,
     )]
     pub case: Account<'info, Case>,
 
-    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump)]
-    pub config: Account<'info, GlobalConfig>,
+    #[account(seeds = [SET_TAG.as_ref(), set_name.as_ref()], bump)]
+    pub set: Account<'info, Set>,
 
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
@@ -33,16 +35,16 @@ pub struct CreateCase<'info> {
 
 pub fn handler(
     ctx: Context<CreateCase>,
-    set: String,
+    set_name: String,
     id: String,
     setup: String,
 ) -> Result<()> {
-    require!(set.len() < MAX_SET_NAME_LENGTH, CaseError::MaxSetNameLength);
+    require!(set_name.len() < MAX_SET_NAME_LENGTH, CaseError::MaxSetNameLength);
     require!(id.len() < MAX_CASE_ID_LENGTH, CaseError::MaxCaseIdLength);
     require!(setup.len() < MAX_SETUP_LENGTH, CaseError::MaxSetupLength);
 
     // Refund lamports
-    let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set));
+    let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set_name));
     require!(
         ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
         TreasuryError::TreasuryNeedsFunds
@@ -50,26 +52,21 @@ pub fn handler(
     **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= case_rent;
     **ctx.accounts.signer.try_borrow_mut_lamports()? += case_rent;
 
-    // Check if the given set and case ID exist
-    let sets_json_str = &ctx.accounts.config.sets_json;
-    let sets_json = serde_json
-        ::from_str::<ConfigCaseJson>(&sets_json_str)
-        .unwrap();
+    // Check if case exists
+    json::from_str::<Vec<String>>(&ctx.accounts.set.case_names)
+        .map_err(|_| ConfigError::ConfigDeserializationError)?
+        .iter().find(|case| case == &&id)
+        .ok_or(CubeError::InvalidCase)?;
 
-    match sets_json.iter().find(|c: &&CaseJson| c.set_name == set) {
-        Some(set) =>
-            require!(set.case_names.iter().any(|case_id| case_id == &id), CubeError::InvalidCase),
-        None => return Err(error!(CubeError::InvalidSet)),
-    };
 
     // Write to PDA
-    ctx.accounts.case.set = set.clone();
+    ctx.accounts.case.set = set_name.clone();
     ctx.accounts.case.id = id;
     ctx.accounts.case.setup = setup.clone();
     ctx.accounts.case.bump = *ctx.bumps.get("case").unwrap();
 
     // Code horror
-    match &set[..] {
+    match &set_name[..] {
         "L4E" => {
             ctx.accounts.case.cube_state = None;
             ctx.accounts.case.pyra_state = Some(Pyra::from_moves(&setup)?);

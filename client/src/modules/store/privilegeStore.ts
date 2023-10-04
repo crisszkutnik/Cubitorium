@@ -28,10 +28,16 @@ export const selectAllUserPrivilege = (state: PrivilegeStoreState) => {
   return privilege;
 };
 
-export const selectPrivilegeForUser = (publicKey: string | PublicKey) => {
-  const pk = getStringFromPKOrObject(publicKey);
-
+export const selectPrivilegeForUser = (
+  publicKey: string | PublicKey | undefined,
+) => {
   return (state: PrivilegeStoreState) => {
+    if (publicKey === undefined) {
+      return undefined;
+    }
+
+    const pk = getStringFromPKOrObject(publicKey);
+
     const { privilege, loadPrivilege } = state;
 
     if (!privilege) {

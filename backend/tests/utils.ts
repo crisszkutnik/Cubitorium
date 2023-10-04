@@ -4,6 +4,7 @@ import {
   CASE_TAG,
   LIKE_CERTIFICATE_TAG,
   PRIVILEGE_TAG,
+  SET_TAG,
   SOLUTION_TAG,
 } from "./constants";
 
@@ -77,6 +78,13 @@ export const likePda = (
       user.toBuffer(),
       solutionPda.toBuffer(),
     ],
+    pid
+  )[0];
+};
+
+export const setPda = (set: string, pid: anchor.web3.PublicKey) => {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from(SET_TAG), Buffer.from(set)],
     pid
   )[0];
 };

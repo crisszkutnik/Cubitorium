@@ -36,3 +36,5 @@ pub const SOLUTION_TAG: &str = "solution";
 pub const LIKE_CERTIFICATE_TAG: &str = "like-certificate";
 
 pub const GLOBAL_CONFIG_TAG: &str = "global-config";
+
+pub const SET_TAG: &str = "set";

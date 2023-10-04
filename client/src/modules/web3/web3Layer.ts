@@ -1,14 +1,26 @@
 import { AnchorProvider, Program, setProvider, utils } from '@coral-xyz/anchor';
 import { Backend, IDL } from '../../../../backend/target/types/backend';
 import { UserInfo } from '../types/userInfo.interface';
-import { EncodedGlobalConfig } from '../types/globalConfig.interface';
+import { SetCase } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
-import { getPKFromStringOrObject, getSolutionPda } from './utils';
+import {
+  getPKFromStringOrObject,
+  getParsedLearningStatus,
+  getRawLearningStatus,
+  getSetPda,
+  getSolutionPda,
+} from './utils';
 import { Privilege } from '../types/privilege.interface';
 import { CaseAccount } from '../types/case.interface';
 import { SolutionAccount } from '../types/solution.interface';
+import {
+  LearningStatus,
+  LikeCertificate,
+  LikeCertificateAccount,
+  ParsedLikeCertificateAccount,
+} from '../types/likeCertificate.interface';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -16,6 +28,8 @@ export enum PDATypes {
   Case = 'case',
   Treasury = 'treasury',
   Solution = 'solution',
+  LikeCertificate = 'like-certificate',
+  Set = 'set',
 }
 
 export enum AccountName {
@@ -134,39 +148,38 @@ class Web3Layer extends Web3Connection {
     return this.program.account.userInfo.fetch(pda);
   }
 
-  async loadGlobalConfig() {
-    const pda = this.getPdaWithSeeds(PDATypes.GlobalConfig);
-    return this.getAndParseAccountInfo<EncodedGlobalConfig>(
-      pda,
-      AccountName.GlobalConfig,
+  async loadGlobalConfig(): Promise<SetCase[]> {
+    const acc = await this.program.account.globalConfig.all();
+
+    const config = await this.program.account.set.fetchMultiple(
+      acc[0].account.sets,
     );
+
+    if (config === null) {
+      return [];
+    }
+
+    const ret = config
+      .filter((c) => c)
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      .map(({ setName, caseNames }: any) => ({
+        setName,
+        caseNames: JSON.parse(caseNames),
+      }));
+
+    return ret;
   }
 
-  async initGlobalConfig(name: string, cases: string[]) {
-    const payload = [
-      {
-        set_name: name,
-        case_names: cases,
-      },
-    ];
+  async appendSetToConfig(set: string, cases: string[]) {
+    const setKey = getSetPda(set, this.program.programId);
+    const existing = !!(await this.program.account.set.fetchNullable(setKey));
 
     const tx = await this.program.methods
-      .initGlobalConfig(JSON.stringify(payload))
+      .appendSetToConfig(set, cases)
       .accounts({
         admin: this.provider?.wallet.publicKey,
-        globalConfig: this.getPdaWithAuth(PDATypes.GlobalConfig),
-      })
-      .transaction();
-
-    return this.signAndSendTx(tx);
-  }
-
-  async appendSetToConfig(name: string, cases: string[]) {
-    const tx = await this.program.methods
-      .appendSetToConfig(name, cases)
-      .accounts({
-        admin: this.provider?.wallet.publicKey,
-        globalConfig: this.getPdaWithAuth(PDATypes.GlobalConfig),
+        existingSet: existing ? setKey : null,
+        newSet: existing ? null : setKey,
       })
       .transaction();
 
@@ -235,6 +248,81 @@ class Web3Layer extends Web3Connection {
 
   async loadSolutions(): Promise<SolutionAccount[]> {
     return this.program.account.solution.all();
+  }
+
+  async likeSolution(solutionPda: PublicKey) {
+    const tx = await this.program.methods
+      .likeSolution()
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadLike(likePda: PublicKey): Promise<ParsedLikeCertificateAccount> {
+    const account = (await this.program.account.likeCertificate.fetch(
+      likePda,
+    )) as LikeCertificate;
+
+    return {
+      publicKey: likePda,
+      account: {
+        ...account,
+        parsedLearningStatus: getParsedLearningStatus(
+          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+          account.learningStatus as any,
+        ),
+      },
+    };
+  }
+
+  async removeLike(solutionPda: PublicKey) {
+    const tx = await this.program.methods
+      .removeLike()
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
+  }
+
+  async loadLikesForUser(): Promise<ParsedLikeCertificateAccount[]> {
+    const accs = (await this.program.account.likeCertificate.all([
+      {
+        memcmp: {
+          offset: 8 + 1,
+          bytes: this.loggedUserPK.toBase58(),
+        },
+      },
+    ])) as LikeCertificateAccount[];
+
+    return accs.map((acc) => ({
+      ...acc,
+      account: {
+        ...acc.account,
+        parsedLearningStatus: getParsedLearningStatus(
+          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+          acc.account as any,
+        ),
+      },
+    }));
+  }
+
+  async setLearningStatus(
+    learningStatus: LearningStatus,
+    solutionPda: PublicKey,
+  ) {
+    const tx = await this.program.methods
+      .setLearningStatus(getRawLearningStatus(learningStatus))
+      .accounts({
+        solutionPda,
+      })
+      .transaction();
+
+    await this.signAndSendTx(tx);
   }
 }
 

@@ -55,10 +55,10 @@ export function TopSelector({
     }
 
     if (type === null) {
-      return sets[0].set_name;
+      return sets[0].setName;
     }
 
-    return setsMap[type][0].set_name;
+    return setsMap[type][0].setName;
   };
 
   const shouldUpdateTypeParam = (
@@ -120,7 +120,7 @@ export function TopSelector({
     const ret: Record<string, string[]> = {};
 
     PuzzleTypeKeys.forEach((key) => {
-      ret[key] = setsMap[key].map((s) => s.set_name);
+      ret[key] = setsMap[key].map((s) => s.setName);
     });
 
     return ret;

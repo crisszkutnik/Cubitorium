@@ -12,11 +12,11 @@ interface Props {
 
 export function Alert({ text, onPress, type }: Props) {
   useEffect(() => {
-    setTimeout(() => onPress && onPress(), 10000);
+    setTimeout(() => onPress && onPress(), 20000);
   }, []);
 
   return (
-    <div className="absolute right-10 top-24">
+    <div className="absolute right-10 top-24 z-30">
       <Card
         onPress={onPress}
         isPressable={true}
