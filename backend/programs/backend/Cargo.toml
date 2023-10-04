@@ -18,4 +18,4 @@ default = []
 [dependencies]
 anchor-lang = {version = "0.28.0", features = [ "init-if-needed" ] }
 anchor-spl = "0.28.0"
-miniserde = { version = "0.1.34" }
+miniserde = "0.1.34"

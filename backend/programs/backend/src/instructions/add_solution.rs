@@ -29,6 +29,9 @@ pub struct AddSolution<'info> {
     )]
     pub solution_pda: Account<'info, Solution>,
 
+    #[account(mut, seeds = [USER_INFO_TAG.as_ref(), signer.key().as_ref()], bump = user_profile.bump)]
+    pub user_profile: Account<'info, UserInfo>,
+
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
@@ -62,6 +65,9 @@ pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
 
     // Update Case
     ctx.accounts.case.solutions += 1;
+
+    // Update profile
+    ctx.accounts.user_profile.submitted_solutions += 1;
 
     Ok(())
 }

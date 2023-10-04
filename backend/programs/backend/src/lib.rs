@@ -86,18 +86,22 @@ pub mod backend {
         surname: String,
         wca_id: String,
         location: String,
+        birthdate: String,
+        profile_img_src: String,
     ) -> Result<()> {
-        send_user_info::handler(ctx, name, surname, wca_id, location)
+        send_user_info::handler(ctx, name, surname, wca_id, location, birthdate, profile_img_src)
     }
 
     /// Modifies existing user info PDA (user)
     pub fn change_user_info(
         ctx: Context<ChangeUserInfo>,
-        new_name: String,
-        new_surname: String,
-        new_wca_id: String,
-        new_location: String,
+        new_name: Option<String>,
+        new_surname: Option<String>,
+        new_wca_id: Option<String>,
+        new_location: Option<String>,
+        new_birthdate: Option<String>,
+        new_profile_img_src: Option<String>,
     ) -> Result<()> {
-        change_user_info::handler(ctx, new_name, new_surname, new_wca_id, new_location)
+        change_user_info::handler(ctx, new_name, new_surname, new_wca_id, new_location, new_birthdate, new_profile_img_src)
     }
 }

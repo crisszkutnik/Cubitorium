@@ -8,11 +8,17 @@ pub enum UserInfoError {
     #[msg("User surname too long")]
     UserSurnameTooLong,
 
-    #[msg("WCA ID too long")]
-    WCAIDTooLong,
+    #[msg("WCA ID must be YYYYXXXXYY")]
+    WrongWCAID,
 
     #[msg("Location too long")]
     LocationTooLong,
+
+    #[msg("Date must be yyyy-mm-dd")]
+    WrongDateFormat,
+
+    #[msg("Profile image URL exceeded max length")]
+    ImgSrcTooLong,
 }
 
 #[error_code]

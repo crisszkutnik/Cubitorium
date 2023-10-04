@@ -45,12 +45,26 @@ describe("backend", () => {
 
   it("Creates user profile", async () => {
     await program.methods
-      .sendUserInfo("Antonio", "Kam", "2017TUNG13", "California, USA")
+      .sendUserInfo(
+        "Antonio",
+        "Kam",
+        "2017TUNG13",
+        "California, USA",
+        "2003-01-22",
+        "http://face.com/anto"
+      )
       .accounts({ user: deployer.publicKey })
       .rpc();
 
     await program.methods
-      .sendUserInfo("Ben", "Baron", "2016BARO04", "Herzliya, Israel")
+      .sendUserInfo(
+        "Ben",
+        "Baron",
+        "2016BARO04",
+        "Herzliya, Israel",
+        "2003-06-11",
+        "http://face.com/ben"
+      )
       .accounts({ user: regularKeypair.publicKey })
       .signers([regularKeypair])
       .rpc();
@@ -69,7 +83,7 @@ describe("backend", () => {
       "L4E",
       program,
       deployer.publicKey,
-      9,
+      8,
       regularKeypair
     );
   });
@@ -93,7 +107,7 @@ describe("backend", () => {
       ["F2L", "OLL", "PLL"],
       program,
       deployer.publicKey,
-      8,
+      7,
       regularKeypair
     );
   });
@@ -105,24 +119,20 @@ describe("backend", () => {
       ["CMLL"],
       program,
       deployer.publicKey,
-      8,
+      7,
       regularKeypair
     );
   });
 
   it("Loads 3x3 (ZBLL Pi, S, H, T, U, L, A)", async () => {
-    try {
-      await loadMultipleCasesFromCsv(
-        "../algs/3x3_zbll/",
-        ["pi", "s", "h", "t", "u", "l", "a"].map((l) => `zbll_${l}.csv`),
-        ["Pi", "S", "H", "T", "U", "L", "A"].map((l) => `ZBLL ${l}`),
-        program,
-        deployer.publicKey,
-        7,
-        regularKeypair
-      );
-    } catch (e) {
-      console.log(e);
-    }
+    await loadMultipleCasesFromCsv(
+      "../algs/3x3_zbll/",
+      ["pi", "s", "h", "t", "u", "l", "a"].map((l) => `zbll_${l}.csv`),
+      ["Pi", "S", "H", "T", "U", "L", "A"].map((l) => `ZBLL ${l}`),
+      program,
+      deployer.publicKey,
+      7,
+      regularKeypair
+    );
   });
 });

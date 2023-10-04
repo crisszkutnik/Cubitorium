@@ -2,7 +2,7 @@ import { Program, web3 } from "@coral-xyz/anchor";
 import { Backend } from "../target/types/backend";
 import * as fs from "fs";
 import { casePda, setPda, solutionKey } from "../tests/utils";
-import { ComputeBudgetProgram } from "@solana/web3.js";
+import { USER_INFO_TAG } from "../tests/constants";
 
 export const loadCasesFromCsv = async (
   path: string,
@@ -38,9 +38,6 @@ export const loadCasesFromCsv = async (
       existingSet: existing ? setKey : null,
       newSet: existing ? null : setKey,
     })
-    .preInstructions([
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 1000000 }),
-    ])
     .rpc();
 
   // Build createCase ixs
@@ -60,6 +57,10 @@ export const loadCasesFromCsv = async (
     solutions.map((solution, i) => {
       let caseAcc = casePda(set, cases[i], program.programId);
       let solutionPda = solutionKey(caseAcc, solution, program.programId);
+      let authorPda = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(USER_INFO_TAG), deployer.toBuffer()],
+        program.programId
+      )[0];
 
       let addSolIx = program.methods
         .addSolution(solution)
@@ -71,7 +72,11 @@ export const loadCasesFromCsv = async (
         likeIxsPromises.push(
           program.methods
             .likeSolution()
-            .accounts({ signer: liker.publicKey, solutionPda })
+            .accounts({
+              signer: liker.publicKey,
+              solutionPda,
+              authorProfile: authorPda,
+            })
             .signers([liker])
             .instruction()
         );

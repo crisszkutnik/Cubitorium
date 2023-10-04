@@ -17,6 +17,7 @@ import {
   GLOBAL_CONFIG_TAG,
   SET_TAG,
   TREASURY_TAG,
+  USER_INFO_TAG,
 } from "./constants";
 
 describe("backend", () => {
@@ -32,10 +33,6 @@ describe("backend", () => {
   const privilegedKeypair2: web3.Keypair = keypairs[2];
 
   const regularKeypair: web3.Keypair = keypairs[3];
-
-  // const deployerWeb3Layer = new Web3Layer();
-  // const privilegedKey1Web3Layer = new Web3Layer();
-  // const regularKeyWeb3Layer = new Web3Layer();
 
   const treasury = web3.PublicKey.findProgramAddressSync(
     [Buffer.from(TREASURY_TAG)],
@@ -55,7 +52,97 @@ describe("backend", () => {
     ]);
   });
 
-  describe("Privileged users", () => {
+  describe("User profiles", async () => {
+    it("Creates a user profile", async () => {
+      await program.methods
+        .sendUserInfo(
+          "Barack",
+          "Obama",
+          "2004OBAM01",
+          "Hawaii, USA",
+          "2003-08-04",
+          "http://obamafa.ce"
+        )
+        .rpc();
+
+      let [profKey, bump] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(USER_INFO_TAG), deployer.publicKey.toBuffer()],
+        pid
+      );
+
+      let prof = await program.account.userInfo.fetch(profKey);
+
+      expect(prof.birthdate).to.eq("2003-08-04");
+      expect(prof.bump).to.eq(bump);
+      expect(Number(prof.joinTimestamp)).to.be.approximately(
+        Math.floor(Date.now() / 1000),
+        100
+      );
+      expect(prof.likesReceived).to.eq(0);
+      expect(prof.location).to.eq("Hawaii, USA");
+      expect(prof.name).to.eq("Barack");
+      expect(prof.profileImgSrc).to.eq("http://obamafa.ce");
+      expect(prof.submittedSolutions).to.eq(0);
+      expect(prof.surname).to.eq("Obama");
+      expect(prof.wcaId).to.eq("2004OBAM01");
+    });
+
+    it("Edits a user profile", async () => {
+      await program.methods
+        .changeUserInfo(
+          "Barack Hussein",
+          null,
+          null,
+          "Washington DC, USA",
+          null,
+          null
+        )
+        .rpc();
+
+      let [profKey, bump] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(USER_INFO_TAG), deployer.publicKey.toBuffer()],
+        pid
+      );
+
+      let prof = await program.account.userInfo.fetch(profKey);
+
+      expect(prof.birthdate).to.eq("2003-08-04");
+      expect(prof.bump).to.eq(bump);
+      expect(Number(prof.joinTimestamp)).to.be.approximately(
+        Math.floor(Date.now() / 1000),
+        100
+      );
+      expect(prof.likesReceived).to.eq(0);
+      expect(prof.location).to.eq("Washington DC, USA");
+      expect(prof.name).to.eq("Barack Hussein");
+      expect(prof.profileImgSrc).to.eq("http://obamafa.ce");
+      expect(prof.submittedSolutions).to.eq(0);
+      expect(prof.surname).to.eq("Obama");
+      expect(prof.wcaId).to.eq("2004OBAM01");
+    });
+
+    it("Can't edit if field is wrongly formatted (1)", async () => {
+      try {
+        await program.methods
+          .changeUserInfo(null, null, "2013DIPI01ben", null, null, null)
+          .rpc();
+      } catch (e) {
+        expect(e.error.errorCode.code).to.eq("WrongWCAID");
+      }
+    });
+
+    it("Can't edit if field is wrongly formatted (2)", async () => {
+      try {
+        await program.methods
+          .changeUserInfo(null, null, null, null, "bad-date", null)
+          .rpc();
+      } catch (e) {
+        expect(e.error.errorCode.code).to.eq("WrongDateFormat");
+      }
+    });
+  });
+
+  describe("Privileged users", async () => {
     it("Can't add a privileged user if not deployer", async () => {
       try {
         await program.methods
@@ -260,6 +347,22 @@ describe("backend", () => {
       setup: `F R U R' U' F'`,
     };
 
+    before(async () => {
+      // Create profile for regular keypair
+      await program.methods
+        .sendUserInfo(
+          "Javier Gerardo",
+          "Milei",
+          "2018MILE01",
+          "CABA, Argentina",
+          "1970-10-22",
+          "http://jmileifa.ce"
+        )
+        .accounts({ user: regularKeypair.publicKey })
+        .signers([regularKeypair])
+        .rpc();
+    });
+
     describe("Creation and solution submission", async () => {
       it("Cannot create a case if not privileged", async () => {
         try {
@@ -387,6 +490,14 @@ describe("backend", () => {
           regularKeypair.publicKey.toString()
         );
         expect(Number(solutionAccount.timestamp)).to.be.approximately(now, 100);
+
+        // User info has +1 submitted solutions
+        let userInfoKey = web3.PublicKey.findProgramAddressSync(
+          [Buffer.from(USER_INFO_TAG), regularKeypair.publicKey.toBuffer()],
+          pid
+        )[0];
+        let userInfoPda = await program.account.userInfo.fetch(userInfoKey);
+        expect(userInfoPda.submittedSolutions).to.eq(1);
       });
 
       it("Can't add a solution if it doesn't work", async () => {
@@ -422,6 +533,10 @@ describe("backend", () => {
       let testCasePda = casePda("OLL", "2", pid);
       let solution1Pda = solutionKey(testCasePda, SOLUTION_1, pid);
       let solution2Pda = solutionKey(testCasePda, SOLUTION_2, pid);
+      let authorProfileKey = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(USER_INFO_TAG), deployer.publicKey.toBuffer()],
+        pid
+      )[0];
 
       before(async () => {
         // We will test on this case
@@ -453,6 +568,10 @@ describe("backend", () => {
         expect(solutionPda.likes).to.eq(0);
         solutionPda = await program.account.solution.fetch(solution2Pda);
         expect(solutionPda.likes).to.eq(0);
+
+        // Deployer profile has no likes
+        let authorPda = await program.account.userInfo.fetch(authorProfileKey);
+        expect(authorPda.likesReceived).to.eq(0);
       });
 
       it("Can like a solution", async () => {
@@ -475,6 +594,10 @@ describe("backend", () => {
         expect(JSON.stringify(likeCertPda.learningStatus)).to.be.eq(
           `{"notLearnt":{}}`
         );
+
+        // Like count still 0 because self-like
+        let authorPda = await program.account.userInfo.fetch(authorProfileKey);
+        expect(authorPda.likesReceived).to.eq(0);
       });
 
       it("Can't like a solution again", async () => {
@@ -550,6 +673,10 @@ describe("backend", () => {
 
         solutionPda = await program.account.solution.fetch(solution1Pda);
         expect(solutionPda.likes).to.eq(2);
+
+        // Just one foreign like
+        let authorPda = await program.account.userInfo.fetch(authorProfileKey);
+        expect(authorPda.likesReceived).to.eq(1);
       });
 
       it("Can set learning status to learning", async () => {
