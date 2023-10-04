@@ -41,7 +41,6 @@ pub fn check_date(date: &str) -> Result<()> {
 
     if !(
         date.len() == 10 &&
-        date[0..=3].parse::<u32>().is_ok() &&
         month <= 12 && day <= [31,leap_feb(year),31,30,31,30,31,31,30,31,30,31][month as usize - 1] &&
         date.chars().nth(4).unwrap() == '-' &&
         date.chars().nth(7).unwrap() == '-'
