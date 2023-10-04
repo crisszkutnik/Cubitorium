@@ -10,7 +10,7 @@ import {
   solutionKey,
 } from "./utils";
 import { keypairs } from "./test-keys";
-
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { assert, expect } from "chai";
 import {
   CASE_BASE_LEN,
@@ -247,7 +247,7 @@ describe("backend", () => {
       expect(config).to.be.null;
 
       await program.methods
-        .initGlobalConfig()
+        .initGlobalConfig(new anchor.BN(10 * LAMPORTS_PER_SOL))
         .accounts({ admin: privilegedKeypair1.publicKey })
         .signers([privilegedKeypair1])
         .rpc();
@@ -360,6 +360,20 @@ describe("backend", () => {
         )
         .accounts({ user: regularKeypair.publicKey })
         .signers([regularKeypair])
+        .rpc();
+
+      // Create profile for other bastard
+      await program.methods
+        .sendUserInfo(
+          "Sergio",
+          "Massa",
+          "2018MASS01",
+          "Tigre, Argentina",
+          "1972-04-28",
+          "http://sergio.com"
+        )
+        .accounts({ user: privilegedKeypair1.publicKey })
+        .signers([privilegedKeypair1])
         .rpc();
     });
 

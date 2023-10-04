@@ -4,6 +4,7 @@ import { Backend } from "../target/types/backend";
 import { TREASURY_TAG } from "../tests/constants";
 import { keypairs } from "../tests/test-keys";
 import { fundAccounts } from "../tests/utils";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { loadCasesFromCsv, loadMultipleCasesFromCsv } from "./utils";
 
 describe("backend", () => {
@@ -72,7 +73,7 @@ describe("backend", () => {
 
   it("Creates global config", async () => {
     await program.methods
-      .initGlobalConfig()
+      .initGlobalConfig(new anchor.BN(10 * LAMPORTS_PER_SOL))
       .accounts({ admin: deployer.publicKey })
       .rpc();
   });
@@ -95,7 +96,7 @@ describe("backend", () => {
       ["CLL", "EG-1", "EG-2"],
       program,
       deployer.publicKey,
-      8,
+      7,
       regularKeypair
     );
   });
@@ -131,7 +132,7 @@ describe("backend", () => {
       ["Pi", "S", "H", "T", "U", "L", "A"].map((l) => `ZBLL ${l}`),
       program,
       deployer.publicKey,
-      7,
+      6,
       regularKeypair
     );
   });

@@ -28,8 +28,13 @@ pub mod backend {
     }
 
     /// Init global config PDA
-    pub fn init_global_config(ctx: Context<InitGlobalConfig>) -> Result<()> {
-        init_global_config::handler(ctx)
+    pub fn init_global_config(ctx: Context<InitGlobalConfig>, max_fund_limit: u64) -> Result<()> {
+        init_global_config::handler(ctx, max_fund_limit)
+    }
+
+    /// Sets max fund limit
+    pub fn set_max_fund_limit(ctx: Context<SetMaxFundLimit>, new_max_fund_limit: u64) -> Result<()> {
+        set_max_fund_limit::handler(ctx, new_max_fund_limit)
     }
 
     /// Appends new set with its cases to global config

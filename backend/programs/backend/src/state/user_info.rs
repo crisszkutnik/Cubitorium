@@ -14,6 +14,8 @@ pub struct UserInfo {
     pub submitted_solutions: u32,
     pub join_timestamp: u64,
     pub profile_img_src: String,
+    /// Number of SOL already funded by treasury on some operations
+    pub sol_funded: u64,
     pub bump: u8,
 }
 
@@ -27,5 +29,6 @@ impl UserInfo {
         + 2 * 4 // two u32s
         + 1 * 8 // one u64
         + STRING_LENGTH_PREFIX + MAX_URL_LEN
+        + 1 * 8 // one u64
         + BUMP_LENGTH;
 }
