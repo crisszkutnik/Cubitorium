@@ -31,11 +31,11 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
   const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>('3x3');
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    setsMap['3x3'][0]?.set_name || '',
+    setsMap['3x3'][0]?.setName || '',
   );
 
   const [selectedCase, setSelectedCase] = useState<string>(
-    setsMap['3x3'][0]?.case_names[0] || '',
+    setsMap['3x3'][0]?.caseNames[0] || '',
   );
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -46,8 +46,8 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
     }
 
     setSelectedPuzzle(puzzle);
-    setSelectedCategory(setsMap[puzzle][0].set_name);
-    setSelectedCase(setsMap[puzzle][0].case_names[0]);
+    setSelectedCategory(setsMap[puzzle][0].setName);
+    setSelectedCase(setsMap[puzzle][0].caseNames[0]);
   };
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -122,7 +122,7 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
         }}
         items={setsMap[selectedPuzzle] as SetCase[]}
       >
-        {(set) => <SelectItem key={set.set_name}>{set.set_name}</SelectItem>}
+        {(set) => <SelectItem key={set.setName}>{set.setName}</SelectItem>}
       </Select>
 
       <Select

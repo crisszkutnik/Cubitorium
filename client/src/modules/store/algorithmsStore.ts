@@ -48,38 +48,26 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
       try {
         const sets = await web3Layer.loadGlobalConfig();
 
-        if (sets === undefined) {
-          return;
-        }
-
-        const parsed: SetCase[] = JSON.parse(sets.setsJson);
-
         const setsMap: Record<PuzzleTypeKey, SetCase[]> = {
           '2x2': [],
           '3x3': [],
           Pyraminx: [],
         };
 
-        parsed.forEach((c) => {
-          const key = getPuzzleType(c.set_name);
+        sets.forEach((c) => {
+          const key = getPuzzleType(c.setName);
           setsMap[key].push(c);
         });
 
-        set({ sets: parsed, setsMap });
-      } catch (_) {
-        _;
+        set({ sets, setsMap });
+      } catch (e) {
+        console.error(e);
       } finally {
         set({ loadingState: LoadingState.LOADED });
       }
     },
     updateSets: async (name: string, cases: string[]) => {
-      const { sets, loadingState } = get();
-
-      if (sets.length === 0 && loadingState === LoadingState.LOADED) {
-        await web3Layer.initGlobalConfig(name, cases);
-      } else {
-        await web3Layer.appendSetToConfig(name, cases);
-      }
+      await web3Layer.appendSetToConfig(name, cases);
     },
     loadingState: LoadingState.NOT_LOADED,
     setLoadingState: (loadingState: LoadingState) => {

@@ -58,7 +58,7 @@ describe("backend", () => {
 
   it("Creates global config", async () => {
     await program.methods
-      .initGlobalConfig("[]")
+      .initGlobalConfig()
       .accounts({ admin: deployer.publicKey })
       .rpc();
   });
@@ -68,8 +68,8 @@ describe("backend", () => {
       "../algs/pyra/l4e.csv",
       "L4E",
       program,
-      4,
       deployer.publicKey,
+      9,
       regularKeypair
     );
   });
@@ -80,20 +80,20 @@ describe("backend", () => {
       ["cll.csv", "eg1.csv", "eg2.csv"],
       ["CLL", "EG-1", "EG-2"],
       program,
-      4,
       deployer.publicKey,
+      8,
       regularKeypair
     );
   });
 
-  xit("Loads 3x3 (F2L, OLL, PLL)", async () => {
+  it("Loads 3x3 (F2L, OLL, PLL)", async () => {
     await loadMultipleCasesFromCsv(
       "../algs/3x3_cfop/",
       ["f2l.csv", "oll.csv", "pll.csv"],
       ["F2L", "OLL", "PLL"],
       program,
-      undefined,
       deployer.publicKey,
+      8,
       regularKeypair
     );
   });
@@ -104,32 +104,25 @@ describe("backend", () => {
       ["cmll.csv"],
       ["CMLL"],
       program,
-      undefined,
       deployer.publicKey,
+      8,
       regularKeypair
     );
   });
 
-  xit("Loads 3x3 (ZBLL H, S, U)", async () => {
-    await loadMultipleCasesFromCsv(
-      "../algs/3x3_zbll/",
-      ["h", "s", "u"].map((l) => `zbll_${l}.csv`),
-      ["H", "S", "U"].map((l) => `ZBLL ${l}`),
-      program,
-      1,
-      deployer.publicKey,
-      regularKeypair
-    );
-  });
-
-  xit("Loads 3x3 (ZBLL L, T, A, Pi)", async () => {
-    await loadMultipleCasesFromCsv(
-      "../algs/3x3_zbll/",
-      ["l", "t", "a", "pi"].map((l) => `zbll_${l}.csv`),
-      ["L", "T", "A", "Pi"].map((l) => `ZBLL ${l}`),
-      program,
-      1,
-      deployer.publicKey
-    );
+  it("Loads 3x3 (ZBLL Pi, S, H, T, U, L, A)", async () => {
+    try {
+      await loadMultipleCasesFromCsv(
+        "../algs/3x3_zbll/",
+        ["pi", "s", "h", "t", "u", "l", "a"].map((l) => `zbll_${l}.csv`),
+        ["Pi", "S", "H", "T", "U", "L", "A"].map((l) => `ZBLL ${l}`),
+        program,
+        deployer.publicKey,
+        7,
+        regularKeypair
+      );
+    } catch (e) {
+      console.log(e);
+    }
   });
 });

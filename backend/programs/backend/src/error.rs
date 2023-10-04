@@ -80,3 +80,9 @@ pub enum CaseError {
     #[msg("Catastrophic failure - world has ended")]
     Cataclysm,
 }
+
+#[error_code]
+pub enum ContextError {
+    #[msg("Only one of the optional accounts can be provided")]
+    MutuallyExclusiveAccounts,
+}

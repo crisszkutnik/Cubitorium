@@ -7,6 +7,6 @@ export interface EncodedGlobalConfig {
 }
 
 export interface SetCase {
-  set_name: string;
-  case_names: string[];
+  setName: string;
+  caseNames: string[];
 }

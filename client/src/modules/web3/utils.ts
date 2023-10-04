@@ -99,3 +99,10 @@ export const getRawLearningStatus = (
       return { notLearnt: {} };
   }
 };
+
+export const getSetPda = (set: string, pid: PublicKey) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(PDATypes.Set), Buffer.from(set)],
+    pid,
+  )[0];
+};

@@ -38,7 +38,7 @@ export function Top({ caseAccount, onCaseChange }: Props) {
 
   const onChangePuzzleType: ChangeEventHandler<HTMLSelectElement> = (e) => {
     const puzzleType = e.target.value as PuzzleTypeKey;
-    setSelectedSetOnSelector(setsMap[puzzleType][0].set_name);
+    setSelectedSetOnSelector(setsMap[puzzleType][0].setName);
     setPuzzleType(puzzleType);
   };
 
@@ -90,7 +90,7 @@ export function Top({ caseAccount, onCaseChange }: Props) {
           items={setsMap[selectedPuzzleType] as SetCase[]}
           onChange={onChangeSet}
         >
-          {(set) => <SelectItem key={set.set_name}>{set.set_name}</SelectItem>}
+          {(set) => <SelectItem key={set.setName}>{set.setName}</SelectItem>}
         </Select>
         <Select
           labelPlacement="outside"

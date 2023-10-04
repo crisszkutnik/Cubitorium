@@ -1,37 +1,30 @@
 use anchor_lang::prelude::*;
 
-use std::collections::BTreeSet;
-
 use crate::constants::DISCRIMINATOR_LENGTH;
-
-pub type ConfigCaseJson = Vec<CaseJson>;
-
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct CaseJson {
-    pub set_name: String,
-    pub case_names: BTreeSet<String>,
-}
 
 #[account]
 pub struct GlobalConfig {
-    /// Supported sets stored in a JSON format
-    /// 
-    /// Example:
-    /// 
-    /// sets_json = [
-    ///    {
-    ///       set_name: 'F2L',
-    ///       case_names: ['1', '2', '3'],
-    ///    },
-    ///    {
-    ///       set_name: 'OLL',
-    ///       case_names: ['Aa', 'Ab', 'E', 'F'],
-    ///    },
-    /// ],
-    /// 
-    pub sets_json: String,
+    /// Supported sets (pointers)
+    pub sets: Vec<Pubkey>,
 }
 
 impl GlobalConfig {
-    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH;
+    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 4;
+}
+
+#[account]
+pub struct Set {
+    /// Set name
+    pub set_name: String,
+    /// Case names as serialized JSON
+    /// 
+    /// Example:
+    /// 
+    /// `["Aa","Ab","E","F"]`
+    /// 
+    pub case_names: String,
+}
+
+impl Set {
+    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 4 + 4;
 }
