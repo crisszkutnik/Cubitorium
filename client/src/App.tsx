@@ -13,6 +13,7 @@ import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
 import { Home } from './pages/home/Home';
 import { MyLikes } from './pages/userInfo/MyLikes';
+import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -40,13 +41,17 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
-          <Route path="/algorithms/upload" element={<AlgorithmsUpload />} />
-          <Route path="/adminpanel" element={<AdminPanel />} />
-          <Route path="/userinfo">
-            <Route path="" element={<UserInfo />} />
-            <Route path="solves" element={<MySolves />} />
-            <Route path="likes" element={<MyLikes />} />
-            <Route path=":id" element={<InfoByUserID />} />
+
+          {/* Authenticated routes */}
+          <Route element={<AuthenticatedRoute />}>
+            <Route path="/algorithms/upload" element={<AlgorithmsUpload />} />
+            <Route path="/adminpanel" element={<AdminPanel />} />
+            <Route path="/userinfo">
+              <Route path="" element={<UserInfo />} />
+              <Route path="solves" element={<MySolves />} />
+              <Route path="likes" element={<MyLikes />} />
+              <Route path=":id" element={<InfoByUserID />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
