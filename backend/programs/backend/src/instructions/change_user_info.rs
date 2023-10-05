@@ -1,50 +1,52 @@
 use anchor_lang::prelude::*;
 
-use crate::error::UserInfoError;
-use crate::{location_is_valid, UserInfo};
-use crate::{name_is_valid, surname_is_valid, wca_id_is_valid};
+use crate::{error::UserInfoError, constants::*, UserInfo, utils::check_date};
 
 #[derive(Accounts)]
 pub struct ChangeUserInfo<'info> {
+    #[account(mut)]
     pub user: Signer<'info>,
 
     #[account(
-      mut,
-      seeds = [b"user-info", user.key().as_ref()],
-      bump = user_info.bump
+        mut,
+        seeds = [b"user-info", user.key().as_ref()],
+        bump = user_info.bump
     )]
     pub user_info: Account<'info, UserInfo>,
 }
 
+macro_rules! update_opt {
+    ($acc:ident, $field:ident, $max_len:ident, $err:expr) => {
+        if let Some(f) = $field {
+            if f.len()>$max_len {
+                return Err(error!($err));
+            }
+            $acc.$field = f;
+        }
+    };
+}
+
 pub fn handler(
     ctx: Context<ChangeUserInfo>,
-    new_name: String,
-    new_surname: String,
-    new_wca_id: String,
-    new_location: String,
+    name: Option<String>,
+    surname: Option<String>,
+    wca_id: Option<String>,
+    location: Option<String>,
+    birthdate: Option<String>,
+    profile_img_src: Option<String>,
 ) -> Result<()> {
-    if !name_is_valid(&new_name) {
-        err!(UserInfoError::UserNameTooLong)?;
-    }
-
-    if !surname_is_valid(&new_surname) {
-        err!(UserInfoError::UserSurnameTooLong)?;
-    }
-
-    if !wca_id_is_valid(&new_wca_id) {
-        err!(UserInfoError::WCAIDTooLong)?;
-    }
-
-    if !location_is_valid(&new_location) {
-        err!(UserInfoError::LocationTooLong)?;
-    }
-
     let user_info = &mut ctx.accounts.user_info;
 
-    user_info.name = new_name;
-    user_info.surname = new_surname;
-    user_info.wca_id = new_wca_id;
-    user_info.location = new_location;
+    update_opt!(user_info, name, MAX_NAME_LENGTH, UserInfoError::UserNameTooLong);
+    update_opt!(user_info, surname, MAX_SURNAME_LENGTH, UserInfoError::UserSurnameTooLong);
+    update_opt!(user_info, wca_id, WCA_ID_LENGTH, UserInfoError::WrongWCAID);
+    update_opt!(user_info, location, MAX_LOCATION_LENGTH, UserInfoError::LocationTooLong);
+    update_opt!(user_info, profile_img_src, MAX_URL_LEN, UserInfoError::ImgSrcTooLong);
+
+    if let Some(_birthdate) = birthdate {
+        check_date(&_birthdate)?;
+        user_info.birthdate = _birthdate;
+    }
 
     Ok(())
 }

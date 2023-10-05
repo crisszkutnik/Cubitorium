@@ -4,38 +4,31 @@ use crate::constants::*;
 
 #[account]
 pub struct UserInfo {
-    pub bump: u8,
     pub name: String,
     pub surname: String,
     pub wca_id: String,
     pub location: String,
+    /// Accepted date format: yyyy-mm-dd
+    pub birthdate: String,
+    pub likes_received: u32,
+    pub submitted_solutions: u32,
+    pub join_timestamp: u64,
+    pub profile_img_src: String,
+    /// Number of SOL already funded by treasury on some operations
+    pub sol_funded: u64,
+    pub bump: u8,
 }
 
 impl UserInfo {
     pub const LEN: usize = DISCRIMINATOR_LENGTH
-        + BUMP_LENGTH
-        + STRING_LENGTH_PREFIX
-        + MAX_NAME_LENGTH
-        + STRING_LENGTH_PREFIX
-        + MAX_SURNAME_LENGTH
-        + STRING_LENGTH_PREFIX
-        + MAX_WCA_ID_LENGTH
-        + STRING_LENGTH_PREFIX
-        + MAX_LOCATION_LENGTH;
-}
-
-pub fn name_is_valid(name: &String) -> bool {
-    return name.as_bytes().len() <= MAX_NAME_LENGTH;
-}
-
-pub fn surname_is_valid(surname: &String) -> bool {
-    return surname.as_bytes().len() <= MAX_SURNAME_LENGTH;
-}
-
-pub fn wca_id_is_valid(wca_id: &String) -> bool {
-    return wca_id.as_bytes().len() <= MAX_WCA_ID_LENGTH;
-}
-
-pub fn location_is_valid(location: &String) -> bool {
-    return location.as_bytes().len() <= MAX_LOCATION_LENGTH;
+        + STRING_LENGTH_PREFIX + MAX_NAME_LENGTH
+        + STRING_LENGTH_PREFIX + MAX_SURNAME_LENGTH
+        + STRING_LENGTH_PREFIX + WCA_ID_LENGTH
+        + STRING_LENGTH_PREFIX + MAX_LOCATION_LENGTH
+        + STRING_LENGTH_PREFIX + DATE_LENGTH
+        + 2 * 4 // two u32s
+        + 1 * 8 // one u64
+        + STRING_LENGTH_PREFIX + MAX_URL_LEN
+        + 1 * 8 // one u64
+        + BUMP_LENGTH;
 }
