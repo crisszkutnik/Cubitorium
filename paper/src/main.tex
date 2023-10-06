@@ -1,16 +1,37 @@
 % Based on https://github.com/JavierGelatti/Formato-LaTeX-CoNaIISI
-% Overleaf Project https://www.overleaf.com/project/64cdfd2c62d20c8819796f78
 
 \input{format.tex}
 \graphicspath{ {./img/} }
 
-% \author{Oscar Ricardo Bruno}
-\title{Repositorio descentralizado para la gestión y el aprendizaje de algoritmos de speedcubing}
-% \email{skielcast@gmail.com}
-% \universidad{Universidad Tecnológica Nacional, Facultad Regional Buenos Aires}
+\author{%
+    \bfseries
+    Agustin Villarreal \\
+    \href{mailto:agustinvilla@frba.utn.edu.ar}{\texttt{\small agustinvilla@frba.utn.edu.ar}} \and
+    \bfseries
+    Cristobal Szkutnik \\
+    \href{mailto:crisszkutnik@gmail.com}{\texttt{\small crisszkutnik@gmail.com}} \and
+    \bfseries
+    Guido Dipietro \\
+    \href{mailto:dipietroguido@gmail.com}{\texttt{\small dipietroguido@gmail.com}} \and
+    \bfseries
+    Guido Enrique Zabala \\
+    \href{mailto:guidoenr4@gmail.com}{\texttt{\small guidoenr4@gmail.com}} \and
+    \bfseries
+    Matias Davicino \\
+    \href{mailto:mdavicino@frba.utn.edu.ar}{\texttt{\small mdavicino@frba.utn.edu.ar}} \\
+    \\
+    \normalsize\bfseries\itshape
+    Universidad Tecnológica Nacional, Facultad Regional Buenos Aires
+}
+\title{%
+    \LARGE\bfseries Repositorio descentralizado para la gestión y el aprendizaje de algoritmos de speedcubing \\
+    \Large Trabajo final de carrera
+}
+\date{}
 
 \begin{document}
-\titulo
+
+\maketitle
 
 \begin{multicols}{2}
 
@@ -43,7 +64,7 @@ Se narrará primeramente el funcionamiento de un método de speedcubing a grande
 
 En este deporte, cada puzzle se resuelve de acuerdo a un método que divide el problema total en distintas etapas o sub-problemas. Algunas de ellas, generalmente las iniciales, se pueden completar de forma intuitiva. Sin embargo, al avanzar en la resolución, el rompecabezas se restringe hasta llegar a un punto en el que es extremadamente difícil deducir soluciones en un tiempo muy corto. Por esta razón, las últimas etapas de los métodos de speedcubing consisten en aplicar un algoritmo que resuelva el caso que se presenta.\\
 
-Si un método tiene una última etapa con 22 casos posibles\footnote{La última etapa del método más popular para el cubo de Rubik, ``PLL'', tiene 22 casos posibles incluyendo el estado resuelto.}, entonces un speedcuber memorizará y practicará todos estos casos para poder resolver cualquier estado que se le presente al llegar a esta etapa en tan solo segundos.\\
+Si un método tiene una última etapa con 22 casos posibles\footnote{La última etapa del método más popular para el cubo de Rubik, ``PLL'', tiene 22 casos posibles incluyendo el estado resuelto.}, entonces un speedcuber memorizará y practicará todos estos casos para poder resolver cualquier estado que se le presente al llegar a esta etapa en segundos.\\
 
 De este modo, una vista del sistema podría verse como sigue:\\
 
@@ -68,9 +89,13 @@ En algunos casos, incluso, sucede que un speedcuber descubre una nueva forma de 
 
 \section{Modelo matemático}
 
-Dada la realidad enunciada en la sección anterior, nuestro sistema admite la carga de algoritmos nuevos. Al carecer de usuarios privilegiados\footnote{El sistema cuenta con usuarios administradores, pero no se espera que formen parte de los casos de uso típicos del mismo. Es decir, estos usuarios solamente se encargarían de definir configuraciones globales del entorno por única vez o muy rara vez.}, la única manera de validar que el algoritmo ingresado sea correcto es implementando un modelo matemático del cubo de Rubik que permita validar las soluciones automáticamente. Narraremos a continuación cómo se ha conseguido hacer eso exitosamente.\\
+Dada la realidad enunciada en la sección anterior, nuestro sistema admite la carga de algoritmos nuevos. Al carecer de usuarios privilegiados\footnote{El sistema cuenta con usuarios administradores, pero no se espera que formen parte de los casos de uso típicos del mismo. Es decir, estos usuarios solamente se encargarían de definir configuraciones globales del entorno por única vez o muy rara vez.}, la única manera de validar que el algoritmo ingresado sea correcto es implementando un modelo matemático del cubo de Rubik que permita validar las soluciones automáticamente.\\
 
-Un cubo de Rubik puede modelarse muy sencillamente como dos arreglos de un tipo abstracto. Al tener un cubo 12 aristas y 8 esquinas\footnote{En la jerga del speedcubing se denomina ``esquina'' a un vértice del cubo.}, bastaría con modelar dos tipos de elementos y contar con 12 y 8 instancias de cada uno respectivamente. En pseudocódigo:
+Narraremos a continuación cómo se ha conseguido hacer eso exitosamente.\\
+
+Un cubo de Rubik puede modelarse muy sencillamente como dos arreglos de un tipo abstracto. Al tener un cubo 12 aristas y 8 esquinas\footnote{En la jerga del speedcubing se denomina ``esquina'' a un vértice del cubo.}, bastaría con modelar dos tipos de elementos y contar con 12 y 8 instancias de cada uno respectivamente.\\
+
+En pseudocódigo:
 
 \begin{verbatim}
     pieza {
@@ -173,7 +198,7 @@ Un archivo accedido frecuentemente por una comunidad entera globalizada difícil
 
 \begin{Figure}
 \centering
-    \includegraphics[width=0.75\textwidth]{img/cubitorium_arch.png}
+    \includegraphics[width=0.90\textwidth]{img/cubitorium_arch.png}
  \captionof{figure}{Arquitectura del sistema}
  \label{fig:arquitectura}
 \end{Figure}
