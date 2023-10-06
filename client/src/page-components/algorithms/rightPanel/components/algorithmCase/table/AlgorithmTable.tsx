@@ -32,7 +32,6 @@ export function AlgorithmTable({ casePk }: Props) {
       <TableRow key={index}>
         <TableCell className="p2 text-lg w-4/6">{s.account.moves}</TableCell>
         <TableCell className="flex">
-          <AddSolutionButton className="mr-4" />
           <Like
             casePk={casePk}
             solutionPk={s.publicKey}
@@ -59,7 +58,7 @@ export function AlgorithmTable({ casePk }: Props) {
   };
 
   return (
-    <div className="w-4/5 flex flex-col">
+    <div className="w-9/12 flex flex-col">
       <h1 className="bg-accent-primary px-3 py-1 rounded-t text-white">
         Solutions
       </h1>
@@ -74,6 +73,7 @@ export function AlgorithmTable({ casePk }: Props) {
       </Table>
       {solutions.length > 0 && (
         <div className="flex justify-center items-center h-full mt-3">
+          <AddSolutionButton className="mr-6" />
           <Link to="/algorithms/all">
             <ButtonWrapper variant="ghost" text="+ More algorithms" />
           </Link>
