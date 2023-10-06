@@ -9,8 +9,10 @@ export function Navbar() {
   return (
     <nav className="flex text-text-primary border-b-2">
       <div className="flex items-center">
-        <img className="h-12" src="/public/Logo.png" />
+      <NavLink to="/" className="flex items-center text-md p-4">
+        <img className="h-12" src="/public/Logo.png"/>
         <h1 className="text-2xl font-semibold">Cubitorium</h1>
+      </NavLink>
       </div>
       <div className="flex ml-5">
         <NavLink to="/" className="flex items-center text-md p-4">
