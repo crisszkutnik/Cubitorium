@@ -14,6 +14,7 @@ import {
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
 import { Like } from '../../../../../../components/like/Like';
+import { AddSolutionButton } from '../../../../../../components/AddSolutionButton';
 
 interface Props {
   casePk: PublicKey;
@@ -31,6 +32,7 @@ export function AlgorithmTable({ casePk }: Props) {
       <TableRow key={index}>
         <TableCell className="p2 text-lg w-4/6">{s.account.moves}</TableCell>
         <TableCell className="flex">
+          <AddSolutionButton className="mr-4" />
           <Like
             casePk={casePk}
             solutionPk={s.publicKey}
@@ -58,6 +60,9 @@ export function AlgorithmTable({ casePk }: Props) {
 
   return (
     <div className="w-4/5 flex flex-col">
+      <h1 className="bg-accent-primary px-3 py-1 rounded-t text-white">
+        Solutions
+      </h1>
       <Table className="bg-accent-primary/10 rounded" hideHeader removeWrapper>
         <TableHeader>
           <TableColumn>asd</TableColumn>
