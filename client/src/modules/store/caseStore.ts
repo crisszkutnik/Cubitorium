@@ -22,12 +22,32 @@ export const selectCasesBySet = (set: string) => {
   };
 };
 
+export const selectCasesBySetMax = (set: string, max: number) => {
+  return (state: CaseStoreState) => {
+    return selectCasesBySet(set)(state).slice(0, max);
+  };
+};
+
 export const selectCaseBySetAndId = (set: string, caseId: string) => {
   return (state: CaseStoreState) => {
     return state.cases.find(
       ({ account: acc }) => acc.set === set && acc.id === caseId,
     );
   };
+};
+
+const comparator = (a: CaseAccount, b: CaseAccount) => {
+  const { id: idA } = a.account;
+  const { id: idB } = b.account;
+
+  const numA = Number(idA);
+  const numB = Number(idB);
+
+  if (!isNaN(numA) && !isNaN(numB)) {
+    return numA > numB ? 1 : -1;
+  }
+
+  return idA > idB ? 1 : -1;
 };
 
 export const useCaseStore = createWithEqualityFn<CaseStoreState>(
@@ -47,6 +67,7 @@ export const useCaseStore = createWithEqualityFn<CaseStoreState>(
       set({ loadingState: LoadingState.LOADING });
       try {
         const cases = await web3Layer.loadCases();
+        cases.sort(comparator);
         set({ cases });
       } catch (_) {
         _;

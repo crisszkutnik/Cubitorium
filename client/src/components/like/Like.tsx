@@ -56,13 +56,15 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     <div className="flex">
       <button
         onClick={onClick}
-        className="flex flex-col items-center justify-center mr-4"
+        className="flex flex-col items-center justify-center mr-4 hover:text-amber-400"
       >
         <FontAwesomeIcon
-          className={likeAccount ? 'text-amber-400' : 'text-black'}
+          className={
+            likeAccount ? 'text-amber-400' : 'text-black hover:text-amber-400'
+          }
           icon={likeAccount ? faStarSolid : faStarRegular}
         />
-        <p>{likeAccount ? 'Liked' : 'Like'}</p>
+        <p className="text-black">{likeAccount ? 'Liked' : 'Like'}</p>
       </button>
       {likeAccount && (
         <LearningStatus

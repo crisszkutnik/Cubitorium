@@ -14,6 +14,7 @@ import {
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
 import { Like } from '../../../../../../components/like/Like';
+import { AddSolutionButton } from '../../../../../../components/AddSolutionButton';
 
 interface Props {
   casePk: PublicKey;
@@ -57,7 +58,10 @@ export function AlgorithmTable({ casePk }: Props) {
   };
 
   return (
-    <div className="w-4/5 flex flex-col">
+    <div className="w-9/12 flex flex-col">
+      <h1 className="bg-accent-primary px-3 py-1 rounded-t text-white">
+        Solutions
+      </h1>
       <Table className="bg-accent-primary/10 rounded" hideHeader removeWrapper>
         <TableHeader>
           <TableColumn>asd</TableColumn>
@@ -69,6 +73,7 @@ export function AlgorithmTable({ casePk }: Props) {
       </Table>
       {solutions.length > 0 && (
         <div className="flex justify-center items-center h-full mt-3">
+          <AddSolutionButton className="mr-6" />
           <Link to="/algorithms/all">
             <ButtonWrapper variant="ghost" text="+ More algorithms" />
           </Link>

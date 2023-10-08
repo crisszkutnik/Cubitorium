@@ -10,6 +10,7 @@ import { useCaseStore } from '../../../modules/store/caseStore';
 import { SetCase } from '../../../modules/types/globalConfig.interface';
 import { ChangeEventHandler, useMemo, useState } from 'react';
 import { CaseAccount } from '../../../modules/types/case.interface';
+import { AddSolutionButton } from '../../../components/AddSolutionButton';
 
 interface Props {
   caseAccount: CaseAccount;
@@ -66,6 +67,7 @@ export function Top({ caseAccount, onCaseChange }: Props) {
           <h2 className="font-bold text-lg">Setup</h2>
           <p className="text-xl">{caseAccount?.account.setup}</p>
         </div>
+        <AddSolutionButton className="mt-4" />
       </div>
       <div className="flex flex-col w-full gap-10">
         <Select

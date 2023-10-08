@@ -59,6 +59,14 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
           setsMap[key].push(c);
         });
 
+        for (const key of PuzzleTypeKeys) {
+          const sets = setsMap[key];
+
+          sets.forEach(({ caseNames }) => {
+            caseNames.sort();
+          });
+        }
+
         set({ sets, setsMap });
       } catch (e) {
         console.error(e);

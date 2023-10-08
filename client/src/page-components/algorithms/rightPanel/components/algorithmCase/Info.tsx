@@ -8,7 +8,7 @@ interface Props {
 
 export function Info({ caseData }: Props) {
   return (
-    <div className="w-1/5 flex flex-col items-center text-center">
+    <div className="w-3/12 flex flex-col items-center text-center">
       <ScrambleDisplay
         event={getPuzzleType(caseData.set)}
         scramble={caseData.setup}
@@ -19,7 +19,7 @@ export function Info({ caseData }: Props) {
           {caseData.id}
         </h1>
       </div>
-      <div className="mt-3">
+      <div className="mt-3 mb-3">
         <h2 className="font-semibold text-accent-dark text-xl">Setup</h2>
         <p>{caseData.setup}</p>
       </div>
