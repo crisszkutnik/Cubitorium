@@ -15,13 +15,14 @@ import {
 } from '../../modules/store/algorithmsStore';
 import { selectCases, useCaseStore } from '../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
-import { CaseAccount } from '../../modules/types/case.interface';
+import { CaseAccount, PerformanceCase } from '../../modules/types/case.interface';
 import { SetCase } from '../../modules/types/globalConfig.interface';
 
 interface Props {
   selectedPuzzle: string;
   setSelectedPuzzle: Dispatch<SetStateAction<string>>;
   setActiveCases: Dispatch<SetStateAction<CaseAccount[] | undefined>>;
+  setPerformance:  Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
 enum QueryParams {
@@ -33,7 +34,8 @@ enum QueryParams {
 export function PracticeSelector({ 
   setActiveCases, 
   selectedPuzzle, 
-  setSelectedPuzzle}: Props) {
+  setSelectedPuzzle,
+  setPerformance}: Props) {
 
   const [sets, setsMap] = useAlgorithmsStore((state) => [
     state.sets,
@@ -61,12 +63,13 @@ export function PracticeSelector({
     }
 
     setSearchParams(searchParams);
-
+    setPerformance([]);
   };
 
   const handleSetChange = (event: ChangeEvent<HTMLSelectElement>) => {
     searchParams.set(QueryParams.SET, event.target.value);
     setSearchParams(searchParams);
+    setPerformance([]);
   };
 
   const handleCaseChange = (e: ChangeEvent<HTMLSelectElement>) => {

@@ -53,6 +53,7 @@ export function Practice() {
                   selectedPuzzle={selectedPuzzle} 
                   setSelectedPuzzle={setSelectedPuzzle}
                   setActiveCases={setActiveCases}
+                  setPerformance={setPerformance}
                 />
                 <div className="flex flex-col w-full items-center">
                     <StopWatch 
