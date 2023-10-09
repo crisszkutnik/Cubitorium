@@ -8,10 +8,7 @@ import { useState, useEffect } from "react";
 import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
 import { CaseAccount } from '../../modules/types/case.interface';
-import{
-  PuzzleTypeKey,
-} from '../../modules/store/algorithmsStore';
-
+import { PerformanceCase } from "../../modules/types/case.interface";
 
 
 export function Practice() {
@@ -28,8 +25,9 @@ export function Practice() {
       undefined,
     );
 
-    const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>('3x3');
-    
+    const [performance, setPerformance] = useState<PerformanceCase[]>([]);
+
+    const [selectedPuzzle, setSelectedPuzzle] = useState<string>('3x3');    
     
     useEffect(() => {
       loadSetsIfNotLoaded();
@@ -55,11 +53,19 @@ export function Practice() {
                   selectedPuzzle={selectedPuzzle} 
                   setSelectedPuzzle={setSelectedPuzzle}
                   setActiveCases={setActiveCases}
-                  activeCases={activeCases}
                 />
                 <div className="flex flex-col w-full items-center">
-                    <StopWatch />
-                    <Performance />
+                    <StopWatch 
+                      selectedPuzzle={selectedPuzzle} 
+                      activeCases={activeCases}
+                      performance={performance}
+                      setPerformance={setPerformance}
+                    />
+                    <Performance 
+                      selectedPuzzle={selectedPuzzle} 
+                      performance={performance}
+                      setPerformance={setPerformance}                      
+                    />
                 </div>
                 
             </div>
