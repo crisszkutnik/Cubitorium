@@ -140,12 +140,7 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
         await web3Layer.sendUserInfo(name, surname, wcaId, location);
       }
 
-      get().addOrUpdateUser(state.loggedUserPk, {
-        name,
-        surname,
-        wcaId,
-        location,
-      });
+      await get().loadUser(state.loggedUserPk);
     },
   }),
   Object.is,

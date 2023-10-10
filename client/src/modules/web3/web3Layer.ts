@@ -145,7 +145,9 @@ class Web3Layer extends Web3Connection {
       PDATypes.UserInfo,
       getPKFromStringOrObject(publicKey),
     );
-    return this.program.account.userInfo.fetch(pda);
+    return this.program.account.userInfo.fetch(
+      pda,
+    ) as unknown as Promise<UserInfo>;
   }
 
   async loadGlobalConfig(): Promise<SetCase[]> {
