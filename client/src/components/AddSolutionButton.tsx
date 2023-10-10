@@ -1,14 +1,21 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip } from '@nextui-org/react';
+import { useNavigate } from 'react-router-dom';
+import { CaseAccount } from '../modules/types/case.interface';
 
 interface Props {
   className?: string;
+  caseAccount: CaseAccount;
 }
 
-export function AddSolutionButton({ className = '' }: Props) {
+export function AddSolutionButton({ className = '', caseAccount }: Props) {
+  const navigate = useNavigate();
+
   const onClick = () => {
-    alert('Not implemented yet');
+    navigate(
+      `/algorithms/upload?set=${caseAccount.account.set}&case=${caseAccount.account.id}`,
+    );
   };
 
   return (
