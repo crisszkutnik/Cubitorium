@@ -15,6 +15,7 @@ import {
 import { Like } from '../../../../../../components/like/Like';
 import { AddSolutionButton } from '../../../../../../components/AddSolutionButton';
 import { CaseAccount } from '../../../../../../modules/types/case.interface';
+import { Profile } from '../../../../../../components/like/Profile';
 
 interface Props {
   caseAccount: CaseAccount;
@@ -32,11 +33,12 @@ export function AlgorithmTable({ caseAccount }: Props) {
 
     const rows = solutions.slice(0, 4).map((s, index) => (
       <TableRow key={index}>
-        <TableCell className="p2 text-lg w-6/12">{s.account.moves}</TableCell>
+        <TableCell className="p2 text-lg w-5/12">{s.account.moves}</TableCell>
         <TableCell className="p2 text-lg w-2/12">
           {s.account.likes + ' ' + (s.account.likes === 1 ? 'like' : 'likes')}
         </TableCell>
-        <TableCell className="flex">
+        <TableCell className="flex justify-end">
+          <Profile author={s.account.author} />
           <Like
             casePk={caseAccount.publicKey}
             solutionPk={s.publicKey}

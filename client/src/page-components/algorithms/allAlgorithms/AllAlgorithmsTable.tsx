@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@nextui-org/react';
+import { Profile } from '../../../components/like/Profile';
 
 interface Props {
   solutions: SolutionAccount[];
@@ -36,7 +37,8 @@ export function AllAlgorithmsTable({ solutions }: Props) {
             <TableCell className="w-1/6">
               {moment(account.timestamp).format('DD/MM/YYYY')}
             </TableCell>
-            <TableCell className="w-1/6">
+            <TableCell className="flex justify-end">
+              <Profile author={account.author} />
               <Like
                 casePk={account.case}
                 solution={account.moves}

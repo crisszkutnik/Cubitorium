@@ -24,8 +24,9 @@ export function AddSolutionButton({ className = '', caseAccount }: Props) {
         className={
           'flex flex-col items-center hover:text-green-500 ' + className
         }
+        onClick={onClick}
       >
-        <FontAwesomeIcon onClick={onClick} icon={faPlus} />
+        <FontAwesomeIcon icon={faPlus} />
         <p className="text-black">Add</p>
       </button>
     </Tooltip>
