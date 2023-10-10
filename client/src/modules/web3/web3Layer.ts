@@ -41,12 +41,21 @@ class Web3Layer extends Web3Connection {
 
   get program() {
     if (this._program === undefined) {
-      this._program = new Program<Backend>(
-        IDL,
-        import.meta.env.VITE_PROGRAM_ID,
-      );
+      return this.setAnonymousProgram();
     }
 
+    return this._program;
+  }
+
+  private setAnonymousProgram() {
+    this._program = new Program<Backend>(IDL, import.meta.env.VITE_PROGRAM_ID, {
+      connection: this.connection,
+    });
+    return this._program;
+  }
+
+  private setRegisteredProgram() {
+    this._program = new Program<Backend>(IDL, import.meta.env.VITE_PROGRAM_ID);
     return this._program;
   }
 
@@ -57,10 +66,12 @@ class Web3Layer extends Web3Connection {
 
     setProvider(provider);
     this.provider = provider;
+    this.setRegisteredProgram();
   }
 
   reset() {
     this.provider = undefined;
+    this.setAnonymousProgram();
   }
 
   get loggedUserPK() {
@@ -100,7 +111,9 @@ class Web3Layer extends Web3Connection {
   ): Promise<T | undefined> {
     const res = await this.connection.getAccountInfo(pda);
 
+    console.log(res);
     if (res?.data) {
+      console.log('ASD');
       return this.program.coder.accounts.decode(accountName, res.data);
     }
   }
