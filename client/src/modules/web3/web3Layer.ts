@@ -111,9 +111,7 @@ class Web3Layer extends Web3Connection {
   ): Promise<T | undefined> {
     const res = await this.connection.getAccountInfo(pda);
 
-    console.log(res);
     if (res?.data) {
-      console.log('ASD');
       return this.program.coder.accounts.decode(accountName, res.data);
     }
   }
