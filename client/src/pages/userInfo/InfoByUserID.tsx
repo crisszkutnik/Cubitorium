@@ -59,6 +59,20 @@ export function InfoByUserID() {
     return <Loading />;
   }
 
+  const getLocation = () => {
+    const location = user?.location;
+
+    if (!location) {
+      return 'Unknown';
+    }
+
+    if (location.length > 40) {
+      return location.slice(0, 37) + '...';
+    }
+
+    return location;
+  };
+
   return (
     <DefaultLayout>
       <div className="flex flex-col bg-white drop-shadow py-3 px-6 rounded w-1/4 mr-6 h-fit">
@@ -97,10 +111,10 @@ export function InfoByUserID() {
         </div>
         <div className="mb-4">
           <h2 className="font-bold text-accent-dark">Location</h2>
-          <p className="text-accent-dark">{user?.location || 'Unknown'}</p>
+          <p className="text-accent-dark">{getLocation()}</p>
         </div>
         <div>
-          <h2 className="font-bold text-accent-dark">Birthdate</h2>
+          <h2 className="font-bold text-accent-dark">Birthdate (YYYY-MM-DD)</h2>
           <p className="text-accent-dark">{user?.birthdate || 'Unknown'}</p>
         </div>
       </div>
@@ -151,7 +165,7 @@ export function InfoByUserID() {
                 return (
                   <tr>
                     <td className="py-2">
-                      {moment(account.timestamp).format('DD/MM/YYYY')}
+                      {moment(account.timestamp).format('YYYY-MM-DD')}
                     </td>
                     <td className="py-2">{account.moves}</td>
                     <td className="py-2">

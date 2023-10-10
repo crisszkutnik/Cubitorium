@@ -110,9 +110,11 @@ class Web3Layer extends Web3Connection {
     surname: string,
     wcaId: string,
     location: string,
+    birthdate: string,
+    profileImgSrc: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .sendUserInfo(name, surname, wcaId, location)
+      .sendUserInfo(name, surname, wcaId, location, birthdate, profileImgSrc)
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
@@ -127,9 +129,11 @@ class Web3Layer extends Web3Connection {
     surname: string,
     wcaId: string,
     location: string,
+    birthdate: string,
+    profileImgSrc: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .changeUserInfo(name, surname, wcaId, location)
+      .changeUserInfo(name, surname, wcaId, location, birthdate, profileImgSrc)
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),

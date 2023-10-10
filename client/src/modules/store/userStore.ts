@@ -10,6 +10,8 @@ type SendUserInfoType = (
   surname: string,
   wcaId: string,
   location: string,
+  birthdate: string,
+  profileImgSrc: string,
 ) => Promise<void>;
 
 interface UserStoreState {
@@ -123,6 +125,8 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
       surname: string,
       wcaId: string,
       location: string,
+      birthdate: string,
+      profileImgSrc: string,
     ) => {
       const state = get();
 
@@ -135,9 +139,23 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
       );
 
       if (oldUser) {
-        await web3Layer.changeUserInfo(name, surname, wcaId, location);
+        await web3Layer.changeUserInfo(
+          name,
+          surname,
+          wcaId,
+          location,
+          birthdate,
+          profileImgSrc,
+        );
       } else {
-        await web3Layer.sendUserInfo(name, surname, wcaId, location);
+        await web3Layer.sendUserInfo(
+          name,
+          surname,
+          wcaId,
+          location,
+          birthdate,
+          profileImgSrc,
+        );
       }
 
       await get().loadUser(state.loggedUserPk);

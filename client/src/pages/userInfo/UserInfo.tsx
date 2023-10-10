@@ -1,5 +1,4 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { Input } from '../../components/Input';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Submit } from '../../components/Submit';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
@@ -9,12 +8,16 @@ import {
 import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 import { Alert } from '../../components/Alert';
+import { Input } from '@nextui-org/react';
+import moment from 'moment';
 
 interface Inputs {
   name: string;
   surname: string;
   wcaId: string;
   location: string;
+  birthdate: string;
+  profileImgSrc: string;
 }
 
 export function UserInfo() {
@@ -25,7 +28,7 @@ export function UserInfo() {
   const [showSuccessAlert, setSuccessAlert] = useState(false);
   const [showErrorAlert, setErrorAlert] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { handleSubmit, reset, control } = useForm<Inputs>();
 
   useEffect(() => {
     if (loggedUser) {
@@ -35,10 +38,18 @@ export function UserInfo() {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      await sendUserInfo(data.name, data.surname, data.wcaId, data.location);
+      await sendUserInfo(
+        data.name,
+        data.surname,
+        data.wcaId,
+        data.location,
+        moment(data.birthdate).format('YYYY-MM-DD'),
+        data.profileImgSrc,
+      );
       setErrorAlert(false);
       setSuccessAlert(true);
     } catch (e) {
+      console.error(e);
       setSuccessAlert(false);
       setErrorAlert(true);
     }
@@ -50,31 +61,58 @@ export function UserInfo() {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col bg-white drop-shadow w-full p-4"
       >
-        <div className="flex w-full">
-          <Input
-            register={register('name')}
-            labelClassName="mr-2 w-1/2"
-            label="Name"
-            name="name"
-          />
-          <Input
-            register={register('surname')}
-            labelClassName="ml-2 w-1/2"
-            label="Surname"
-            name="surname"
-          />
-          <Input
-            register={register('wcaId')}
-            labelClassName="mr-2 w-1/2"
-            label="WCA ID"
-            name="wcaId"
-          />
-          <Input
-            register={register('location')}
-            labelClassName="ml-2 w-1/2"
-            label="Location"
-            name="location"
-          />
+        <div className="flex flex-col w-full gap-3">
+          <div className="flex gap-3">
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input label="Name" color="primary" {...field} />
+              )}
+            />
+            <Controller
+              control={control}
+              name="surname"
+              render={({ field }) => (
+                <Input label="Surname" color="primary" {...field} />
+              )}
+            />
+            <Controller
+              control={control}
+              name="wcaId"
+              render={({ field }) => (
+                <Input label="WCA ID" color="primary" {...field} />
+              )}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Controller
+              control={control}
+              name="location"
+              render={({ field }) => (
+                <Input label="Location" color="primary" {...field} />
+              )}
+            />
+            <Controller
+              control={control}
+              name="birthdate"
+              render={({ field }) => (
+                <Input
+                  label="Birthdate (DD/MM/YYYY)"
+                  type="date"
+                  color="primary"
+                  {...field}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="profileImgSrc"
+              render={({ field }) => (
+                <Input label="Porfile image URL" color="primary" {...field} />
+              )}
+            />
+          </div>
         </div>
         <div className="mt-4">
           <Submit />
