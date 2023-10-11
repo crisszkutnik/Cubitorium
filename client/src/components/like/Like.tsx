@@ -8,6 +8,7 @@ import {
 } from '../../modules/store/likeStore';
 import { useAlertContext } from '../context/AlertContext';
 import { LearningStatus } from './LearningStatus';
+import { useUserStore } from '../../modules/store/userStore';
 
 interface Props {
   casePk: string | PublicKey;
@@ -21,6 +22,8 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     selectLikeForSolution(solutionPk)(state),
     state.removeLike,
   ]);
+
+  const isLogged = useUserStore((state) => state.isLogged);
 
   const { success, error } = useAlertContext();
 
@@ -52,6 +55,10 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     }
   };
 
+  if (!isLogged) {
+    return <></>;
+  }
+
   return (
     <div className="flex">
       <button
@@ -66,13 +73,11 @@ export function Like({ casePk, solutionPk, solution }: Props) {
         />
         <p className="text-black">{likeAccount ? 'Liked' : 'Like'}</p>
       </button>
-      {likeAccount && (
-        <LearningStatus
-          casePk={casePk}
-          solution={solution}
-          likeAccount={likeAccount}
-        />
-      )}
+      <LearningStatus
+        casePk={casePk}
+        solution={solution}
+        likeAccount={likeAccount}
+      />
     </div>
   );
 }

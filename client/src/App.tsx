@@ -46,12 +46,15 @@ function App() {
           <Route element={<AuthenticatedRoute />}>
             <Route path="/algorithms/upload" element={<AlgorithmsUpload />} />
             <Route path="/adminpanel" element={<AdminPanel />} />
-            <Route path="/userinfo">
+          </Route>
+
+          <Route path="/userinfo">
+            <Route element={<AuthenticatedRoute />}>
               <Route path="" element={<UserInfo />} />
               <Route path="solves" element={<MySolves />} />
               <Route path="likes" element={<MyLikes />} />
-              <Route path=":id" element={<InfoByUserID />} />
             </Route>
+            <Route path=":id" element={<InfoByUserID />} />
           </Route>
         </Routes>
       </BrowserRouter>
