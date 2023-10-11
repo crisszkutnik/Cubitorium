@@ -63,6 +63,16 @@ export function selectLikedSolutionsBySetAndId(
   };
 }
 
+export function selectSolutionsByAuthor(authorPublicKey: PublicKey | string) {
+  const authorPk = getStringFromPKOrObject(authorPublicKey);
+
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter(
+      (s) => s.account.author.toString() === authorPk,
+    );
+  };
+}
+
 export const useSolutionStore = createWithEqualityFn<SolutionStoreState>(
   (set, get) => ({
     solutions: [],

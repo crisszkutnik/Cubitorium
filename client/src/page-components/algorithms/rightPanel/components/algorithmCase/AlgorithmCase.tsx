@@ -10,7 +10,7 @@ export function AlgorithmCase({ caseAccount }: Props) {
   return (
     <div className="flex drop-shadow bg-white p-3 mb-6 rounded-md">
       <Info caseData={caseAccount.account} />
-      <AlgorithmTable casePk={caseAccount.publicKey} />
+      <AlgorithmTable caseAccount={caseAccount} />
     </div>
   );
 }

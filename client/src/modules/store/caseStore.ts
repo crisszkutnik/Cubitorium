@@ -2,6 +2,8 @@ import { createWithEqualityFn } from 'zustand/traditional';
 import { CaseAccount } from '../types/case.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { LoadingState } from '../types/loadingState.enum';
+import { PublicKey } from '@solana/web3.js';
+import { getStringFromPKOrObject } from '../web3/utils';
 
 interface CaseStoreState {
   cases: CaseAccount[];
@@ -33,6 +35,14 @@ export const selectCaseBySetAndId = (set: string, caseId: string) => {
     return state.cases.find(
       ({ account: acc }) => acc.set === set && acc.id === caseId,
     );
+  };
+};
+
+export const selectCasesByPks = (pks: (PublicKey | string)[]) => {
+  const keys = pks.map(getStringFromPKOrObject);
+
+  return (state: CaseStoreState) => {
+    return state.cases.filter((c) => keys.includes(c.publicKey.toString()));
   };
 };
 

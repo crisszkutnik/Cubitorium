@@ -9,6 +9,7 @@ import {
 import {
   PuzzleTypeKey,
   PuzzleTypeKeys,
+  getPuzzleType,
   useAlgorithmsStore,
 } from '../../../modules/store/algorithmsStore';
 import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
@@ -16,6 +17,7 @@ import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { SetCase } from '../../../modules/types/globalConfig.interface';
+import { useSearchParams } from 'react-router-dom';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -25,7 +27,9 @@ interface Props {
 // Este componente es un asco la verdad
 
 export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
-  const [setsMap] = useAlgorithmsStore((state) => [state.setsMap]);
+  const [searchParams] = useSearchParams();
+
+  const setsMap = useAlgorithmsStore((state) => state.setsMap);
   const cases = useCaseStore(selectCases);
 
   const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>('3x3');
@@ -37,6 +41,22 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
   const [selectedCase, setSelectedCase] = useState<string>(
     setsMap['3x3'][0]?.caseNames[0] || '',
   );
+
+  useEffect(() => {
+    const querySet = searchParams.get('set');
+
+    const queryCase = searchParams.get('case');
+
+    if (!querySet || !queryCase) {
+      return;
+    }
+
+    const puzzle = getPuzzleType(querySet);
+
+    setSelectedPuzzle(puzzle);
+    setSelectedCategory(querySet);
+    setSelectedCase(queryCase);
+  });
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const puzzle = event.target.value as PuzzleTypeKey;
@@ -114,7 +134,7 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
         labelPlacement="outside"
         selectedKeys={[selectedCategory]}
         color="primary"
-        label="Algorithm category"
+        label="Algorithm set"
         onChange={handleCategoryChange}
         classNames={{
           label: 'text-accent-dark font-semibold text-lg',

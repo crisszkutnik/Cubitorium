@@ -67,7 +67,7 @@ export function Top({ caseAccount, onCaseChange }: Props) {
           <h2 className="font-bold text-lg">Setup</h2>
           <p className="text-xl">{caseAccount?.account.setup}</p>
         </div>
-        <AddSolutionButton className="mt-4" />
+        <AddSolutionButton caseAccount={caseAccount} className="mt-4" />
       </div>
       <div className="flex flex-col w-full gap-10">
         <Select

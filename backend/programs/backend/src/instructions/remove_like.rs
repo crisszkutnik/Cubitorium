@@ -29,6 +29,13 @@ pub struct RemoveLike<'info> {
     )]
     pub like_certificate: Account<'info, LikeCertificate>,
 
+    #[account(
+        mut,
+        seeds = [USER_INFO_TAG.as_ref(), solution_pda.author.as_ref()],
+        bump = author_profile.bump
+    )]
+    pub author_profile: Account<'info, UserInfo>,
+
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
@@ -36,6 +43,10 @@ pub struct RemoveLike<'info> {
 pub fn handler(ctx: Context<RemoveLike>) -> Result<()> {
     // Decrease like count in Solution
     ctx.accounts.solution_pda.likes -= 1;
+
+    if ctx.accounts.signer.key() != ctx.accounts.solution_pda.author {
+        ctx.accounts.author_profile.likes_received -= 1;
+    }
 
     Ok(())
 }

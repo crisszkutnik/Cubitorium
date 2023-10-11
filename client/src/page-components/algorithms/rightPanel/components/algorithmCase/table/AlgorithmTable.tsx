@@ -8,20 +8,23 @@ import {
   TableRow,
   TableCell,
 } from '@nextui-org/react';
-import { PublicKey } from '@solana/web3.js';
 import {
   selectSolutionsByCase,
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
 import { Like } from '../../../../../../components/like/Like';
 import { AddSolutionButton } from '../../../../../../components/AddSolutionButton';
+import { CaseAccount } from '../../../../../../modules/types/case.interface';
+import { Profile } from '../../../../../../components/like/Profile';
 
 interface Props {
-  casePk: PublicKey;
+  caseAccount: CaseAccount;
 }
 
-export function AlgorithmTable({ casePk }: Props) {
-  const solutions = useSolutionStore(selectSolutionsByCase(casePk));
+export function AlgorithmTable({ caseAccount }: Props) {
+  const solutions = useSolutionStore(
+    selectSolutionsByCase(caseAccount.publicKey),
+  );
 
   const getRows = () => {
     if (solutions.length === 0) {
@@ -30,10 +33,14 @@ export function AlgorithmTable({ casePk }: Props) {
 
     const rows = solutions.slice(0, 4).map((s, index) => (
       <TableRow key={index}>
-        <TableCell className="p2 text-lg w-4/6">{s.account.moves}</TableCell>
-        <TableCell className="flex">
+        <TableCell className="p2 text-lg w-5/12">{s.account.moves}</TableCell>
+        <TableCell className="p2 text-lg w-2/12">
+          {s.account.likes + ' ' + (s.account.likes === 1 ? 'like' : 'likes')}
+        </TableCell>
+        <TableCell className="flex justify-end">
+          <Profile author={s.account.author} />
           <Like
-            casePk={casePk}
+            casePk={caseAccount.publicKey}
             solutionPk={s.publicKey}
             solution={s.account.moves}
           />
@@ -50,6 +57,9 @@ export function AlgorithmTable({ casePk }: Props) {
           <TableCell className="p2 text-lg">
             <p className="invisible">''</p>
           </TableCell>
+          <TableCell className="p2 text-lg">
+            <p className="invisible">''</p>
+          </TableCell>
         </TableRow>,
       );
     }
@@ -59,13 +69,15 @@ export function AlgorithmTable({ casePk }: Props) {
 
   return (
     <div className="w-9/12 flex flex-col">
-      <h1 className="bg-accent-primary px-3 py-1 rounded-t text-white">
-        Solutions
-      </h1>
-      <Table className="bg-accent-primary/10 rounded" hideHeader removeWrapper>
+      <Table
+        className="bg-accent-primary/10 rounded"
+        removeWrapper
+        classNames={{ th: 'bg-accent-primary text-white text-lg' }}
+      >
         <TableHeader>
-          <TableColumn>asd</TableColumn>
+          <TableColumn>Solution</TableColumn>
           <TableColumn>Likes</TableColumn>
+          <TableColumn hideHeader>Like button</TableColumn>
         </TableHeader>
         <TableBody emptyContent="No one has uploaded a solution for this case yet. Be the first!">
           {getRows()}
@@ -73,7 +85,7 @@ export function AlgorithmTable({ casePk }: Props) {
       </Table>
       {solutions.length > 0 && (
         <div className="flex justify-center items-center h-full mt-3">
-          <AddSolutionButton className="mr-6" />
+          <AddSolutionButton caseAccount={caseAccount} className="mr-6" />
           <Link to="/algorithms/all">
             <ButtonWrapper variant="ghost" text="+ More algorithms" />
           </Link>
