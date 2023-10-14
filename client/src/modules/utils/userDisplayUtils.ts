@@ -5,5 +5,11 @@ export function getName(userInfo: UserInfo | undefined) {
     return 'Unknown';
   }
 
-  return (userInfo.name || '') + ' ' + (userInfo.surname || '');
+  const str = (userInfo.name || '') + ' ' + (userInfo.surname || '');
+
+  if (str.length >= 20) {
+    return str.slice(0, 17).trim() + '...';
+  }
+
+  return str;
 }

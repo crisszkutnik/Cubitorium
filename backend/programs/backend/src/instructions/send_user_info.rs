@@ -1,11 +1,12 @@
 use anchor_lang::prelude::*;
 
-use crate::error::UserInfoError;
-use crate::{constants::*, name_is_valid, surname_is_valid, wca_id_is_valid};
-use crate::{location_is_valid, UserInfo};
+use crate::{constants::*, error::UserInfoError, UserInfo, utils::check_date};
 
 #[derive(Accounts)]
 pub struct SendUserInfo<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+
     #[account(
         init,
         payer = user,
@@ -14,9 +15,6 @@ pub struct SendUserInfo<'info> {
         bump
     )]
     pub user_info: Account<'info, UserInfo>,
-
-    #[account(mut)]
-    pub user: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }
@@ -27,28 +25,24 @@ pub fn handler(
     surname: String,
     wca_id: String,
     location: String,
+    birthdate: String,
+    profile_img_src: String,
 ) -> Result<()> {
-    if !name_is_valid(&name) {
-        err!(UserInfoError::UserNameTooLong)?;
-    }
-
-    if !surname_is_valid(&surname) {
-        err!(UserInfoError::UserSurnameTooLong)?;
-    }
-
-    if !wca_id_is_valid(&wca_id) {
-        err!(UserInfoError::WCAIDTooLong)?;
-    }
-
-    if !location_is_valid(&location) {
-        err!(UserInfoError::LocationTooLong)?;
-    }
+    require!(name.len() <= MAX_NAME_LENGTH, UserInfoError::UserNameTooLong);
+    require!(surname.len() <= MAX_SURNAME_LENGTH, UserInfoError::UserSurnameTooLong);
+    require!(wca_id.len() <= WCA_ID_LENGTH, UserInfoError::WrongWCAID);
+    require!(location.len() <= MAX_LOCATION_LENGTH, UserInfoError::LocationTooLong);
+    require!(profile_img_src.len() <= MAX_URL_LEN, UserInfoError::ImgSrcTooLong);
+    check_date(&birthdate)?;
 
     let user_info = &mut ctx.accounts.user_info;
     user_info.name = name;
     user_info.surname = surname;
     user_info.wca_id = wca_id;
     user_info.location = location;
+    user_info.birthdate = birthdate;
+    user_info.join_timestamp = Clock::get()?.unix_timestamp as u64;
+    user_info.profile_img_src = profile_img_src;
     user_info.bump = *ctx.bumps.get("user_info").unwrap();
 
     Ok(())

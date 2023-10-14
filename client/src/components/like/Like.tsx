@@ -8,6 +8,7 @@ import {
 } from '../../modules/store/likeStore';
 import { useAlertContext } from '../context/AlertContext';
 import { LearningStatus } from './LearningStatus';
+import { useUserStore } from '../../modules/store/userStore';
 
 interface Props {
   casePk: string | PublicKey;
@@ -21,6 +22,8 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     selectLikeForSolution(solutionPk)(state),
     state.removeLike,
   ]);
+
+  const isLogged = useUserStore((state) => state.isLogged);
 
   const { success, error } = useAlertContext();
 
@@ -52,25 +55,29 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     }
   };
 
+  if (!isLogged) {
+    return <></>;
+  }
+
   return (
     <div className="flex">
       <button
         onClick={onClick}
-        className="flex flex-col items-center justify-center mr-4"
+        className="flex flex-col items-center justify-center mr-4 hover:text-amber-400"
       >
         <FontAwesomeIcon
-          className={likeAccount ? 'text-amber-400' : 'text-black'}
+          className={
+            likeAccount ? 'text-amber-400' : 'text-black hover:text-amber-400'
+          }
           icon={likeAccount ? faStarSolid : faStarRegular}
         />
-        <p>{likeAccount ? 'Liked' : 'Like'}</p>
+        <p className="text-black">{likeAccount ? 'Liked' : 'Like'}</p>
       </button>
-      {likeAccount && (
-        <LearningStatus
-          casePk={casePk}
-          solution={solution}
-          likeAccount={likeAccount}
-        />
-      )}
+      <LearningStatus
+        casePk={casePk}
+        solution={solution}
+        likeAccount={likeAccount}
+      />
     </div>
   );
 }

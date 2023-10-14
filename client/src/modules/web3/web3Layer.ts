@@ -41,12 +41,21 @@ class Web3Layer extends Web3Connection {
 
   get program() {
     if (this._program === undefined) {
-      this._program = new Program<Backend>(
-        IDL,
-        import.meta.env.VITE_PROGRAM_ID,
-      );
+      return this.setAnonymousProgram();
     }
 
+    return this._program;
+  }
+
+  private setAnonymousProgram() {
+    this._program = new Program<Backend>(IDL, import.meta.env.VITE_PROGRAM_ID, {
+      connection: this.connection,
+    });
+    return this._program;
+  }
+
+  private setRegisteredProgram() {
+    this._program = new Program<Backend>(IDL, import.meta.env.VITE_PROGRAM_ID);
     return this._program;
   }
 
@@ -57,10 +66,12 @@ class Web3Layer extends Web3Connection {
 
     setProvider(provider);
     this.provider = provider;
+    this.setRegisteredProgram();
   }
 
   reset() {
     this.provider = undefined;
+    this.setAnonymousProgram();
   }
 
   get loggedUserPK() {
@@ -110,9 +121,11 @@ class Web3Layer extends Web3Connection {
     surname: string,
     wcaId: string,
     location: string,
+    birthdate: string,
+    profileImgSrc: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .sendUserInfo(name, surname, wcaId, location)
+      .sendUserInfo(name, surname, wcaId, location, birthdate, profileImgSrc)
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
@@ -127,9 +140,11 @@ class Web3Layer extends Web3Connection {
     surname: string,
     wcaId: string,
     location: string,
+    birthdate: string,
+    profileImgSrc: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .changeUserInfo(name, surname, wcaId, location)
+      .changeUserInfo(name, surname, wcaId, location, birthdate, profileImgSrc)
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
@@ -145,7 +160,9 @@ class Web3Layer extends Web3Connection {
       PDATypes.UserInfo,
       getPKFromStringOrObject(publicKey),
     );
-    return this.program.account.userInfo.fetch(pda);
+    return this.program.account.userInfo.fetch(
+      pda,
+    ) as unknown as Promise<UserInfo>;
   }
 
   async loadGlobalConfig(): Promise<SetCase[]> {

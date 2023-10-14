@@ -2,6 +2,8 @@ import { createWithEqualityFn } from 'zustand/traditional';
 import { CaseAccount } from '../types/case.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { LoadingState } from '../types/loadingState.enum';
+import { PublicKey } from '@solana/web3.js';
+import { getStringFromPKOrObject } from '../web3/utils';
 
 interface CaseStoreState {
   cases: CaseAccount[];
@@ -22,12 +24,40 @@ export const selectCasesBySet = (set: string) => {
   };
 };
 
+export const selectCasesBySetMax = (set: string, max: number) => {
+  return (state: CaseStoreState) => {
+    return selectCasesBySet(set)(state).slice(0, max);
+  };
+};
+
 export const selectCaseBySetAndId = (set: string, caseId: string) => {
   return (state: CaseStoreState) => {
     return state.cases.find(
       ({ account: acc }) => acc.set === set && acc.id === caseId,
     );
   };
+};
+
+export const selectCasesByPks = (pks: (PublicKey | string)[]) => {
+  const keys = pks.map(getStringFromPKOrObject);
+
+  return (state: CaseStoreState) => {
+    return state.cases.filter((c) => keys.includes(c.publicKey.toString()));
+  };
+};
+
+const comparator = (a: CaseAccount, b: CaseAccount) => {
+  const { id: idA } = a.account;
+  const { id: idB } = b.account;
+
+  const numA = Number(idA);
+  const numB = Number(idB);
+
+  if (!isNaN(numA) && !isNaN(numB)) {
+    return numA > numB ? 1 : -1;
+  }
+
+  return idA > idB ? 1 : -1;
 };
 
 export const useCaseStore = createWithEqualityFn<CaseStoreState>(
@@ -46,8 +76,8 @@ export const useCaseStore = createWithEqualityFn<CaseStoreState>(
     loadCases: async () => {
       set({ loadingState: LoadingState.LOADING });
       try {
-        const loadedCases = await web3Layer.loadCases();
-        const cases = loadedCases.sort((a, b) => { return a.account.id.localeCompare(b.account.id, 'es', {numeric: true})});
+        const cases = await web3Layer.loadCases();
+        cases.sort(comparator);
         set({ cases });
       } catch (_) {
         _;

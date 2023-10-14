@@ -13,6 +13,9 @@ pub struct CreateCase<'info> {
     #[account(seeds = [PRIVILEGE_TAG.as_ref(), signer.key().as_ref()], bump = user_privilege.bump)]
     pub user_privilege: Account<'info, Privilege>,
 
+    #[account(mut, seeds = [USER_INFO_TAG.as_ref(), signer.key().as_ref()], bump = user_profile.bump)]
+    pub user_profile: Account<'info, UserInfo>,
+
     /// Program PDA treasury, funded by the community
     #[account(init_if_needed, payer = signer, space = 8, seeds = [TREASURY_TAG.as_ref()], bump)]
     pub treasury: Account<'info, Treasury>,
@@ -29,6 +32,9 @@ pub struct CreateCase<'info> {
     #[account(seeds = [SET_TAG.as_ref(), set_name.as_ref()], bump)]
     pub set: Account<'info, Set>,
 
+    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump)]
+    pub global_config: Account<'info, GlobalConfig>,
+
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
@@ -43,14 +49,17 @@ pub fn handler(
     require!(id.len() < MAX_CASE_ID_LENGTH, CaseError::MaxCaseIdLength);
     require!(setup.len() < MAX_SETUP_LENGTH, CaseError::MaxSetupLength);
 
-    // Refund lamports
+    // Refund lamports if user has some quota left
     let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set_name));
-    require!(
-        ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
-        TreasuryError::TreasuryNeedsFunds
-    );
-    **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= case_rent;
-    **ctx.accounts.signer.try_borrow_mut_lamports()? += case_rent;
+    if ctx.accounts.user_profile.sol_funded + case_rent < ctx.accounts.global_config.max_fund_limit {
+        require!(
+            ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
+            TreasuryError::TreasuryNeedsFunds
+        );
+        **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= case_rent;
+        **ctx.accounts.signer.try_borrow_mut_lamports()? += case_rent;
+        ctx.accounts.user_profile.sol_funded += case_rent;
+    }
 
     // Check if case exists
     json::from_str::<Vec<String>>(&ctx.accounts.set.case_names)

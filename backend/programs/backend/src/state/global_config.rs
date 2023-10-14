@@ -4,12 +4,13 @@ use crate::constants::DISCRIMINATOR_LENGTH;
 
 #[account]
 pub struct GlobalConfig {
+    pub max_fund_limit: u64,
     /// Supported sets (pointers)
     pub sets: Vec<Pubkey>,
 }
 
 impl GlobalConfig {
-    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 4;
+    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 8 + 4;
 }
 
 #[account]

@@ -16,7 +16,7 @@ import { useLikeStore } from '../../modules/store/likeStore';
 interface Props {
   casePk: string | PublicKey;
   solution: string;
-  likeAccount: ParsedLikeCertificateAccount;
+  likeAccount?: ParsedLikeCertificateAccount;
 }
 
 export function LearningStatus({ casePk, solution, likeAccount }: Props) {
@@ -65,7 +65,12 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
   const classes = 'text-left flex items-center py-1 px-2 rounded-full';
 
   return (
-    <button className="flex flex-col items-center justify-center">
+    <button
+      className={
+        'flex flex-col items-center justify-center' +
+        (likeAccount === undefined ? ' invisible' : '')
+      }
+    >
       <Popover placement="bottom" showArrow={true}>
         <PopoverTrigger>
           {getChip(likeAccount?.account.parsedLearningStatus)}
