@@ -46,7 +46,8 @@ export const useCaseStore = createWithEqualityFn<CaseStoreState>(
     loadCases: async () => {
       set({ loadingState: LoadingState.LOADING });
       try {
-        const cases = await web3Layer.loadCases();
+        const loadedCases = await web3Layer.loadCases();
+        const cases = loadedCases.sort((a, b) => { return a.account.id.localeCompare(b.account.id, 'es', {numeric: true})});
         set({ cases });
       } catch (_) {
         _;

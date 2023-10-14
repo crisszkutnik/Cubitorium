@@ -5,7 +5,6 @@ interface Props {
 }
 
 export function TwistyPlayer({ puzzle, algorithm, size }: Props) {
-
   const getPuzzle = () => {
     if (!puzzle) {
       return null;
@@ -33,7 +32,8 @@ export function TwistyPlayer({ puzzle, algorithm, size }: Props) {
             height: ${size}px;"
             puzzle="${getPuzzle()}"
             alg="${algorithm}"
-            experimental-setup-anchor="end"
+            hint-facelets="none"
+            back-view="top-right"
             visualization="experimental-2D-LL"
             background="none"
             control-panel="none"

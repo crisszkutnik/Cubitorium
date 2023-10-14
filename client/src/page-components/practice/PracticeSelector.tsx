@@ -15,28 +15,31 @@ import {
 } from '../../modules/store/algorithmsStore';
 import { selectCases, useCaseStore } from '../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
-import { CaseAccount, PerformanceCase } from '../../modules/types/case.interface';
+import {
+  CaseAccount,
+  PerformanceCase,
+} from '../../modules/types/case.interface';
 import { SetCase } from '../../modules/types/globalConfig.interface';
 
 interface Props {
   selectedPuzzle: string;
   setSelectedPuzzle: Dispatch<SetStateAction<string>>;
   setActiveCases: Dispatch<SetStateAction<CaseAccount[] | undefined>>;
-  setPerformance:  Dispatch<SetStateAction<PerformanceCase[]>>;
+  setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
 enum QueryParams {
   PUZZLE = 'puzzle',
   SET = 'set',
-  CASES = 'cases'
+  CASES = 'cases',
 }
 
-export function PracticeSelector({ 
-  setActiveCases, 
-  selectedPuzzle, 
+export function PracticeSelector({
+  setActiveCases,
+  selectedPuzzle,
   setSelectedPuzzle,
-  setPerformance}: Props) {
-
+  setPerformance,
+}: Props) {
   const [sets, setsMap] = useAlgorithmsStore((state) => [
     state.sets,
     state.setsMap,
@@ -47,7 +50,6 @@ export function PracticeSelector({
     sets.length > 0 ? sets[0].setName : '',
   );
 
-  
   const [selectedCases, setSelectedCases] = useState<Set<string>>();
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -82,7 +84,11 @@ export function PracticeSelector({
   }, [selectedSet, cases]);
 
   useEffect(() => {
-    setActiveCases(cases.filter((c) => selectedCases?.has(c.account.id) && c.account.set == selectedSet));
+    setActiveCases(
+      cases.filter(
+        (c) => selectedCases?.has(c.account.id) && c.account.set == selectedSet,
+      ),
+    );
   }, [selectedSet, selectedCases]);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -92,14 +98,17 @@ export function PracticeSelector({
     const querySet = searchParams.get(QueryParams.SET);
     const queryCases = searchParams.get(QueryParams.CASES);
 
-    const puzzleParamChanged = shouldUpdatePuzzleParam(queryPuzzle, searchParams);
+    const puzzleParamChanged = shouldUpdatePuzzleParam(
+      queryPuzzle,
+      searchParams,
+    );
 
     const setParamChanged = shouldUpdateSetParam(
       querySet,
       queryPuzzle,
       searchParams,
     );
-    
+
     const casesParamChanged = shouldUpdateCasesParam(
       querySet,
       queryCases,
@@ -155,7 +164,7 @@ export function PracticeSelector({
       setSelectedSet(querySet);
       return false;
     }
-    if(!querySet){
+    if (!querySet) {
       const value = getSetValue(queryPuzzle as PuzzleTypeKey | null);
       if (value) {
         params.set(QueryParams.SET, value);
@@ -177,7 +186,9 @@ export function PracticeSelector({
     }
 
     const value = getCasesValue(querySet);
-    const valueString = Array.from(value!).map((c) => c.account.id).join(',');
+    const valueString = Array.from(value!)
+      .map((c) => c.account.id)
+      .join(',');
 
     if (value) {
       params.set(QueryParams.CASES, valueString);
