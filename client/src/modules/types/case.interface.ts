@@ -13,3 +13,8 @@ export interface CaseAccount {
   account: Case;
   publicKey: PublicKey;
 }
+
+export interface PerformanceCase {
+  case: CaseAccount;
+  history: number[];
+}

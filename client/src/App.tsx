@@ -11,6 +11,7 @@ import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
+import { Practice } from './pages/practice/Practice';
 import { Home } from './pages/home/Home';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
@@ -56,6 +57,7 @@ function App() {
             </Route>
             <Route path=":id" element={<InfoByUserID />} />
           </Route>
+          <Route path="/practice" element={<Practice />} />
         </Routes>
       </BrowserRouter>
     );
