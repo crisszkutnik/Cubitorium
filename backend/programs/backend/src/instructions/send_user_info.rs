@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::*, error::UserInfoError, UserInfo, utils::check_date};
+use crate::{constants::*, error::UserInfoError, utils::check_date, UserInfo};
 
 #[derive(Accounts)]
 pub struct SendUserInfo<'info> {
@@ -28,11 +28,23 @@ pub fn handler(
     birthdate: String,
     profile_img_src: String,
 ) -> Result<()> {
-    require!(name.len() <= MAX_NAME_LENGTH, UserInfoError::UserNameTooLong);
-    require!(surname.len() <= MAX_SURNAME_LENGTH, UserInfoError::UserSurnameTooLong);
+    require!(
+        name.len() <= MAX_NAME_LENGTH,
+        UserInfoError::UserNameTooLong
+    );
+    require!(
+        surname.len() <= MAX_SURNAME_LENGTH,
+        UserInfoError::UserSurnameTooLong
+    );
     require!(wca_id.len() <= WCA_ID_LENGTH, UserInfoError::WrongWCAID);
-    require!(location.len() <= MAX_LOCATION_LENGTH, UserInfoError::LocationTooLong);
-    require!(profile_img_src.len() <= MAX_URL_LEN, UserInfoError::ImgSrcTooLong);
+    require!(
+        location.len() <= MAX_LOCATION_LENGTH,
+        UserInfoError::LocationTooLong
+    );
+    require!(
+        profile_img_src.len() <= MAX_URL_LEN,
+        UserInfoError::ImgSrcTooLong
+    );
     check_date(&birthdate)?;
 
     let user_info = &mut ctx.accounts.user_info;

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use std::{str::SplitWhitespace, borrow::BorrowMut};
+use std::{borrow::BorrowMut, str::SplitWhitespace};
 
 use crate::error::CubeError;
 
@@ -24,7 +24,7 @@ impl Pyra {
     pub fn default() -> Pyra {
         Pyra {
             xo: [0; 4],
-            ep: [1,2,3,4,5,6],
+            ep: [1, 2, 3, 4, 5, 6],
             eo: [0; 6],
         }
     }
@@ -44,9 +44,11 @@ impl Pyra {
         let moves: SplitWhitespace = moves.split_whitespace();
         for mov in moves {
             if ![
-                    "R","U","L","B","R'","U'","L'","B'",
-                    "R2","U2","L2","B2","R2'","U2'","L2'","B2'",
-                ].contains(&mov) {
+                "R", "U", "L", "B", "R'", "U'", "L'", "B'", "R2", "U2", "L2", "B2", "R2'", "U2'",
+                "L2'", "B2'",
+            ]
+            .contains(&mov)
+            {
                 return Err(error!(CubeError::InvalidMove));
             }
 
@@ -54,14 +56,14 @@ impl Pyra {
             // B=66, L=76, R=82, U=85
             // B=0,  L=10, R=16, U=19
             let base_move: usize = mov.chars().nth(0).unwrap() as usize - 66;
-            
+
             match mov.chars().nth(1).is_some() {
                 true => {
                     match mov.chars().nth(2).is_some() {
                         true => move_pyra(base_move, self.borrow_mut())?, // R2'
                         false => move_pyra(base_move + 1, self.borrow_mut())?, // R2 or R' (same for Pyra)
                     }
-                },
+                }
                 false => move_pyra(base_move, self.borrow_mut())?, // R
             }
         }
@@ -71,14 +73,13 @@ impl Pyra {
 
     /// Checks if the Pyra is solved
     pub fn is_solved(&self) -> Result<()> {
-        if !(
-            self.xo == [0,0,0,0] &&
-            self.eo == [0,0,0,0,0,0] &&
-            self.ep == [1,2,3,4,5,6]
-        ) {
+        if !(self.xo == [0, 0, 0, 0]
+            && self.eo == [0, 0, 0, 0, 0, 0]
+            && self.ep == [1, 2, 3, 4, 5, 6])
+        {
             return Err(error!(CubeError::UnsolvedCube));
         }
-    
+
         Ok(())
     }
 }

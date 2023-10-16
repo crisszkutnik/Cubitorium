@@ -1,6 +1,11 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::*, state::*, utils::validate_set_setup_solution, error::{CaseError, TreasuryError}};
+use crate::{
+    constants::*,
+    error::{CaseError, TreasuryError},
+    state::*,
+    utils::validate_set_setup_solution,
+};
 
 #[derive(Accounts)]
 #[instruction(solution: String)]
@@ -41,26 +46,34 @@ pub struct AddSolution<'info> {
 
 pub fn handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
     // Check if case has enough solutions
-    require!(ctx.accounts.case.solutions < MAX_SOLUTIONS_ALLOWED, CaseError::MaxSolutionsAllowed);
+    require!(
+        ctx.accounts.case.solutions < MAX_SOLUTIONS_ALLOWED,
+        CaseError::MaxSolutionsAllowed
+    );
 
     // Refund rent if user has some quota left
-    let solution_pda_rent = ctx.accounts.rent.minimum_balance(Solution::BASE_LEN + solution.len());
-    if ctx.accounts.user_profile.sol_funded + solution_pda_rent < ctx.accounts.global_config.max_fund_limit {
+    let solution_pda_rent = ctx
+        .accounts
+        .rent
+        .minimum_balance(Solution::BASE_LEN + solution.len());
+    if ctx.accounts.user_profile.sol_funded + solution_pda_rent
+        < ctx.accounts.global_config.max_fund_limit
+    {
         require!(
             ctx.accounts.treasury.to_account_info().lamports() >= solution_pda_rent,
             TreasuryError::TreasuryNeedsFunds
         );
-        **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= solution_pda_rent;
+        **ctx
+            .accounts
+            .treasury
+            .to_account_info()
+            .try_borrow_mut_lamports()? -= solution_pda_rent;
         **ctx.accounts.signer.try_borrow_mut_lamports()? += solution_pda_rent;
         ctx.accounts.user_profile.sol_funded += solution_pda_rent;
     }
 
     // Check that solution works (setup + solution = solved state for its set)
-    validate_set_setup_solution(
-        &ctx.accounts.case.set,
-        &ctx.accounts.case.setup,
-        &solution
-    )?;
+    validate_set_setup_solution(&ctx.accounts.case.set, &ctx.accounts.case.setup, &solution)?;
 
     // Populate Solution fields
     ctx.accounts.solution_pda.case = ctx.accounts.case.key();

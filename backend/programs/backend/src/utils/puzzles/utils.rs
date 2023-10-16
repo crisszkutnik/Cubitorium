@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 
-use crate::{utils::{Cube, Pyra}, error::CubeError};
+use crate::{
+    error::CubeError,
+    utils::{Cube, Pyra},
+};
 
 pub fn validate_set_setup_solution(set: &str, setup: &str, solution: &str) -> Result<()> {
     match set {
@@ -8,7 +11,7 @@ pub fn validate_set_setup_solution(set: &str, setup: &str, solution: &str) -> Re
             let mut pyra: Pyra = Pyra::from_moves(setup)?;
             pyra.apply_moves(solution)?;
             pyra.is_solved()?;
-        },
+        }
         _ => {
             let mut cube: Cube = Cube::from_moves(setup)?;
             cube.apply_moves(solution)?;

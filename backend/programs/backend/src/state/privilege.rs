@@ -10,7 +10,7 @@ pub struct Privilege {
 
     /// Granted to
     pub grantee: Pubkey,
-    
+
     pub bump: u8,
 }
 

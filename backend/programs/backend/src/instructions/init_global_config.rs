@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{state::*, constants::*};
+use crate::{constants::*, state::*};
 
 #[derive(Accounts)]
 pub struct InitGlobalConfig<'info> {

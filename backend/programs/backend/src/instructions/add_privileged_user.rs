@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use std::str::FromStr;
 
-use crate::{constants::*, state::*, error::*};
+use crate::{constants::*, error::*, state::*};
 
 #[derive(Accounts)]
 pub struct AddPrivilegedUser<'info> {

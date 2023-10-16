@@ -18,11 +18,11 @@ pub struct Set {
     /// Set name
     pub set_name: String,
     /// Case names as serialized JSON
-    /// 
+    ///
     /// Example:
-    /// 
+    ///
     /// `["Aa","Ab","E","F"]`
-    /// 
+    ///
     pub case_names: String,
 }
 
