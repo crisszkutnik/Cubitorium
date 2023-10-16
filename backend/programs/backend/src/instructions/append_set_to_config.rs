@@ -4,7 +4,12 @@ use std::collections::BTreeSet;
 
 use miniserde::json;
 
-use crate::{state::*, constants::*, error::{ConfigError, ContextError}, utils::realloc_with_rent};
+use crate::{
+    constants::*,
+    error::{ConfigError, ContextError},
+    state::*,
+    utils::realloc_with_rent,
+};
 
 #[derive(Accounts)]
 #[instruction(set_name: String, case_names: Vec<String>)]
@@ -37,19 +42,24 @@ pub struct AppendSetToConfig<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(ctx: Context<AppendSetToConfig>, set_name: String, case_names: Vec<String>) -> Result<()> {   
+pub fn handler(
+    ctx: Context<AppendSetToConfig>,
+    set_name: String,
+    case_names: Vec<String>,
+) -> Result<()> {
     match (&mut ctx.accounts.existing_set, &mut ctx.accounts.new_set) {
         // First case: EXISTING SET
-
         (Some(set), None) => {
             // Deserialize and extend
             let mut current_case_names = BTreeSet::from_iter(
-                json::from_str::<Vec<String>>(&set.case_names).map_err(|_| ConfigError::ConfigDeserializationError)?
+                json::from_str::<Vec<String>>(&set.case_names)
+                    .map_err(|_| ConfigError::ConfigDeserializationError)?,
             );
             current_case_names.extend(case_names);
 
             // Serialize
-            let new_case_names_json = json::to_string::<Vec<String>>(&current_case_names.into_iter().collect());
+            let new_case_names_json =
+                json::to_string::<Vec<String>>(&current_case_names.into_iter().collect());
 
             // Realloc and write Set
             realloc_with_rent(
@@ -60,7 +70,7 @@ pub fn handler(ctx: Context<AppendSetToConfig>, set_name: String, case_names: Ve
             )?;
 
             set.case_names = new_case_names_json;
-        },
+        }
 
         // Second case: NEW SET
         (None, Some(set)) => {
@@ -77,10 +87,10 @@ pub fn handler(ctx: Context<AppendSetToConfig>, set_name: String, case_names: Ve
             )?;
 
             ctx.accounts.global_config.sets.push(set.key());
-        },
+        }
 
         // Everything else: FAIL
-        (_, _) => err!(ContextError::MutuallyExclusiveAccounts)?
+        (_, _) => err!(ContextError::MutuallyExclusiveAccounts)?,
     }
 
     Ok(())

@@ -51,7 +51,9 @@ pub fn handler(ctx: Context<LikeSolution>) -> Result<()> {
 
     // Refund rent to Signer if user has some quota left
     let like_certificate_rent = ctx.accounts.rent.minimum_balance(LikeCertificate::LEN);
-    if ctx.accounts.user_profile.sol_funded + like_certificate_rent < ctx.accounts.global_config.max_fund_limit {
+    if ctx.accounts.user_profile.sol_funded + like_certificate_rent
+        < ctx.accounts.global_config.max_fund_limit
+    {
         require!(
             ctx.accounts.treasury.to_account_info().lamports() >= like_certificate_rent,
             TreasuryError::TreasuryNeedsFunds

@@ -1,5 +1,8 @@
+use crate::{
+    constants::*,
+    utils::{Cube, Pyra},
+};
 use anchor_lang::prelude::*;
-use crate::{utils::{Cube, Pyra}, constants::*};
 
 /// Describes a solvable case
 #[account]

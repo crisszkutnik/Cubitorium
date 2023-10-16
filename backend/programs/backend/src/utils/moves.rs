@@ -4,13 +4,19 @@
 
 use anchor_lang::prelude::*;
 
-use crate::{move_def::{pyra_move_def::{EP as P_EP, EO as P_EO, XO}, cube_move_def::*}, error::CubeError};
 use super::{Cube, Pyra};
+use crate::{
+    error::CubeError,
+    move_def::{
+        cube_move_def::*,
+        pyra_move_def::{EO as P_EO, EP as P_EP, XO},
+    },
+};
 
 /// Rotate four elements
 pub fn apply_permutation(arr: &mut [u8], indices: [usize; 4]) -> () {
     // This was the easiest & fastest to think of option
-    let last    = arr[indices[3]];
+    let last = arr[indices[3]];
     arr[indices[3]] = arr[indices[2]];
     arr[indices[2]] = arr[indices[1]];
     arr[indices[1]] = arr[indices[0]];
@@ -20,7 +26,7 @@ pub fn apply_permutation(arr: &mut [u8], indices: [usize; 4]) -> () {
 /// Rotate three elements
 pub fn apply_permutation_3(arr: &mut [u8], indices: [usize; 3]) -> () {
     // This was the easiest & fastest to think of option
-    let last    = arr[indices[2]];
+    let last = arr[indices[2]];
     arr[indices[2]] = arr[indices[1]];
     arr[indices[1]] = arr[indices[0]];
     arr[indices[0]] = last;
@@ -28,10 +34,9 @@ pub fn apply_permutation_3(arr: &mut [u8], indices: [usize; 3]) -> () {
 
 /// Apply orientation mask with modulo
 pub fn apply_orientation(arr: &[u8], mask: &[u8], modulo: u8) -> Vec<u8> {
-    arr
-        .iter()
+    arr.iter()
         .zip(mask)
-        .map(|(&a,&b)| (a+b) % modulo)
+        .map(|(&a, &b)| (a + b) % modulo)
         .collect()
 }
 
@@ -74,7 +79,7 @@ pub fn apply_to_pyra(
     mut pyra: Pyra,
     ep_indices: [usize; 3],
     xo_mask: [u8; 4],
-    eo_mask_opt: Option<[u8; 6]>
+    eo_mask_opt: Option<[u8; 6]>,
 ) -> Pyra {
     // Cycle both edge arrays
     apply_permutation_3(&mut pyra.eo, ep_indices);

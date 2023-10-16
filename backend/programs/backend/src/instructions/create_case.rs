@@ -2,7 +2,12 @@ use anchor_lang::prelude::*;
 
 use miniserde::json;
 
-use crate::{state::*, constants::*, utils::*, error::{CubeError, CaseError, ConfigError, TreasuryError}};
+use crate::{
+    constants::*,
+    error::{CaseError, ConfigError, CubeError, TreasuryError},
+    state::*,
+    utils::*,
+};
 
 #[derive(Accounts)]
 #[instruction(set_name: String, id: String)]
@@ -45,18 +50,29 @@ pub fn handler(
     id: String,
     setup: String,
 ) -> Result<()> {
-    require!(set_name.len() < MAX_SET_NAME_LENGTH, CaseError::MaxSetNameLength);
+    require!(
+        set_name.len() < MAX_SET_NAME_LENGTH,
+        CaseError::MaxSetNameLength
+    );
     require!(id.len() < MAX_CASE_ID_LENGTH, CaseError::MaxCaseIdLength);
     require!(setup.len() < MAX_SETUP_LENGTH, CaseError::MaxSetupLength);
 
     // Refund lamports if user has some quota left
-    let case_rent = ctx.accounts.rent.minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set_name));
-    if ctx.accounts.user_profile.sol_funded + case_rent < ctx.accounts.global_config.max_fund_limit {
+    let case_rent = ctx
+        .accounts
+        .rent
+        .minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set_name));
+    if ctx.accounts.user_profile.sol_funded + case_rent < ctx.accounts.global_config.max_fund_limit
+    {
         require!(
             ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
             TreasuryError::TreasuryNeedsFunds
         );
-        **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? -= case_rent;
+        **ctx
+            .accounts
+            .treasury
+            .to_account_info()
+            .try_borrow_mut_lamports()? -= case_rent;
         **ctx.accounts.signer.try_borrow_mut_lamports()? += case_rent;
         ctx.accounts.user_profile.sol_funded += case_rent;
     }
@@ -64,9 +80,9 @@ pub fn handler(
     // Check if case exists
     json::from_str::<Vec<String>>(&ctx.accounts.set.case_names)
         .map_err(|_| ConfigError::ConfigDeserializationError)?
-        .iter().find(|case| case == &&id)
+        .iter()
+        .find(|case| case == &&id)
         .ok_or(CubeError::InvalidCase)?;
-
 
     // Write to PDA
     ctx.accounts.case.set = set_name.clone();
@@ -79,7 +95,7 @@ pub fn handler(
         "L4E" => {
             ctx.accounts.case.cube_state = None;
             ctx.accounts.case.pyra_state = Some(Pyra::from_moves(&setup)?);
-        },
+        }
         _ => {
             ctx.accounts.case.cube_state = Some(Cube::from_moves(&setup)?);
             ctx.accounts.case.pyra_state = None;

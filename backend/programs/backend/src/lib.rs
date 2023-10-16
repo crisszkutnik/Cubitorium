@@ -33,7 +33,10 @@ pub mod backend {
     }
 
     /// Sets max fund limit
-    pub fn set_max_fund_limit(ctx: Context<SetMaxFundLimit>, new_max_fund_limit: u64) -> Result<()> {
+    pub fn set_max_fund_limit(
+        ctx: Context<SetMaxFundLimit>,
+        new_max_fund_limit: u64,
+    ) -> Result<()> {
         set_max_fund_limit::handler(ctx, new_max_fund_limit)
     }
 
@@ -94,7 +97,15 @@ pub mod backend {
         birthdate: String,
         profile_img_src: String,
     ) -> Result<()> {
-        send_user_info::handler(ctx, name, surname, wca_id, location, birthdate, profile_img_src)
+        send_user_info::handler(
+            ctx,
+            name,
+            surname,
+            wca_id,
+            location,
+            birthdate,
+            profile_img_src,
+        )
     }
 
     /// Modifies existing user info PDA (user)
@@ -107,6 +118,14 @@ pub mod backend {
         new_birthdate: Option<String>,
         new_profile_img_src: Option<String>,
     ) -> Result<()> {
-        change_user_info::handler(ctx, new_name, new_surname, new_wca_id, new_location, new_birthdate, new_profile_img_src)
+        change_user_info::handler(
+            ctx,
+            new_name,
+            new_surname,
+            new_wca_id,
+            new_location,
+            new_birthdate,
+            new_profile_img_src,
+        )
     }
 }
