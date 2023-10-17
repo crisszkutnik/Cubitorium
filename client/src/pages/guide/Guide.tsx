@@ -8,7 +8,7 @@ export function Guide() {
     <img className="block mt-40 -mb-10 h-20"src="/public/Logo.png"alt="Cubitorium"/>
        <p className="text-sm text-gray-900 text-center max-w-sm mt-40 bg-gray-50">
        
-       💡  Before you start enjoying all the features of Cubitorium, please read and follow this series of essential steps to be able to use the site without blockers.
+       💡  Before you start enjoying all the features of Cubitorium, please read and follow this series of essential steps to be able to use the site swiftly.
       </p>
 
       <h1 className="text-4xl font-bold text-accent-dark text-center">Getting Started with Cryptocurrency Wallets</h1>
@@ -20,7 +20,7 @@ export function Guide() {
         </p>
         <p className="text-gray-400 font-bold mb-4">
           In the context of Cubitorium, there are really no cryptocurrency transactions per se, but you will use your "Credit" on your wallet to be able to upload your algorithms.
-          You don't have to worry at all in terms of money if you only want to interact with the site without saving any status (such as solving algorithms, likes to algorithms, saving practice statuses, among others).
+          You don't have to worry at all in terms of money if you only want to read or practice.
     
         </p>
 
