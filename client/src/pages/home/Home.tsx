@@ -44,11 +44,15 @@ export function Home() {
 
         {/* Description */}
         <div className="flex flex-col items-center mt-1 mb-3">
-          <p className="text-sm text-xm max-w-sm text-gray-900 text-center">
+          <p className="text-sm text-xm max-w-sm text-gray-600 text-center font-bold">
             Cubitorium is a decentralized Web3 solution created to assist the
             Speedcubers community. Here, you will find several tools to improve
             your skills in this global sport practiced in more than 100
             countries in the world.
+          </p>
+
+          <p className="text-sm text-xm max-w-sm text-gray-600 text-center mt-5">
+          Before you start exploring the capabilities of our application, we <b>strongly recommend </b>reading this <a href='/guide' className="text-blue-600 font-bold">guide on how to install a cryptocurrency wallet</a>. Once you're ready with that:
           </p>
 
           {/* Experience the best way to... */}

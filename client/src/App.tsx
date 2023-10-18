@@ -13,6 +13,7 @@ import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
 import { Practice } from './pages/practice/Practice';
 import { Home } from './pages/home/Home';
+import { Guide } from './pages/guide/Guide';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
+          <Route path="/guide" element={<Guide />} />  {/* The guide page will not have a NavLink on the Navbar since it's not a func of our app */}
 
           {/* Authenticated routes */}
           <Route element={<AuthenticatedRoute />}>
