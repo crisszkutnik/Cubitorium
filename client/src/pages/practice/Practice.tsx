@@ -9,6 +9,7 @@ import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
 import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
+import { LastCase } from '../../page-components/practice/LastCase';
 
 export function Practice() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -47,13 +48,22 @@ export function Practice() {
     <DefaultLayout column={true}>
       <h1 className="text-4xl py-6 text-accent-dark font-bold">Practice</h1>
       <div className="flex flex-row gap-4">
-        <PracticeSelector
-          selectedPuzzle={selectedPuzzle}
-          setSelectedPuzzle={setSelectedPuzzle}
-          setActiveCases={setActiveCases}
-          setPerformance={setPerformance}
-        />
-        <div className="flex flex-col w-full items-center">
+        <div className="flex flex-col w-1/4 items-center gap-4">
+          <PracticeSelector
+            selectedPuzzle={selectedPuzzle}
+            setSelectedPuzzle={setSelectedPuzzle}
+            setActiveCases={setActiveCases}
+            setPerformance={setPerformance}
+          />
+          {performance.length > 0 && (
+            <LastCase 
+            selectedPuzzle={selectedPuzzle}
+            performance={performance[performance.length - 1]}
+          />
+          )}
+          
+        </div>
+        <div className="flex flex-col w-3/4 items-center">
           <StopWatch
             selectedPuzzle={selectedPuzzle}
             activeCases={activeCases}

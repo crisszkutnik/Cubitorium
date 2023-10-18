@@ -105,7 +105,6 @@ export function PracticeSelector({
 
     const setParamChanged = shouldUpdateSetParam(
       querySet,
-      queryPuzzle,
       searchParams,
     );
 
@@ -157,7 +156,6 @@ export function PracticeSelector({
 
   const shouldUpdateSetParam = (
     querySet: string | null,
-    queryPuzzle: string | null,
     params: URLSearchParams,
   ) => {
     if (querySet && querySet !== selectedSet) {
@@ -165,7 +163,7 @@ export function PracticeSelector({
       return false;
     }
     if (!querySet) {
-      const value = getSetValue(queryPuzzle as PuzzleTypeKey | null);
+      const value = getSetValue(selectedPuzzle as PuzzleTypeKey | null);
       if (value) {
         params.set(QueryParams.SET, value);
         return true;
@@ -199,7 +197,7 @@ export function PracticeSelector({
   };
 
   return (
-    <div className="w-1/4 h-fit drop-shadow bg-white rounded flex flex-col px-5 py-5">
+    <div className="w-full h-fit drop-shadow bg-white rounded flex flex-col px-5 py-5">
       <h1 className="font-bold text-accent-dark text-2xl mb-10">Select case</h1>
       <Select
         labelPlacement="outside"

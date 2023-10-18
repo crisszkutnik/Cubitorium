@@ -24,6 +24,7 @@ export function StopWatch({
 }: Props) {
   // state to store time
   const [time, setTime] = useState(0);
+  const [redTime, setRedTime] = useState(false);
 
   const [selectedCase, setSelectedCase] = useState<CaseAccount>();
 
@@ -73,7 +74,21 @@ export function StopWatch({
   const keyPress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === ' ') {
+        e.preventDefault();
+        if(!isRunning){
+          setTime(0);
+          setRedTime(true);
+        }
+      }
+    },
+    [startAndStop],
+  );
+
+  const keyUnpress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === ' ') {
         startAndStop();
+        setRedTime(false);
         e.preventDefault();
       }
     },
@@ -84,6 +99,11 @@ export function StopWatch({
     document.addEventListener('keydown', keyPress);
     return () => document.removeEventListener('keydown', keyPress);
   }, [keyPress]);
+
+  useEffect(() => {
+    document.addEventListener('keyup', keyUnpress);
+    return () => document.removeEventListener('keyup', keyUnpress);
+  }, [keyUnpress]);
 
   useEffect(() => {
     updateCase();
@@ -113,7 +133,7 @@ export function StopWatch({
             {selectedCase?.account.setup}
           </h1>
         </div>
-        <p className="text-9xl text-black font-bold py-8">
+        <p className={"text-9xl font-bold py-8 " + (redTime ? "text-red-600" : "text-black")}>
           {seconds.toFixed(2)}
         </p>
         <p className="pb-6">Space to {isRunning ? 'stop' : 'start'}</p>

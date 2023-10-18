@@ -26,8 +26,8 @@
 
 | Name               | Email                   | FRBA email                     |
 | ------------------ | ----------------------- | ------------------------------ |
-| Agustin Villareal  | #                       | agustinvilla@frba.utn.edu.ar   |
+| Agustin Villareal  | agus@cpmail.com         | agustinvilla@frba.utn.edu.ar   |
 | Cristobal Szkutnik | crisszkutnik@gmail.com  | cszkutnik@frba.utn.edu.ar      |
 | Guido Dipietro     | dipietroguido@gmail.com | gdipietro@frba.utn.edu.ar      |
 | Guido Enrique      | guidoenr4@gmail.com     | genriquezabala@frba.utn.edu.ar |
-| Matias Davicino    | #                       | mdavicino@frba.utn.edu.ar      |
+| Matias Davicino    | mati.spd@gmail.com      | mdavicino@frba.utn.edu.ar      |
