@@ -1,6 +1,5 @@
-import { Transaction, VersionedTransaction } from '@coral-xyz/anchor';
 import { hash } from '@coral-xyz/anchor/dist/cjs/utils/sha256';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { PDATypes } from './web3Layer';
 import {
   RawLearningStatus,
