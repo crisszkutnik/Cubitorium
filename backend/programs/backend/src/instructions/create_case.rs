@@ -88,7 +88,7 @@ pub fn handler(
     ctx.accounts.case.set = set_name.clone();
     ctx.accounts.case.id = id;
     ctx.accounts.case.setup = setup.clone();
-    ctx.accounts.case.bump = *ctx.bumps.get("case").unwrap();
+    ctx.accounts.case.bump = ctx.bumps.case;
 
     // Code horror
     match &set_name[..] {
