@@ -49,7 +49,7 @@ pub fn handler(ctx: Context<AddPrivilegedUser>) -> Result<()> {
 
     ctx.accounts.grantee_privilege.granter = ctx.accounts.granter.key();
     ctx.accounts.grantee_privilege.grantee = ctx.accounts.grantee.key();
-    ctx.accounts.grantee_privilege.bump = *ctx.bumps.get("grantee_privilege").unwrap();
+    ctx.accounts.grantee_privilege.bump = ctx.bumps.grantee_privilege;
 
     emit!(AddPrivilegedUserEvent {
         granter: ctx.accounts.grantee_privilege.granter,

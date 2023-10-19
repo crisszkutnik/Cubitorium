@@ -55,7 +55,7 @@ pub fn handler(
     user_info.birthdate = birthdate;
     user_info.join_timestamp = Clock::get()?.unix_timestamp as u64;
     user_info.profile_img_src = profile_img_src;
-    user_info.bump = *ctx.bumps.get("user_info").unwrap();
+    user_info.bump = ctx.bumps.user_info;
 
     Ok(())
 }
