@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { TwistyPlayer } from './TwistyPlayer';
 import { PerformanceCase } from '../../modules/types/case.interface';
 
@@ -15,6 +15,18 @@ export const Performance = ({ selectedPuzzle, performance }: Props) => {
     return (sum / array.length).toFixed(2);
   };
 
+  const onClick = (itemCaseId: string) => {
+    let newPerformance = [...performance];
+    newPerformance = newPerformance.map((item) => {
+      if (item.case.account.id === itemCaseId) {
+        item.history.pop();
+      }
+      return item;
+    });
+    newPerformance = newPerformance.filter((item) => item.history.length > 0);
+    setPerformance(newPerformance);
+  };
+
   return (
     <div className="w-full drop-shadow p-6 rounded bg-white mt-4">
       <div className="flex flex-col w-full justify-center items-center">
@@ -27,6 +39,7 @@ export const Performance = ({ selectedPuzzle, performance }: Props) => {
               <th>&nbsp;</th>
               <th>Case</th>
               <th>Results</th>
+              <th>&nbsp;</th>
               <th>Average</th>
             </tr>
           </thead>
@@ -42,6 +55,11 @@ export const Performance = ({ selectedPuzzle, performance }: Props) => {
                 </td>
                 <td className="text-center">{item.case.account.id}</td>
                 <td>{item.history.map((i) => i.toFixed(2)).join(', ')}</td>
+                <td>
+                  <button onClick={() => onClick(item.case.account.id)}>
+                    <img className="h-6" src="/public/delete.png" />
+                  </button>
+                </td>
                 <td className="text-center">
                   {calculateAverage(item.history)}
                 </td>
