@@ -24,9 +24,20 @@ export const selectCasesBySet = (set: string) => {
   };
 };
 
-export const selectCasesBySetMax = (set: string, max: number) => {
+export const selectCasesByTermAndSetMax = (
+  set: string,
+  max: number,
+  filterTerm?: string,
+) => {
   return (state: CaseStoreState) => {
-    return selectCasesBySet(set)(state).slice(0, max);
+    return state.cases
+      .filter((c) => {
+        return (
+          c.account.set === set &&
+          (filterTerm ? c.account.id.includes(filterTerm) : true)
+        );
+      })
+      .slice(0, max);
   };
 };
 

@@ -24,7 +24,7 @@ export function Profile({ author }: Props) {
           onClick={onUserProfileClick}
         >
           <FontAwesomeIcon icon={faUser} />
-          <p>Profile</p>
+          <p>Author</p>
         </button>
       </Tooltip>
     </div>

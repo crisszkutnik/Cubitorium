@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ export function DefaultLayout({ children, column }: Props) {
   return (
     <div className="flex justify-center w-full mt-4">
       <div
-        className={"flex w-full max-w-screen-xl" + (column ? " flex-col" : "")}
+        className={'flex w-full max-w-screen-xl' + (column ? ' flex-col' : '')}
       >
         {children}
       </div>

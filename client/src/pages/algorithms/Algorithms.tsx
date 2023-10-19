@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { DefaultLayout } from '../../components/layout/DefaultLayout';
 import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
 import { LoadingState } from '../../modules/types/loadingState.enum';
-import { LeftPanel } from '../../page-components/algorithms/LeftPanel';
 import { TopSelector } from '../../page-components/algorithms/TopSelector';
 import { RightPanel } from '../../page-components/algorithms/rightPanel/RightPanel';
 import { Loading } from '../Loading';
 import { useCaseStore } from '../../modules/store/caseStore';
 import { useSolutionStore } from '../../modules/store/solutionStore';
 import { useLikeStore } from '../../modules/store/likeStore';
+import { Input } from '@nextui-org/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 export function Algorithms() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -31,6 +33,8 @@ export function Algorithms() {
 
   const [selectedType, setSelectedType] = useState<string>('3x3');
   const [selectedSubtype, setSelectedSubtype] = useState<string>('');
+
+  const [filterTerm, setFilterTerm] = useState('');
 
   useEffect(() => {
     loadSetsIfNotLoaded();
@@ -58,13 +62,27 @@ export function Algorithms() {
       <TopSelector
         selectedType={selectedType}
         selectedSubtype={selectedSubtype}
-        setSelectedType={setSelectedType}
-        setSelectedSubtype={setSelectedSubtype}
+        setSelectedType={(str) => {
+          setFilterTerm('');
+          setSelectedType(str);
+        }}
+        setSelectedSubtype={(str) => {
+          setFilterTerm('');
+          setSelectedSubtype(str);
+        }}
       />
-      <div className="flex mt-3">
-        <LeftPanel />
-        <RightPanel selectedSubtype={selectedSubtype} />
+      <div className="w-56 mb-4">
+        <Input
+          label="Filter"
+          placeholder="Filter cases"
+          startContent={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+          isClearable
+          variant="bordered"
+          onChange={(e) => setFilterTerm(e.target.value)}
+          value={filterTerm}
+        />
       </div>
+      <RightPanel selectedSubtype={selectedSubtype} filterTerm={filterTerm} />
     </DefaultLayout>
   );
 }

@@ -55,12 +55,8 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     }
   };
 
-  if (!isLogged) {
-    return <></>;
-  }
-
   return (
-    <div className="flex">
+    <div className={'flex' + (!isLogged ? ' invisible' : '')}>
       <button
         onClick={onClick}
         className="flex flex-col items-center justify-center mr-4 hover:text-amber-400"
