@@ -9,11 +9,7 @@ interface Props {
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
-export const Performance = ({
-  selectedPuzzle,
-  performance,
-  setPerformance,
-}: Props) => {
+export const Performance = ({ selectedPuzzle, performance }: Props) => {
   const calculateAverage = (array: number[]): string => {
     const sum = array.reduce((a: number, b: number): number => a + b);
     return (sum / array.length).toFixed(2);
@@ -45,7 +41,7 @@ export const Performance = ({
                   ></TwistyPlayer>
                 </td>
                 <td className="text-center">{item.case.account.id}</td>
-                <td>{item.history.map(i => i.toFixed(2)).join(', ')}</td>
+                <td>{item.history.map((i) => i.toFixed(2)).join(', ')}</td>
                 <td className="text-center">
                   {calculateAverage(item.history)}
                 </td>
