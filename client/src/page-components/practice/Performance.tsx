@@ -58,12 +58,15 @@ export const Performance = ({
                   ></TwistyPlayer>
                 </td>
                 <td className="text-center">{item.case.account.id}</td>
-                <td>{item.history.map(i => i.toFixed(2)).join(', ')}</td>
-                <td><button onClick={() => onClick(item.case.account.id)}><img className='h-6' src="/public/delete.png"/></button></td>
+                <td>{item.history.map((i) => i.toFixed(2)).join(', ')}</td>
+                <td>
+                  <button onClick={() => onClick(item.case.account.id)}>
+                    <img className="h-6" src="/public/delete.png" />
+                  </button>
+                </td>
                 <td className="text-center">
                   {calculateAverage(item.history)}
                 </td>
-                
               </tr>
             ))}
           </tbody>

@@ -10,6 +10,7 @@ import { Loading } from '../Loading';
 import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
 import { LastCase } from '../../page-components/practice/LastCase';
+import { useSolutionStore } from '../../modules/store/solutionStore';
 
 export function Practice() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -28,15 +29,28 @@ export function Practice() {
 
   const [selectedPuzzle, setSelectedPuzzle] = useState<string>('3x3');
 
+  const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
+    useSolutionStore((state) => [
+      state.solutions.filter(
+        (s) =>
+          s.account.case.toString() ===
+          performance[performance.length - 1]?.case.publicKey.toString(),
+      ),
+      state.loadIfNotLoaded,
+      state.loadingState,
+    ]);
+
   useEffect(() => {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
+    loadSolutionsIfNotLoaded();
   }, []);
 
   const hasAllRequiredData = () => {
     return (
       setsLoadingState === LoadingState.LOADED &&
-      caseLoadingState === LoadingState.LOADED
+      caseLoadingState === LoadingState.LOADED &&
+      solutionsLoadingState === LoadingState.LOADED
     );
   };
 
@@ -56,12 +70,12 @@ export function Practice() {
             setPerformance={setPerformance}
           />
           {performance.length > 0 && (
-            <LastCase 
-            selectedPuzzle={selectedPuzzle}
-            performance={performance[performance.length - 1]}
-          />
+            <LastCase
+              selectedPuzzle={selectedPuzzle}
+              performance={performance[performance.length - 1]}
+              solutions={solutions}
+            />
           )}
-          
         </div>
         <div className="flex flex-col w-3/4 items-center">
           <StopWatch

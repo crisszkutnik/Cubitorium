@@ -75,7 +75,7 @@ export function StopWatch({
     (e: KeyboardEvent) => {
       if (e.key === ' ') {
         e.preventDefault();
-        if(!isRunning){
+        if (!isRunning) {
           setTime(0);
           setRedTime(true);
         }
@@ -133,7 +133,12 @@ export function StopWatch({
             {selectedCase?.account.setup}
           </h1>
         </div>
-        <p className={"text-9xl font-bold py-8 " + (redTime ? "text-red-600" : "text-black")}>
+        <p
+          className={
+            'text-9xl font-bold py-8 ' +
+            (redTime ? 'text-red-600' : 'text-black')
+          }
+        >
           {seconds.toFixed(2)}
         </p>
         <p className="pb-6">Space to {isRunning ? 'stop' : 'start'}</p>

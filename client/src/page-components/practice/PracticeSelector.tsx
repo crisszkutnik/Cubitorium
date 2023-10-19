@@ -103,10 +103,7 @@ export function PracticeSelector({
       searchParams,
     );
 
-    const setParamChanged = shouldUpdateSetParam(
-      querySet,
-      searchParams,
-    );
+    const setParamChanged = shouldUpdateSetParam(querySet, searchParams);
 
     const casesParamChanged = shouldUpdateCasesParam(
       querySet,
