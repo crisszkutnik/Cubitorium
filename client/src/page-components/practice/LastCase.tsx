@@ -1,5 +1,4 @@
 import { TwistyPlayer } from './TwistyPlayer';
-import { CaseAccount } from '../../modules/types/case.interface';
 import { ButtonWrapper } from '../../components/ButtonWrapper';
 import { PerformanceCase } from '../../modules/types/case.interface';
 import { useNavigate } from 'react-router-dom';

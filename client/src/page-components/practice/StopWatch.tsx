@@ -8,6 +8,7 @@ import {
 import { TwistyPlayer } from './TwistyPlayer';
 import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
+import { useAlertContext } from '../../components/context/AlertContext';
 
 interface Props {
   selectedPuzzle: string;
@@ -31,6 +32,8 @@ export function StopWatch({
   // state to check stopwatch running or not
   const [isRunning, setIsRunning] = useState(false);
 
+  const { error } = useAlertContext();
+
   useEffect(() => {
     let intervalId: NodeJS.Timer;
     if (isRunning) {
@@ -42,6 +45,10 @@ export function StopWatch({
 
   // Method to start and stop timer
   const startAndStop = () => {
+    if (!activeCases || activeCases.length == 0) {
+      error('No cases selected');
+      return;
+    }
     setIsRunning(!isRunning);
     if (!isRunning) {
       setTime(0);
@@ -97,6 +104,7 @@ export function StopWatch({
 
   useEffect(() => {
     document.addEventListener('keydown', keyPress);
+    (document.activeElement as HTMLElement).blur();
     return () => document.removeEventListener('keydown', keyPress);
   }, [keyPress]);
 
