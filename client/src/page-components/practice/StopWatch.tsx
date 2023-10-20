@@ -26,6 +26,7 @@ export function StopWatch({
   // state to store time
   const [time, setTime] = useState(0);
   const [redTime, setRedTime] = useState(false);
+  const [showScramble, setShowScramble] = useState(true);
 
   const [selectedCase, setSelectedCase] = useState<CaseAccount>();
 
@@ -132,11 +133,36 @@ export function StopWatch({
     <div className="w-full drop-shadow p-6 rounded bg-white">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="flex flex-row items-center w-full p-6 border-b-4">
-          <TwistyPlayer
-            puzzle={selectedPuzzle}
-            algorithm={selectedCase?.account.setup}
-            size="100"
-          ></TwistyPlayer>
+          <div className="flex flex-col w-40 h-32 items-center">
+            <button onClick={() => setShowScramble(!showScramble)}>
+              <div className="flex flex-row items-center gap-1">
+                {showScramble ? (
+                  <>
+                    <p className="text-s">Hide Scramble</p>
+                    <img
+                      src="/public/closed_eye.png"
+                      className="w-6 h-6"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-s">Show Scramble</p>
+                    <img
+                      src="/public/opened_eye.png"
+                      className="w-6 h-6"
+                    />
+                  </>
+                )}
+              </div>
+            </button>
+            {showScramble && (
+              <TwistyPlayer
+                puzzle={selectedPuzzle}
+                algorithm={selectedCase?.account.setup}
+                size="100"
+              ></TwistyPlayer>
+            )}
+          </div>
           <h1 className="text-3xl font-bold w-full text-center">
             {selectedCase?.account.setup}
           </h1>
