@@ -67,7 +67,7 @@ export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
 
   return (
     <div
-      className={`flex ${width || 'w-full'}`}
+      className={`flex ${width ?? 'w-full'}`}
       dangerouslySetInnerHTML={{
         __html: `
           <twisty-player

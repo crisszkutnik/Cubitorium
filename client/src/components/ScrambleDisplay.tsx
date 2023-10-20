@@ -16,6 +16,9 @@ interface Props {
   width?: string;
 }
 
+/**
+ * @deprecated
+ */
 export function ScrambleDisplay({
   event,
   scramble,
