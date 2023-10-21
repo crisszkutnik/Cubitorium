@@ -1,5 +1,4 @@
 import { ChangeEvent, useRef, useState } from 'react';
-import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
 import { Input, Textarea } from '@nextui-org/react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +6,7 @@ import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { useAlertContext } from '../../../components/context/AlertContext';
 import { useSolutionStore } from '../../../modules/store/solutionStore';
-import { getPuzzleType } from '../../../modules/store/algorithmsStore';
+import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -53,12 +52,12 @@ export function ResolutionInput({ activeCase }: Props) {
         <p className="mt-4 text-lg">
           <b>Setup: </b> {activeCase?.account.setup}
         </p>
-        <ScrambleDisplay
+        <ScrambleDisplay2
           height="h-60 mb-4"
           width="w-fit"
-          event={getPuzzleType(activeCase?.account.set || '')}
+          set={activeCase?.account.set || ''}
           scramble={activeCase?.account.setup + ' ' + userSolution}
-        ></ScrambleDisplay>
+        />
       </div>
       <div>
         <div className="text-md items-center flex rounded text-gray-600 text-center mb-5 bg-blue-100 p-2">
