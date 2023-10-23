@@ -8,7 +8,11 @@ interface Props {
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
-export const Performance = ({ setPerformance, performance }: Props) => {
+export const Performance = ({
+  selectedPuzzle,
+  performance,
+  setPerformance,
+}: Props) => {
   const calculateAverage = (array: number[]): string => {
     const sum = array.reduce((a: number, b: number): number => a + b);
     return (sum / array.length).toFixed(2);
@@ -29,8 +33,24 @@ export const Performance = ({ setPerformance, performance }: Props) => {
   return (
     <div className="w-full drop-shadow p-6 rounded bg-white mt-4">
       <div className="flex flex-col w-full justify-center items-center">
-        <div className="flex flex-row items-center w-full p-6 border-b-4">
-          <h1 className="text-2xl font-bold w-full">Performance History</h1>
+        <div className="flex flex-row items-center w-full p-6 border-b-4 justify-between">
+          <h1 className="text-2xl font-bold">Performance History</h1>
+          {performance.length > 0 && (
+            <p>
+              {'Total average: ' +
+                (
+                  performance.reduce((accumulator, object) => {
+                    return (
+                      accumulator +
+                      object.history.reduce(
+                        (a: number, b: number): number => a + b,
+                      ) /
+                        object.history.length
+                    );
+                  }, 0) / performance.length
+                ).toFixed(2)}
+            </p>
+          )}
         </div>
         <table className="w-5/6 overscroll-none">
           <thead>

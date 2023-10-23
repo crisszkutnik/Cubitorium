@@ -20,6 +20,7 @@ import {
   PerformanceCase,
 } from '../../modules/types/case.interface';
 import { SetCase } from '../../modules/types/globalConfig.interface';
+import { ButtonWrapper } from '../../components/ButtonWrapper';
 
 interface Props {
   selectedPuzzle: string;
@@ -179,18 +180,37 @@ export function PracticeSelector({
       setSelectedCases(new Set(queryCasesArray));
       return false;
     }
+    if (querySet != selectedSet) {
+      const value = getCasesValue(querySet);
+      const valueString = Array.from(value!)
+        .map((c) => c.account.id)
+        .join(',');
 
-    const value = getCasesValue(querySet);
-    const valueString = Array.from(value!)
-      .map((c) => c.account.id)
-      .join(',');
-
-    if (value) {
-      params.set(QueryParams.CASES, valueString);
-      return true;
+      if (value) {
+        params.set(QueryParams.CASES, valueString);
+        return true;
+      }
+    }
+    if (!queryCases) {
+      setSelectedCases(new Set([]));
     }
 
     return false;
+  };
+
+  const onSelectAll = () => {
+    const value = getCasesValue(selectedSet);
+    const valueArray = Array.from(value!).map((c) => c.account.id);
+    setSelectedCases(new Set(valueArray));
+    const test = valueArray.join(',');
+    searchParams.set(QueryParams.CASES, test);
+    setSearchParams(searchParams);
+  };
+
+  const onSelectNone = () => {
+    setSelectedCases(new Set([]));
+    searchParams.set(QueryParams.CASES, Array.from([]).join(','));
+    setSearchParams(searchParams);
   };
 
   return (
@@ -231,19 +251,32 @@ export function PracticeSelector({
       <Select
         labelPlacement="outside"
         selectionMode="multiple"
+        placeholder="Select cases"
         color="primary"
         label="Algorithm cases"
         selectedKeys={selectedCases}
         onChange={handleCaseChange}
         disabled={casesForselectedSet.length === 0}
         classNames={{
-          label: 'text-accent-dark font-semibold text-lg',
-          base: 'mt-10',
+          label: 'text-accent-dark text-lg',
+          base: 'mt-2',
         }}
         items={casesForselectedSet}
       >
         {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
       </Select>
+      <div className="flex flex-row gap-2 justify-center mt-4">
+        <ButtonWrapper
+          onClick={() => onSelectAll()}
+          text="Select All"
+          variant="shadow"
+        />
+        <ButtonWrapper
+          onClick={() => onSelectNone()}
+          text="Select None"
+          variant="shadow"
+        />
+      </div>
     </div>
   );
 }
