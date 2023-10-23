@@ -5,24 +5,18 @@ import {
   Dispatch,
   SetStateAction,
 } from 'react';
-import { TwistyPlayer } from './TwistyPlayer';
 import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
 import { useAlertContext } from '../../components/context/AlertContext';
+import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
 
 interface Props {
-  selectedPuzzle: string;
   activeCases: CaseAccount[] | undefined;
   performance: PerformanceCase[];
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
-export function StopWatch({
-  selectedPuzzle,
-  activeCases,
-  performance,
-  setPerformance,
-}: Props) {
+export function StopWatch({ activeCases, performance, setPerformance }: Props) {
   // state to store time
   const [time, setTime] = useState(0);
   const [redTime, setRedTime] = useState(false);
@@ -62,7 +56,7 @@ export function StopWatch({
   function actualizarPerformance() {
     if (selectedCase) {
       const index = performance.findIndex((c) => c.case === selectedCase);
-      let newPerformance = [...performance];
+      const newPerformance = [...performance];
       if (index != -1) {
         const newPerformanceCase = performance?.at(index);
         newPerformanceCase!.history.push(seconds);
