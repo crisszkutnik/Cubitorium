@@ -5,23 +5,17 @@ import {
   Dispatch,
   SetStateAction,
 } from 'react';
-import { TwistyPlayer } from './TwistyPlayer';
 import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
+import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
 
 interface Props {
-  selectedPuzzle: string;
   activeCases: CaseAccount[] | undefined;
   performance: PerformanceCase[];
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
-export function StopWatch({
-  selectedPuzzle,
-  activeCases,
-  performance,
-  setPerformance,
-}: Props) {
+export function StopWatch({ activeCases, performance, setPerformance }: Props) {
   // state to store time
   const [time, setTime] = useState(0);
   const [redTime, setRedTime] = useState(false);
@@ -54,7 +48,7 @@ export function StopWatch({
   function actualizarPerformance() {
     if (selectedCase) {
       const index = performance.findIndex((c) => c.case === selectedCase);
-      let newPerformance = [...performance];
+      const newPerformance = [...performance];
       if (index != -1) {
         const newPerformanceCase = performance?.at(index);
         newPerformanceCase!.history.push(seconds);
@@ -124,11 +118,11 @@ export function StopWatch({
     <div className="w-full drop-shadow p-6 rounded bg-white">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="flex flex-row items-center w-full p-6 border-b-4">
-          <TwistyPlayer
-            puzzle={selectedPuzzle}
-            algorithm={selectedCase?.account.setup}
-            size="100"
-          ></TwistyPlayer>
+          <ScrambleDisplay2
+            scramble={selectedCase?.account.setup || ''}
+            set={selectedCase?.account.set || ''}
+            height="h-52"
+          />
           <h1 className="text-3xl font-bold w-full text-center">
             {selectedCase?.account.setup}
           </h1>
