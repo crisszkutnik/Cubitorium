@@ -1,4 +1,5 @@
-import { ScrambleDisplay2 } from '../../../../../components/ScrambleDisplay2';
+import { ScrambleDisplay } from '../../../../../components/ScrambleDisplay';
+import { getPuzzleType } from '../../../../../modules/store/algorithmsStore';
 import { Case } from '../../../../../modules/types/case.interface';
 
 interface Props {
@@ -8,8 +9,8 @@ interface Props {
 export function Info({ caseData }: Props) {
   return (
     <div className="w-3/12 flex flex-col items-center text-center">
-      <ScrambleDisplay2
-        set={caseData.set}
+      <ScrambleDisplay
+        event={getPuzzleType(caseData.set)}
         scramble={caseData.setup}
         height="h-36"
       />

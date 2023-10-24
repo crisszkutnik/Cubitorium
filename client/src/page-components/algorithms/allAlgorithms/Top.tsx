@@ -1,4 +1,5 @@
 import { Select, SelectItem } from '@nextui-org/react';
+import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
 import {
   PuzzleTypeKey,
   PuzzleTypeKeys,
@@ -10,7 +11,6 @@ import { SetCase } from '../../../modules/types/globalConfig.interface';
 import { ChangeEventHandler, useMemo, useState } from 'react';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { AddSolutionButton } from '../../../components/AddSolutionButton';
-import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
 
 interface Props {
   caseAccount: CaseAccount;
@@ -58,10 +58,10 @@ export function Top({ caseAccount, onCaseChange }: Props) {
   return (
     <div className="flex my-4 items-center">
       <div className="flex flex-col">
-        <ScrambleDisplay2
+        <ScrambleDisplay
           scramble={caseAccount?.account.setup}
           height="h-60"
-          set={caseAccount.account.set}
+          event={puzzleType}
         />
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-lg">Setup</h2>

@@ -4,9 +4,6 @@ interface Props {
   size?: string;
 }
 
-/**
- * @deprecated
- */
 export function TwistyPlayer({ puzzle, algorithm, size }: Props) {
   const getPuzzle = () => {
     if (!puzzle) {
