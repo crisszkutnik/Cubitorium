@@ -71,6 +71,7 @@ export function Practice() {
           />
           {performance.length > 0 && (
             <LastCase
+              selectedPuzzle={selectedPuzzle}
               performance={performance[performance.length - 1]}
               solutions={solutions}
             />
@@ -78,11 +79,13 @@ export function Practice() {
         </div>
         <div className="flex flex-col w-3/4 items-center">
           <StopWatch
+            selectedPuzzle={selectedPuzzle}
             activeCases={activeCases}
             performance={performance}
             setPerformance={setPerformance}
           />
           <Performance
+            selectedPuzzle={selectedPuzzle}
             performance={performance}
             setPerformance={setPerformance}
           />
