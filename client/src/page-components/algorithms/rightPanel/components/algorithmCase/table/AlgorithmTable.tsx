@@ -94,7 +94,11 @@ export function AlgorithmTable({ caseAccount }: Props) {
       {solutions.length > 0 && (
         <div className="flex justify-center items-center h-full mt-3">
           <AddSolutionButton caseAccount={caseAccount} className="mr-6" />
-          <Link to="/algorithms/all">
+          <Link
+            to={`/algorithms/all?case=${encodeURIComponent(
+              caseAccount.account.id,
+            )}&set=${encodeURIComponent(caseAccount.account.set)}`}
+          >
             <ButtonWrapper variant="ghost" text="+ More algorithms" />
           </Link>
         </div>

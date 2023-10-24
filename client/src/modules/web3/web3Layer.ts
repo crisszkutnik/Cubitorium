@@ -21,6 +21,7 @@ import {
   LikeCertificateAccount,
   ParsedLikeCertificateAccount,
 } from '../types/likeCertificate.interface';
+import { SolutionAlreadyExistsError } from '../utils/SolutionAlreadyExistsError';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -252,15 +253,28 @@ class Web3Layer extends Web3Connection {
   }
 
   async addSolution(casePublicKey: string | PublicKey, solution: string) {
-    const tx = await this.program.methods
-      .addSolution(solution)
-      .accounts({
-        case: getPKFromStringOrObject(casePublicKey),
-        solutionPda: getSolutionPda(casePublicKey, solution, this.programId),
-      })
-      .transaction();
+    const solutionPda = getSolutionPda(casePublicKey, solution, this.programId);
 
-    await this.signAndSendTx(tx);
+    try {
+      // Check if account exists, if it does not exists it will throw
+      await this.program.account.solution.fetch(solutionPda);
+      throw new SolutionAlreadyExistsError();
+    } catch (e) {
+      if (e instanceof SolutionAlreadyExistsError) {
+        // Keep propagating error because solution already exists
+        throw e;
+      }
+
+      const tx = await this.program.methods
+        .addSolution(solution)
+        .accounts({
+          case: getPKFromStringOrObject(casePublicKey),
+          solutionPda: solutionPda,
+        })
+        .transaction();
+
+      await this.signAndSendTx(tx);
+    }
   }
 
   async loadSolutions(): Promise<SolutionAccount[]> {

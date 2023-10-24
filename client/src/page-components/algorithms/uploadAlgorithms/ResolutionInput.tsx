@@ -7,6 +7,7 @@ import { CaseAccount } from '../../../modules/types/case.interface';
 import { useAlertContext } from '../../../components/context/AlertContext';
 import { useSolutionStore } from '../../../modules/store/solutionStore';
 import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
+import { SolutionAlreadyExistsError } from '../../../modules/utils/SolutionAlreadyExistsError';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -37,9 +38,14 @@ export function ResolutionInput({ activeCase }: Props) {
       success('Solution added successfully');
     } catch (e) {
       console.error(e);
-      error(
-        'Failed to add solution. Check that the solution you submitted solves the selected case!',
-      );
+
+      if (e instanceof SolutionAlreadyExistsError) {
+        error('This solution has already been added by another user :(');
+      } else {
+        error(
+          'Failed to add solution. Check that the solution you submitted solves the selected case!',
+        );
+      }
     }
   };
 

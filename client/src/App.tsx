@@ -8,7 +8,7 @@ import { MySolves } from './pages/userInfo/MySolves';
 import { InfoByUserID } from './pages/userInfo/InfoByUserID';
 import { AdminPanel } from './pages/adminPanel/AdminPanel';
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
 import { Practice } from './pages/practice/Practice';
@@ -20,7 +20,6 @@ import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 function App() {
   const { autoConnect, connected } = useWallet();
   const anchorWallet = useAnchorWallet();
-  const [showPage, setShowPage] = useState(false);
   const { login, logout, isLogged } = useUserStore();
 
   useEffect(() => {
@@ -30,12 +29,10 @@ function App() {
       } else if (isLogged) {
         logout();
       }
-
-      setShowPage(true);
     }
   }, [autoConnect, connected, anchorWallet]);
 
-  if (showPage) {
+  if (isLogged || !autoConnect) {
     return (
       <BrowserRouter>
         <Navbar />
@@ -43,14 +40,13 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
-          <Route path="/guide" element={<Guide />} />  {/* The guide page will not have a NavLink on the Navbar since it's not a func of our app */}
-
+          <Route path="/guide" element={<Guide />} />{' '}
+          {/* The guide page will not have a NavLink on the Navbar since it's not a func of our app */}
           {/* Authenticated routes */}
           <Route element={<AuthenticatedRoute />}>
             <Route path="/algorithms/upload" element={<AlgorithmsUpload />} />
             <Route path="/adminpanel" element={<AdminPanel />} />
           </Route>
-
           <Route path="/userinfo">
             <Route element={<AuthenticatedRoute />}>
               <Route path="" element={<UserInfo />} />
