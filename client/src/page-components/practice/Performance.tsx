@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
+import { TwistyPlayer } from './TwistyPlayer';
 import { PerformanceCase } from '../../modules/types/case.interface';
-import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
 
 interface Props {
+  selectedPuzzle: string;
   performance: PerformanceCase[];
   //Esto se va a usar para hacer el ABM de la performance
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
@@ -66,12 +67,11 @@ export const Performance = ({
             {performance.reverse().map((item) => (
               <tr key={item.case.account.id}>
                 <td className="justify-center w-1/6">
-                  <ScrambleDisplay2
-                    scramble={item.case.account.setup}
-                    set={item.case.account.set}
-                    width="w-20"
-                    height="h-20"
-                  />
+                  <TwistyPlayer
+                    puzzle={selectedPuzzle}
+                    algorithm={item.case.account.setup}
+                    size="70"
+                  ></TwistyPlayer>
                 </td>
                 <td className="text-center">{item.case.account.id}</td>
                 <td>{item.history.map((i) => i.toFixed(2)).join(', ')}</td>
