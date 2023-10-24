@@ -32,7 +32,7 @@ export const loadCasesFromCsv = async (
   const setKey = setPda(set, program.programId);
   let existing = !!(await program.account.set.fetchNullable(setKey));
   await program.methods
-    .appendSetToConfig(set, cases)
+    .appendSetToConfig(set, [...new Set(cases)])
     .accounts({
       admin: deployer,
       existingSet: existing ? setKey : null,
@@ -41,10 +41,11 @@ export const loadCasesFromCsv = async (
     .rpc();
 
   // Build createCase ixs
+  let ben = [...new Set(cases.map((cas, i) => `${cas}BEN${setups[i]}`))];
   let createCaseIxs = await Promise.all(
-    setups.map((setup, i) =>
+    ben.map((elem) =>
       program.methods
-        .createCase(set, cases[i], setup)
+        .createCase(set, elem.split("BEN")[0], elem.split("BEN")[1])
         .accounts({ signer: deployer })
         .instruction()
     )
