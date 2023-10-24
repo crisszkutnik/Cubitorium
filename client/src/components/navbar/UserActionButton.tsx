@@ -45,7 +45,7 @@ export function UserActionButton() {
       onClick: () => clickAction('/userinfo'),
     },
     {
-      text: 'My solves',
+      text: 'My solutions',
       onClick: () => clickAction('/userinfo/solves'),
     },
     {

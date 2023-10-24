@@ -136,7 +136,7 @@ export function InfoByUserID() {
           </div>
           <div>
             <h1 className="font-bold text-accent-dark text-2xl">
-              Votes received
+              Likes received
             </h1>
             <p className="text-accent-dark text-xl">
               {user?.likesReceived || 0}

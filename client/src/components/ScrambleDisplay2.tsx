@@ -9,14 +9,6 @@ interface Props {
 }
 
 export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
-  const getStr = (propertyName: string, value: string | undefined) => {
-    if (propertyName !== undefined) {
-      return `${propertyName}="${value}"`;
-    }
-
-    return '';
-  };
-
   const getRepresentationForCase = () => {
     const puzzleType = getPuzzleType(set);
 
@@ -73,8 +65,8 @@ export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
           <twisty-player
             style="resize: both"
             class="${height}"
-            ${getStr('alg', scramble)}
-            puzzle="${repr?.puzzle}"
+            alg="${scramble || ''}"
+            puzzle="${repr?.puzzle || '3x3x3'}"
             background="none"
             control-panel="none"
             ${
@@ -82,7 +74,7 @@ export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
                 ? 'experimental-stickering=' + repr['experimental-stickering']
                 : ''
             }
-            visualization="${repr?.visualization}"
+            visualization="${repr?.visualization || '3D'}"
           >
           </twisty-player>
         `,

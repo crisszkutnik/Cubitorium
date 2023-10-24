@@ -109,7 +109,7 @@ export function UserInfo() {
               control={control}
               name="profileImgSrc"
               render={({ field }) => (
-                <Input label="Porfile image URL" color="primary" {...field} />
+                <Input label="Profile image URL" color="primary" {...field} />
               )}
             />
           </div>
