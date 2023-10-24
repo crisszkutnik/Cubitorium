@@ -12,12 +12,12 @@ import {
   getPuzzleType,
   useAlgorithmsStore,
 } from '../../../modules/store/algorithmsStore';
-import { ScrambleDisplay } from '../../../components/ScrambleDisplay';
 import { selectCases, useCaseStore } from '../../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { SetCase } from '../../../modules/types/globalConfig.interface';
 import { useSearchParams } from 'react-router-dom';
+import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -107,11 +107,11 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
   return (
     <div className="w-1/4 h-fit drop-shadow bg-white rounded flex flex-col px-5 py-5">
       <h1 className="font-bold text-accent-dark text-2xl">Select case</h1>
-      <ScrambleDisplay
+      <ScrambleDisplay2
         height="h-60 mb-8"
-        event={selectedPuzzle}
         scramble={activeCase?.account.setup}
-      ></ScrambleDisplay>
+        set={activeCase?.account.set || ''}
+      />
 
       <Select
         labelPlacement="outside"

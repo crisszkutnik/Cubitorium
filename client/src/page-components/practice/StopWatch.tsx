@@ -5,35 +5,25 @@ import {
   Dispatch,
   SetStateAction,
 } from 'react';
-import { TwistyPlayer } from './TwistyPlayer';
 import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
-import { useAlertContext } from '../../components/context/AlertContext';
+import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
 
 interface Props {
-  selectedPuzzle: string;
   activeCases: CaseAccount[] | undefined;
   performance: PerformanceCase[];
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
 }
 
-export function StopWatch({
-  selectedPuzzle,
-  activeCases,
-  performance,
-  setPerformance,
-}: Props) {
+export function StopWatch({ activeCases, performance, setPerformance }: Props) {
   // state to store time
   const [time, setTime] = useState(0);
   const [redTime, setRedTime] = useState(false);
-  const [showScramble, setShowScramble] = useState(true);
 
   const [selectedCase, setSelectedCase] = useState<CaseAccount>();
 
   // state to check stopwatch running or not
   const [isRunning, setIsRunning] = useState(false);
-
-  const { error } = useAlertContext();
 
   useEffect(() => {
     let intervalId: NodeJS.Timer;
@@ -46,10 +36,6 @@ export function StopWatch({
 
   // Method to start and stop timer
   const startAndStop = () => {
-    if (!activeCases || activeCases.length == 0) {
-      error('No cases selected');
-      return;
-    }
     setIsRunning(!isRunning);
     if (!isRunning) {
       setTime(0);
@@ -62,7 +48,7 @@ export function StopWatch({
   function actualizarPerformance() {
     if (selectedCase) {
       const index = performance.findIndex((c) => c.case === selectedCase);
-      let newPerformance = [...performance];
+      const newPerformance = [...performance];
       if (index != -1) {
         const newPerformanceCase = performance?.at(index);
         newPerformanceCase!.history.push(seconds);
@@ -105,7 +91,6 @@ export function StopWatch({
 
   useEffect(() => {
     document.addEventListener('keydown', keyPress);
-    (document.activeElement as HTMLElement).blur();
     return () => document.removeEventListener('keydown', keyPress);
   }, [keyPress]);
 
@@ -133,36 +118,11 @@ export function StopWatch({
     <div className="w-full drop-shadow p-6 rounded bg-white">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="flex flex-row items-center w-full p-6 border-b-4">
-          <div className="flex flex-col w-40 h-32 items-center">
-            <button onClick={() => setShowScramble(!showScramble)}>
-              <div className="flex flex-row items-center gap-1">
-                {showScramble ? (
-                  <>
-                    <p className="text-s">Hide Scramble</p>
-                    <img
-                      src="/public/closed_eye.png"
-                      className="w-6 h-6"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p className="text-s">Show Scramble</p>
-                    <img
-                      src="/public/opened_eye.png"
-                      className="w-6 h-6"
-                    />
-                  </>
-                )}
-              </div>
-            </button>
-            {showScramble && (
-              <TwistyPlayer
-                puzzle={selectedPuzzle}
-                algorithm={selectedCase?.account.setup}
-                size="100"
-              ></TwistyPlayer>
-            )}
-          </div>
+          <ScrambleDisplay2
+            scramble={selectedCase?.account.setup || ''}
+            set={selectedCase?.account.set || ''}
+            height="h-52"
+          />
           <h1 className="text-3xl font-bold w-full text-center">
             {selectedCase?.account.setup}
           </h1>
