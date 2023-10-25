@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { PerformanceCase } from '../../modules/types/case.interface';
 import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
+import { decompress } from '../../modules/utils/compression';
 
 interface Props {
   performance: PerformanceCase[];
@@ -63,7 +64,7 @@ export const Performance = ({ setPerformance, performance }: Props) => {
               <tr key={item.case.account.id}>
                 <td className="justify-center w-1/6">
                   <ScrambleDisplay2
-                    scramble={item.case.account.setup}
+                    scramble={decompress(item.case.account.setup)}
                     set={item.case.account.set}
                     width="w-20"
                     height="h-20"

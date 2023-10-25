@@ -1,10 +1,16 @@
+use std::cell::RefMut;
+
 use anchor_lang::{
     prelude::*,
     solana_program::{program::invoke, system_instruction},
 };
 
-use crate::error::UserInfoError;
+use crate::{
+    error::{TreasuryError, UserInfoError},
+    UserInfo,
+};
 
+/// Calls a realloc and transfers enough rent. Meant for non-PDA funders.
 pub fn realloc_with_rent<'info>(
     new_size: usize,
     acc: &mut AccountInfo<'info>,
@@ -20,6 +26,40 @@ pub fn realloc_with_rent<'info>(
     )?;
 
     acc.realloc(new_size as usize, false)?;
+
+    Ok(())
+}
+
+/// Util function to tidy up instructions just a bit
+/// Treasury pays remaining rent and refunds an amount to the user.
+pub fn pay_rent_and_refund_to_user<'a, 'info>(
+    refund_amount: u64,
+    extra_amount: u64,
+    max_fund_limit: u64,
+    mut treasury_lamports: RefMut<&'a mut u64>,
+    mut pda_lamports: RefMut<&'a mut u64>,
+    mut user_lamports: RefMut<&'a mut u64>,
+    user_profile: &mut Account<UserInfo>,
+) -> Result<()> {
+    // Refund lamports if user has some quota left
+    if user_profile.sol_funded + refund_amount < max_fund_limit {
+        require!(
+            **treasury_lamports >= refund_amount,
+            TreasuryError::TreasuryNeedsFunds
+        );
+
+        **treasury_lamports -= refund_amount;
+        **user_lamports += refund_amount;
+        user_profile.sol_funded += refund_amount;
+    }
+
+    // Transfer extra rent
+    require!(
+        **treasury_lamports >= extra_amount,
+        TreasuryError::TreasuryNeedsFunds
+    );
+    **treasury_lamports -= extra_amount;
+    **pda_lamports += extra_amount;
 
     Ok(())
 }

@@ -35,7 +35,7 @@ export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
       case 'F2L':
         return {
           'experimental-stickering': 'F2L',
-          visualization: '3D',
+          visualization: '2D',
           puzzle: '3x3x3',
         };
 

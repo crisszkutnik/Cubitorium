@@ -10,7 +10,11 @@ export const GLOBAL_CONFIG_TAG = "global-config";
 
 export const SET_TAG = "set";
 
-export const CASE_BASE_LEN = 201;
+export const CASE_BASE_LEN = 55;
+
+export const CUBE_STATE_LEN = 46;
+
+export const PYRA_STATE_LEN = 16;
 
 export const LIKE_CERTIFICATE_TAG = "like-certificate";
 

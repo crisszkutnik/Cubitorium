@@ -26,11 +26,18 @@ describe("backend", () => {
     pid
   )[0];
 
+  const allKeys = [treasury, ...keypairs.map((k) => k.publicKey)];
+
+  const FUND = 200_000_000_000_000;
+
   it("Funds treasury and others", async () => {
-    await fundAccounts(provider, [
-      treasury,
-      ...[...keypairs].map((k) => k.publicKey),
-    ]);
+    await fundAccounts(provider, allKeys, FUND);
+
+    console.log(
+      (
+        await Promise.all(allKeys.map((k) => provider.connection.getBalance(k)))
+      ).map((balance, i) => `${allKeys[i]} = ${balance}`)
+    );
   });
 
   it("Create admin", async () => {
@@ -134,6 +141,24 @@ describe("backend", () => {
       deployer.publicKey,
       6,
       regularKeypair
+    );
+  });
+
+  it("Expenses:", async () => {
+    let balances = await Promise.all(
+      allKeys.map((k) => provider.connection.getBalance(k))
+    );
+
+    console.log(
+      balances.map((balance, i) => `${allKeys[i]} = ${FUND - balance}`)
+    );
+
+    console.log(
+      "Total expenses: ",
+      (FUND * balances.length -
+        balances.reduce((prev, current) => prev + current)) /
+        LAMPORTS_PER_SOL,
+      "SOL"
     );
   });
 });

@@ -15,6 +15,7 @@ import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
 import { selectCasesByPks, useCaseStore } from '../../modules/store/caseStore';
 import { getPuzzleType } from '../../modules/store/algorithmsStore';
+import { decompress } from '../../modules/utils/compression';
 
 export function InfoByUserID() {
   const { id } = useParams();
@@ -167,7 +168,7 @@ export function InfoByUserID() {
                     <td className="py-2">
                       {moment(account.timestamp).format('YYYY-MM-DD')}
                     </td>
-                    <td className="py-2">{account.moves}</td>
+                    <td className="py-2">{decompress(account.moves)}</td>
                     <td className="py-2">
                       {getPuzzleType(c?.account.set || '')}
                     </td>

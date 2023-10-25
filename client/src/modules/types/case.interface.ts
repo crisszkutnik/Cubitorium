@@ -5,7 +5,7 @@ export interface Case {
   // OJO QUE EL ID SE PUEDE REPETIR
   // FILTRAR POR SET E ID A LA VEZ
   id: string;
-  setup: string;
+  setup: Buffer;
   solutions: number;
 }
 

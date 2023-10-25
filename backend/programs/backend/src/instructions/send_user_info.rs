@@ -19,7 +19,7 @@ pub struct SendUserInfo<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(
+pub fn send_user_info_handler(
     ctx: Context<SendUserInfo>,
     name: String,
     surname: String,

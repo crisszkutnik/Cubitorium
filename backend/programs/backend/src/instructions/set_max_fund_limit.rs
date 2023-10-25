@@ -14,7 +14,10 @@ pub struct SetMaxFundLimit<'info> {
     pub global_config: Account<'info, GlobalConfig>,
 }
 
-pub fn handler(ctx: Context<SetMaxFundLimit>, new_max_fund_limit: u64) -> Result<()> {
+pub fn set_max_fund_limit_handler(
+    ctx: Context<SetMaxFundLimit>,
+    new_max_fund_limit: u64,
+) -> Result<()> {
     ctx.accounts.global_config.max_fund_limit = new_max_fund_limit;
 
     Ok(())

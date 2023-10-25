@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 
 export interface Solution {
   case: PublicKey;
-  moves: string;
+  moves: Buffer;
   selfIndex: number;
   author: PublicKey;
   likes: number;

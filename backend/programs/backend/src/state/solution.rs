@@ -6,8 +6,8 @@ use crate::constants::DISCRIMINATOR_LENGTH;
 pub struct Solution {
     /// Case this solution solves
     pub case: Pubkey,
-    /// Actual solution
-    pub moves: String,
+    /// Actual solution (compressed, see [crate::utils::compression])
+    pub moves: Vec<u8>,
     /// Index within the virtual solution array for the case
     pub self_index: u8,
     /// Signer of the add_solution() instruction

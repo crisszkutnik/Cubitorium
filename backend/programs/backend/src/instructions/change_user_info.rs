@@ -26,7 +26,7 @@ macro_rules! update_opt {
     };
 }
 
-pub fn handler(
+pub fn change_user_info_handler(
     ctx: Context<ChangeUserInfo>,
     name: Option<String>,
     surname: Option<String>,

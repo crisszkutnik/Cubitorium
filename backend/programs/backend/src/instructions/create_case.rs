@@ -4,7 +4,7 @@ use miniserde::json;
 
 use crate::{
     constants::*,
-    error::{CaseError, ConfigError, CubeError, TreasuryError},
+    error::{CaseError, ConfigError, CubeError},
     state::*,
     utils::*,
 };
@@ -29,7 +29,7 @@ pub struct CreateCase<'info> {
     #[account(
         init,
         seeds = [CASE_TAG.as_ref(), set_name.as_ref(), id.as_ref()], bump,
-        space = Case::BASE_LEN + Case::extra_size_for_set(&set_name),
+        space = Case::BASE_LEN,
         payer = signer,
     )]
     pub case: Account<'info, Case>,
@@ -44,7 +44,7 @@ pub struct CreateCase<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(
+pub fn create_case_handler(
     ctx: Context<CreateCase>,
     set_name: String,
     id: String,
@@ -57,26 +57,6 @@ pub fn handler(
     require!(id.len() < MAX_CASE_ID_LENGTH, CaseError::MaxCaseIdLength);
     require!(setup.len() < MAX_SETUP_LENGTH, CaseError::MaxSetupLength);
 
-    // Refund lamports if user has some quota left
-    let case_rent = ctx
-        .accounts
-        .rent
-        .minimum_balance(Case::BASE_LEN + Case::extra_size_for_set(&set_name));
-    if ctx.accounts.user_profile.sol_funded + case_rent < ctx.accounts.global_config.max_fund_limit
-    {
-        require!(
-            ctx.accounts.treasury.to_account_info().lamports() >= case_rent,
-            TreasuryError::TreasuryNeedsFunds
-        );
-        **ctx
-            .accounts
-            .treasury
-            .to_account_info()
-            .try_borrow_mut_lamports()? -= case_rent;
-        **ctx.accounts.signer.try_borrow_mut_lamports()? += case_rent;
-        ctx.accounts.user_profile.sol_funded += case_rent;
-    }
-
     // Check if case exists
     json::from_str::<Vec<String>>(&ctx.accounts.set.case_names)
         .map_err(|_| ConfigError::ConfigDeserializationError)?
@@ -84,23 +64,45 @@ pub fn handler(
         .find(|case| case == &&id)
         .ok_or(CubeError::InvalidCase)?;
 
-    // Write to PDA
-    ctx.accounts.case.set = set_name.clone();
-    ctx.accounts.case.id = id;
-    ctx.accounts.case.setup = setup.clone();
-    ctx.accounts.case.bump = ctx.bumps.case;
+    // Compress setup and compute puzzle state
+    ctx.accounts.case.set = set_name;
+    let compressed_setup = ctx.accounts.case.set_puzzle_state_and_compress(&setup)?;
 
-    // Code horror
-    match &set_name[..] {
-        "L4E" => {
-            ctx.accounts.case.cube_state = None;
-            ctx.accounts.case.pyra_state = Some(Pyra::from_moves(&setup)?);
-        }
-        _ => {
-            ctx.accounts.case.cube_state = Some(Cube::from_moves(&setup)?);
-            ctx.accounts.case.pyra_state = None;
-        }
-    }
+    // Allocate extra size for cube state and setup
+    let case_len = Case::BASE_LEN + ctx.accounts.case.extra_size() + compressed_setup.len();
+    ctx.accounts
+        .case
+        .to_account_info()
+        .realloc(case_len, false)?;
+
+    // Pay and refund rent
+    let refund_amount = ctx.accounts.case.to_account_info().lamports();
+    let extra_amount = ctx
+        .accounts
+        .rent
+        .minimum_balance(case_len)
+        .saturating_sub(refund_amount);
+
+    pay_rent_and_refund_to_user(
+        refund_amount,
+        extra_amount,
+        ctx.accounts.global_config.max_fund_limit,
+        ctx.accounts
+            .treasury
+            .to_account_info()
+            .try_borrow_mut_lamports()?,
+        ctx.accounts
+            .case
+            .to_account_info()
+            .try_borrow_mut_lamports()?,
+        ctx.accounts.signer.try_borrow_mut_lamports()?,
+        &mut ctx.accounts.user_profile,
+    )?;
+
+    // Write remaining fields to PDA
+    ctx.accounts.case.id = id;
+    ctx.accounts.case.setup = compressed_setup;
+    ctx.accounts.case.bump = ctx.bumps.case;
 
     Ok(())
 }

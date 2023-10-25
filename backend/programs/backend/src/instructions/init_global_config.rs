@@ -22,7 +22,10 @@ pub struct InitGlobalConfig<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<InitGlobalConfig>, max_fund_limit: u64) -> Result<()> {
+pub fn init_global_config_handler(
+    ctx: Context<InitGlobalConfig>,
+    max_fund_limit: u64,
+) -> Result<()> {
     ctx.accounts.global_config.sets = vec![];
     ctx.accounts.global_config.max_fund_limit = max_fund_limit;
 

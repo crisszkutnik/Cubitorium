@@ -9,6 +9,7 @@ import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
 import { useAlertContext } from '../../components/context/AlertContext';
 import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
+import { decompress } from '../../modules/utils/compression';
 
 interface Props {
   activeCases: CaseAccount[] | undefined;
@@ -146,7 +147,7 @@ export function StopWatch({ activeCases, performance, setPerformance }: Props) {
             </button>
             <div className={showScramble ? '' : 'invisible'}>
               <ScrambleDisplay2
-                scramble={selectedCase?.account.setup || ''}
+                scramble={decompress(selectedCase?.account.setup) || ''}
                 set={selectedCase?.account.set || ''}
                 height="h-24"
               />
@@ -154,7 +155,7 @@ export function StopWatch({ activeCases, performance, setPerformance }: Props) {
           </div>
 
           <h1 className="text-3xl font-bold w-full text-center">
-            {selectedCase?.account.setup}
+            {decompress(selectedCase?.account.setup)}
           </h1>
         </div>
         <p

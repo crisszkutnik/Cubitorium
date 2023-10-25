@@ -18,6 +18,7 @@ import { CaseAccount } from '../../../modules/types/case.interface';
 import { SetCase } from '../../../modules/types/globalConfig.interface';
 import { useSearchParams } from 'react-router-dom';
 import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
+import { decompress } from '../../../modules/utils/compression';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -109,7 +110,7 @@ export function CubeSelectorPanel({ activeCase, setActiveCase }: Props) {
       <h1 className="font-bold text-accent-dark text-2xl">Select case</h1>
       <ScrambleDisplay2
         height="h-60 mb-8"
-        scramble={activeCase?.account.setup}
+        scramble={decompress(activeCase?.account.setup)}
         set={activeCase?.account.set || ''}
       />
 
