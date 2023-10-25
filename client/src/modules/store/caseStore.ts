@@ -34,7 +34,9 @@ export const selectCasesByTermAndSetMax = (
       .filter((c) => {
         return (
           c.account.set === set &&
-          (filterTerm ? c.account.id.includes(filterTerm) : true)
+          (filterTerm?.toLowerCase()
+            ? c.account.id.toLocaleLowerCase().includes(filterTerm)
+            : true)
         );
       })
       .slice(0, max);
