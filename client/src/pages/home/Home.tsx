@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem } from '@nextui-org/react';
+import { Accordion, AccordionItem, Button, Link } from '@nextui-org/react';
 import { useState, useEffect } from 'react';
 
 export function Home() {
@@ -17,6 +17,7 @@ export function Home() {
       clearInterval(backgroundInterval);
     };
   }, []);
+
 
   const currentBackground = backgroundImages[currentBackgroundIndex];
 
@@ -50,9 +51,14 @@ export function Home() {
             your skills in this global sport practiced in more than 100
             countries in the world.
           </p>
+          <Link href="/guide">
+          <Button color="secondary" variant="shadow" className="mt-4 text-gray-100 text-lg font-bold" href="/guide">
+              GET STARTED!
+          </Button>  
+          </Link>
 
           <p className="text-sm text-xm max-w-sm text-gray-600 text-center mt-5">
-          Before you start exploring the capabilities of our application, we <b>strongly recommend </b>reading this <a href='/guide' className="text-blue-600 font-bold">guide on how to install a cryptocurrency wallet</a>. Once you're ready with that:
+          Before you start exploring the capabilities of our application, we <b>strongly recommend </b>reading the guide above.
           </p>
 
           {/* Experience the best way to... */}
