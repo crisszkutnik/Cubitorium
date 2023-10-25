@@ -19,17 +19,17 @@ pub mod backend {
 
     /// Adds a new privileged user (only privileged user)
     pub fn add_privileged_user(ctx: Context<AddPrivilegedUser>) -> Result<()> {
-        add_privileged_user::handler(ctx)
+        add_privileged_user::add_privileged_user_handler(ctx)
     }
 
     /// Revoke existing privilege (only privileged user)
     pub fn revoke_privilege(ctx: Context<RevokePrivilege>, revoked_user: Pubkey) -> Result<()> {
-        revoke_privilege::handler(ctx, revoked_user)
+        revoke_privilege::revoke_privilege_handler(ctx, revoked_user)
     }
 
     /// Init global config PDA
     pub fn init_global_config(ctx: Context<InitGlobalConfig>, max_fund_limit: u64) -> Result<()> {
-        init_global_config::handler(ctx, max_fund_limit)
+        init_global_config::init_global_config_handler(ctx, max_fund_limit)
     }
 
     /// Sets max fund limit
@@ -37,7 +37,7 @@ pub mod backend {
         ctx: Context<SetMaxFundLimit>,
         new_max_fund_limit: u64,
     ) -> Result<()> {
-        set_max_fund_limit::handler(ctx, new_max_fund_limit)
+        set_max_fund_limit::set_max_fund_limit_handler(ctx, new_max_fund_limit)
     }
 
     /// Appends new set with its cases to global config
@@ -46,7 +46,7 @@ pub mod backend {
         set_name: String,
         case_names: Vec<String>,
     ) -> Result<()> {
-        append_set_to_config::handler(ctx, set_name, case_names)
+        append_set_to_config::append_set_to_config_handler(ctx, set_name, case_names)
     }
 
     //////////// Case handling ////////////
@@ -58,23 +58,23 @@ pub mod backend {
         id: String,
         setup: String,
     ) -> Result<()> {
-        create_case::handler(ctx, set_name, id, setup)
+        create_case::create_case_handler(ctx, set_name, id, setup)
     }
 
     /// Add a solution to a case (permissionless)
     pub fn add_solution(ctx: Context<AddSolution>, solution: String) -> Result<()> {
-        add_solution::handler(ctx, solution)
+        add_solution::add_solution_handler(ctx, solution)
     }
 
     /// Adds a like to a solution or changes existing like (user)
     /// A user can only like one solution per case
     pub fn like_solution(ctx: Context<LikeSolution>) -> Result<()> {
-        like_solution::handler(ctx)
+        like_solution::like_solution_handler(ctx)
     }
 
     /// Removes a like from a solution entirely (user)
     pub fn remove_like(ctx: Context<RemoveLike>) -> Result<()> {
-        remove_like::handler(ctx)
+        remove_like::remove_like_handler(ctx)
     }
 
     /// Sets learning status. Needs to like solution first
@@ -82,7 +82,7 @@ pub mod backend {
         ctx: Context<SetLearningStatus>,
         status: LearningStatus,
     ) -> Result<()> {
-        set_learning_status::handler(ctx, status)
+        set_learning_status::set_learning_status_handler(ctx, status)
     }
 
     //////////// User profiles ////////////
@@ -97,7 +97,7 @@ pub mod backend {
         birthdate: String,
         profile_img_src: String,
     ) -> Result<()> {
-        send_user_info::handler(
+        send_user_info::send_user_info_handler(
             ctx,
             name,
             surname,
@@ -118,7 +118,7 @@ pub mod backend {
         new_birthdate: Option<String>,
         new_profile_img_src: Option<String>,
     ) -> Result<()> {
-        change_user_info::handler(
+        change_user_info::change_user_info_handler(
             ctx,
             new_name,
             new_surname,

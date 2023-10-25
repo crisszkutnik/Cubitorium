@@ -40,7 +40,7 @@ pub struct RemoveLike<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(ctx: Context<RemoveLike>) -> Result<()> {
+pub fn remove_like_handler(ctx: Context<RemoveLike>) -> Result<()> {
     // Decrease like count in Solution
     ctx.accounts.solution_pda.likes -= 1;
 

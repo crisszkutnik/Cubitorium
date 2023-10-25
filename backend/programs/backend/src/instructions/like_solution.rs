@@ -39,7 +39,7 @@ pub struct LikeSolution<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(ctx: Context<LikeSolution>) -> Result<()> {
+pub fn like_solution_handler(ctx: Context<LikeSolution>) -> Result<()> {
     // Add to like count in Solution and author UserInfo if we're not liking self
     ctx.accounts.solution_pda.likes += 1;
     if ctx.accounts.signer.key() != ctx.accounts.solution_pda.author {

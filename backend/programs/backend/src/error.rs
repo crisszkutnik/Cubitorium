@@ -49,6 +49,9 @@ pub enum CubeError {
 
     #[msg("The given set is not supported yet (validator code missing)")]
     UnsupportedSet,
+
+    #[msg("Fatal error validating the puzzle state")]
+    FatalError,
 }
 
 #[error_code]
@@ -91,4 +94,16 @@ pub enum CaseError {
 pub enum ContextError {
     #[msg("Only one of the optional accounts can be provided")]
     MutuallyExclusiveAccounts,
+}
+
+#[error_code]
+pub enum CompressionError {
+    #[msg("Error in string compression")]
+    CompressionError,
+
+    #[msg("Error while moving cube during compression. Should be unreachable. Sorry if this happened.")]
+    MovingDuringCompressionError,
+
+    #[msg("Invalid path travelling the tree")]
+    InvalidTreePath,
 }

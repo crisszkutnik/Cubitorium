@@ -25,7 +25,10 @@ pub struct SetLearningStatus<'info> {
     pub like_certificate: Account<'info, LikeCertificate>,
 }
 
-pub fn handler(ctx: Context<SetLearningStatus>, status: LearningStatus) -> Result<()> {
+pub fn set_learning_status_handler(
+    ctx: Context<SetLearningStatus>,
+    status: LearningStatus,
+) -> Result<()> {
     // Set learning status
     ctx.accounts.like_certificate.learning_status = status;
 

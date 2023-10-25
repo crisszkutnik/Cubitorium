@@ -1,16 +1,13 @@
 use anchor_lang::prelude::*;
-
-use std::{borrow::BorrowMut, str::SplitWhitespace};
+use bitstream_io::{BigEndian, BitWrite, BitWriter};
 
 use crate::{
-    error::CubeError,
-    utils::{opp_slice, wide_to_slice},
+    error::{CompressionError, CubeError},
+    utils::{huffman_compress_move, move_cube_huffman, Puzzle},
 };
 
-use super::super::move_cube;
-
 /// Cube state
-#[derive(Clone, Debug, AnchorDeserialize, AnchorSerialize)]
+#[derive(Clone, Copy, Debug, AnchorDeserialize, AnchorSerialize)]
 pub struct Cube {
     /// Corner orientation vector
     pub co: [u8; 8],
@@ -25,10 +22,10 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub const LEN: usize = 8 + 8 + 12 + 12;
+    pub const LEN: usize = 8 + 8 + 12 + 12 + 6;
 
     /// Returns a solved Cube
-    pub fn default() -> Cube {
+    pub const fn default() -> Cube {
         Cube {
             co: [0; 8],
             cp: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -38,105 +35,13 @@ impl Cube {
         }
     }
 
-    /// Cube::default() + apply_moves()
-    pub fn from_moves(moves: &str) -> Result<Cube> {
+    /// Cube::default() + moves
+    /// Returns Huffman compressed moves (see [crate::utils::compression])
+    pub fn from_moves(moves: &str) -> Result<(Cube, Vec<u8>)> {
         let mut cube: Cube = Self::default();
-        cube.apply_moves(moves)?;
+        let compressed_moves = cube.compress_and_apply(moves)?;
 
-        Ok(cube)
-    }
-
-    /// Given a "moves" string, apply to cube
-    /// Example: moves = "R' U' F R U R2 D"
-    pub fn apply_moves(&mut self, moves: &str) -> Result<()> {
-        // Iterate through every move and apply it if valid
-        let moves: SplitWhitespace = moves.split_whitespace();
-        for mov in moves {
-            // Check for rotations (UTTERLY questionable mental health)
-            match mov {
-                "x" => {
-                    self.apply_moves("L' Rw")?;
-                    continue;
-                }
-                "y" => {
-                    self.apply_moves("U Dw'")?;
-                    continue;
-                }
-                "z" => {
-                    self.apply_moves("F Bw'")?;
-                    continue;
-                }
-                "x\'" => {
-                    self.apply_moves("L Rw'")?;
-                    continue;
-                }
-                "y\'" => {
-                    self.apply_moves("U' Dw")?;
-                    continue;
-                }
-                "z\'" => {
-                    self.apply_moves("F' Bw")?;
-                    continue;
-                }
-                "x2" => {
-                    self.apply_moves("L2 Rw2")?;
-                    continue;
-                }
-                "y2" => {
-                    self.apply_moves("U2 Dw2")?;
-                    continue;
-                }
-                "z2" => {
-                    self.apply_moves("F2 Bw2")?;
-                    continue;
-                }
-                _ => (),
-            }
-
-            // Letter into index (shifted ASCII value)
-            // B=66, D=68, E=69, F=70, L=76, M=77, R=82, S=83, U=85
-            // B=0,  D=2, *E=6,  F=4,  L=10,*M=14, R=16,*S=20, U=22
-
-            let mut base_move: usize = (mov.chars().nth(0).unwrap() as usize)
-                .checked_sub(66)
-                .ok_or(CubeError::InvalidMove)?;
-
-            // E, M, S need to be shifted 3 more places. U gets shifted too for being odd and annoying.
-            // Since they are the only numbers here that are 1 mod 2 we can save a comparison
-            // Guido D. did this like this to avoid writing a single "if" statement and preserve O(1) indexing
-            // He does not regret writing the following line
-            base_move += 3 * (base_move % 2);
-
-            // Direction
-            match mov.chars().nth(1) {
-                Some('\'') => move_cube(base_move + 1, self.borrow_mut())?,
-                Some('2') => {
-                    move_cube(base_move, self.borrow_mut())?;
-                    move_cube(base_move, self.borrow_mut())?;
-                }
-                Some('w') => match mov.chars().nth(2) {
-                    Some('\'') => {
-                        move_cube(base_move + 1, self.borrow_mut())?;
-                        move_cube(opp_slice(wide_to_slice(base_move)?)?, self.borrow_mut())?;
-                    }
-                    Some('2') => {
-                        move_cube(base_move, self.borrow_mut())?;
-                        move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
-                        move_cube(base_move, self.borrow_mut())?;
-                        move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
-                    }
-                    None => {
-                        move_cube(base_move, self.borrow_mut())?;
-                        move_cube(wide_to_slice(base_move)?, self.borrow_mut())?;
-                    }
-                    _ => err!(CubeError::InvalidMove)?,
-                },
-                None => move_cube(base_move, self.borrow_mut())?,
-                _ => err!(CubeError::InvalidMove)?,
-            }
-        }
-
-        Ok(())
+        Ok((cube, compressed_moves))
     }
 
     /// Checks if the Cube is solved
@@ -208,8 +113,38 @@ impl Cube {
 
         Ok(())
     }
+}
 
-    pub fn check_solved_for_set(&self, set: &str) -> Result<()> {
+impl Puzzle for Cube {
+    /// Compress given move sequence and apply it to the Cube
+    fn compress_and_apply(&mut self, moves: &str) -> Result<Vec<u8>> {
+        let moves = moves.split_whitespace();
+
+        let mut out = Vec::<u8>::new();
+        let mut writer = BitWriter::endian(&mut out, BigEndian);
+
+        // Transform move into Huffman representation and apply move to cube
+        for m in moves {
+            let (repr, size) = huffman_compress_move(m)?;
+
+            writer
+                .write(size, repr)
+                .map_err(|_| CompressionError::CompressionError)?;
+
+            move_cube_huffman(repr, size, self)?;
+        }
+
+        // Pad with EOF sequence
+        writer
+            .write(7, 0b1110011)
+            .map_err(|_| CompressionError::CompressionError)?;
+
+        writer.into_unwritten();
+
+        Ok(out)
+    }
+
+    fn check_solved_for_set(&self, set: &str) -> Result<()> {
         if set.len() > 4 && &set[0..4] == "ZBLL" {
             self.is_solved()?;
             return Ok(());

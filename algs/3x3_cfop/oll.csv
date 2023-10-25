@@ -1,5 +1,5 @@
 case_id, setup, solution
-1, F R' F' R U2' F R' F' R2' U2' R', R U2 R' R' F R F' U2 R' F R F'
+1, F R' F' R U2' F R' F' R2' U2' R', R U2 R2' F R F' U2 R' F R F'
 2, Fw U R U' R' Fw' F U R U' R' F', F R U R' U' F' Fw R U R' U' Fw'
 3, F U R U' R' F' U Fw U R U' R' Fw', Fw R U R' U' Fw' U' F R U R' U' F'
 4, F U R U' R' F' U' Fw U R U' R' Fw', Fw R U R' U' Fw' U F R U R' U' F'

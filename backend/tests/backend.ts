@@ -14,11 +14,13 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { assert, expect } from "chai";
 import {
   CASE_BASE_LEN,
+  CUBE_STATE_LEN,
   GLOBAL_CONFIG_TAG,
   SET_TAG,
   TREASURY_TAG,
   USER_INFO_TAG,
 } from "./constants";
+import { decompress } from "../../client/src/modules/utils/compression";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -263,19 +265,15 @@ describe("backend", () => {
         pid
       )[0];
 
-      try {
-        await program.methods
-          .appendSetToConfig("OLL", ["0", "1", "2", "40"])
-          .accounts({
-            admin: privilegedKeypair1.publicKey,
-            existingSet: null,
-            newSet: ollSetPda,
-          })
-          .signers([privilegedKeypair1])
-          .rpc();
-      } catch (e) {
-        console.log(e);
-      }
+      await program.methods
+        .appendSetToConfig("OLL", ["0", "1", "2", "40"])
+        .accounts({
+          admin: privilegedKeypair1.publicKey,
+          existingSet: null,
+          newSet: ollSetPda,
+        })
+        .signers([privilegedKeypair1])
+        .rpc();
 
       let config = await program.account.globalConfig.fetchNullable(
         globalConfig
@@ -295,19 +293,15 @@ describe("backend", () => {
         pid
       )[0];
 
-      try {
-        await program.methods
-          .appendSetToConfig("OLL", ["14"])
-          .accounts({
-            admin: privilegedKeypair1.publicKey,
-            newSet: null,
-            existingSet: ollSetPda,
-          })
-          .signers([privilegedKeypair1])
-          .rpc();
-      } catch (e) {
-        console.log(e);
-      }
+      await program.methods
+        .appendSetToConfig("OLL", ["14"])
+        .accounts({
+          admin: privilegedKeypair1.publicKey,
+          newSet: null,
+          existingSet: ollSetPda,
+        })
+        .signers([privilegedKeypair1])
+        .rpc();
 
       let config = await program.account.globalConfig.fetchNullable(
         globalConfig
@@ -345,6 +339,7 @@ describe("backend", () => {
       set: `OLL`,
       id: `1`,
       setup: `F R U R' U' F'`,
+      hexCompressedSetup: `fcccaf`,
     };
 
     before(async () => {
@@ -375,6 +370,16 @@ describe("backend", () => {
         .accounts({ user: privilegedKeypair1.publicKey })
         .signers([privilegedKeypair1])
         .rpc();
+    });
+
+    describe("Compression", async () => {
+      it("Can decompress a sequence", async () => {
+        let decompressed = decompress(
+          Buffer.from(caseObj.hexCompressedSetup, "hex")
+        );
+
+        expect(decompressed).to.eq(caseObj.setup);
+      });
     });
 
     describe("Creation and solution submission", async () => {
@@ -442,7 +447,9 @@ describe("backend", () => {
         expect(pdaCase).to.not.be.null;
         expect(pdaCase.id).to.eq(caseObj.id);
         expect(pdaCase.set).to.eq(caseObj.set);
-        expect(pdaCase.setup).to.eq(caseObj.setup);
+        expect(pdaCase.setup.toString("hex")).to.be.eq(
+          caseObj.hexCompressedSetup
+        );
         expect(pdaCase.solutions).to.be.eq(0);
         assert.deepEqual(pdaCase.cubeState, {
           co: [0, 2, 1, 0, 0, 0, 0, 0],
@@ -463,7 +470,7 @@ describe("backend", () => {
 
         const rent =
           await provider.connection.getMinimumBalanceForRentExemption(
-            CASE_BASE_LEN + 41
+            CASE_BASE_LEN + 1 + CUBE_STATE_LEN + 3
           );
 
         expect(userBalanceBefore - userBalanceAfter).to.be.lessThan(rent);
@@ -472,6 +479,7 @@ describe("backend", () => {
 
       it("Can add a solution if it works", async () => {
         let solution = `F U R U' R' F'`;
+        let hexCompressedSolution = "ff11af";
 
         let caseAddress = casePda(caseObj.set, caseObj.id, pid);
         let solutionPda = solutionKey(caseAddress, solution, pid);
@@ -499,7 +507,9 @@ describe("backend", () => {
         let solutionAccount = await program.account.solution.fetch(solutionPda);
 
         expect(solutionAccount.likes).to.be.eq(0);
-        expect(solutionAccount.moves).to.be.eq(solution);
+        expect(solutionAccount.moves.toString("hex")).to.be.eq(
+          hexCompressedSolution
+        );
         expect(solutionAccount.author.toString()).to.be.eq(
           regularKeypair.publicKey.toString()
         );
@@ -520,7 +530,9 @@ describe("backend", () => {
         let caseAddress = casePda(caseObj.set, caseObj.id, pid);
         let caseAccount = await program.account.case.fetch(caseAddress);
 
-        expect(caseAccount.setup).to.equal(caseObj.setup);
+        expect(caseAccount.setup.toString("hex")).to.equal(
+          caseObj.hexCompressedSetup
+        );
 
         try {
           await program.methods
@@ -789,50 +801,46 @@ describe("backend", () => {
       // Let's add a PLL, OLL, and F2L case.
 
       // We need to edit config first to allow this to happen
-      try {
-        await program.methods
-          .appendSetToConfig("PLL", ["Aa", "FOX"])
-          .accounts({
-            admin: deployer.publicKey,
-            newSet: setPda("PLL", pid),
-            existingSet: null,
-          })
-          .rpc();
-        await program.methods
-          .appendSetToConfig("F2L", ["1"])
-          .accounts({
-            admin: deployer.publicKey,
-            newSet: setPda("F2L", pid),
-            existingSet: null,
-          })
-          .rpc();
-        await program.methods
-          .appendSetToConfig("L4E", ["1"])
-          .accounts({
-            admin: deployer.publicKey,
-            newSet: setPda("L4E", pid),
-            existingSet: null,
-          })
-          .rpc();
-        await program.methods
-          .appendSetToConfig("CMLL", ["0"])
-          .accounts({
-            admin: deployer.publicKey,
-            newSet: setPda("CMLL", pid),
-            existingSet: null,
-          })
-          .rpc();
-        await program.methods
-          .appendSetToConfig("CLL", ["0"])
-          .accounts({
-            admin: deployer.publicKey,
-            newSet: setPda("CLL", pid),
-            existingSet: null,
-          })
-          .rpc();
-      } catch (e) {
-        console.log("C&A - ADV: ", e);
-      }
+      await program.methods
+        .appendSetToConfig("PLL", ["Aa", "FOX"])
+        .accounts({
+          admin: deployer.publicKey,
+          newSet: setPda("PLL", pid),
+          existingSet: null,
+        })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("F2L", ["1"])
+        .accounts({
+          admin: deployer.publicKey,
+          newSet: setPda("F2L", pid),
+          existingSet: null,
+        })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("L4E", ["1"])
+        .accounts({
+          admin: deployer.publicKey,
+          newSet: setPda("L4E", pid),
+          existingSet: null,
+        })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("CMLL", ["0"])
+        .accounts({
+          admin: deployer.publicKey,
+          newSet: setPda("CMLL", pid),
+          existingSet: null,
+        })
+        .rpc();
+      await program.methods
+        .appendSetToConfig("CLL", ["0"])
+        .accounts({
+          admin: deployer.publicKey,
+          newSet: setPda("CLL", pid),
+          existingSet: null,
+        })
+        .rpc();
 
       // Adding the cases now!
       await program.methods
@@ -988,6 +996,14 @@ describe("backend", () => {
             ),
           })
           .rpc();
+      });
+
+      it("Decompresses every move correctly", async () => {
+        let foxPda = await program.account.case.fetch(
+          casePda("PLL", "FOX", pid)
+        );
+
+        expect(decompress(foxPda.setup)).to.eq(brownFox.setup);
       });
     });
 

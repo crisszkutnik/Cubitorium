@@ -1,13 +1,13 @@
 use anchor_lang::prelude::*;
+use bitstream_io::{BigEndian, BitWrite, BitWriter};
 
-use std::{borrow::BorrowMut, str::SplitWhitespace};
-
-use crate::error::CubeError;
-
-use super::super::move_pyra;
+use crate::{
+    error::{CompressionError, CubeError},
+    utils::{huffman_compress_move, move_pyra_huffman, Puzzle},
+};
 
 /// Cube state
-#[derive(Clone, Debug, AnchorDeserialize, AnchorSerialize)]
+#[derive(Clone, Copy, Debug, AnchorDeserialize, AnchorSerialize)]
 pub struct Pyra {
     /// Center orientation
     pub xo: [u8; 4],
@@ -29,46 +29,13 @@ impl Pyra {
         }
     }
 
-    /// Pyra::default() + apply_moves()
-    pub fn from_moves(moves: &str) -> Result<Pyra> {
+    /// Pyra::default() + moves
+    /// Returns Huffman compressed moves (see [crate::utils::compression])
+    pub fn from_moves(moves: &str) -> Result<(Pyra, Vec<u8>)> {
         let mut pyra: Pyra = Self::default();
-        pyra.apply_moves(moves)?;
+        let compressed_moves = pyra.compress_and_apply(moves)?;
 
-        Ok(pyra)
-    }
-
-    /// Given a "moves" string, apply to Pyra
-    /// Example: moves = "R' U' L' U L"
-    pub fn apply_moves(&mut self, moves: &str) -> Result<()> {
-        // Iterate through every move and apply it if valid
-        let moves: SplitWhitespace = moves.split_whitespace();
-        for mov in moves {
-            if ![
-                "R", "U", "L", "B", "R'", "U'", "L'", "B'", "R2", "U2", "L2", "B2", "R2'", "U2'",
-                "L2'", "B2'",
-            ]
-            .contains(&mov)
-            {
-                return Err(error!(CubeError::InvalidMove));
-            }
-
-            // Letter into index (shifted ASCII value)
-            // B=66, L=76, R=82, U=85
-            // B=0,  L=10, R=16, U=19
-            let base_move: usize = mov.chars().nth(0).unwrap() as usize - 66;
-
-            match mov.chars().nth(1).is_some() {
-                true => {
-                    match mov.chars().nth(2).is_some() {
-                        true => move_pyra(base_move, self.borrow_mut())?, // R2'
-                        false => move_pyra(base_move + 1, self.borrow_mut())?, // R2 or R' (same for Pyra)
-                    }
-                }
-                false => move_pyra(base_move, self.borrow_mut())?, // R
-            }
-        }
-
-        Ok(())
+        Ok((pyra, compressed_moves))
     }
 
     /// Checks if the Pyra is solved
@@ -81,5 +48,39 @@ impl Pyra {
         }
 
         Ok(())
+    }
+}
+
+impl Puzzle for Pyra {
+    /// Compress given move sequence and apply it to the Pyraminx
+    fn compress_and_apply(&mut self, moves: &str) -> Result<Vec<u8>> {
+        let moves = moves.split_whitespace();
+
+        let mut out = Vec::<u8>::new();
+        let mut writer = BitWriter::endian(&mut out, BigEndian);
+
+        // Transform move into Huffman representation and apply move to cube
+        for m in moves {
+            let (repr, size) = huffman_compress_move(m)?;
+
+            writer
+                .write(size, repr)
+                .map_err(|_| CompressionError::CompressionError)?;
+
+            move_pyra_huffman(repr, size, self)?;
+        }
+
+        // Pad with EOF sequence
+        writer
+            .write(7, 0b1110011)
+            .map_err(|_| CompressionError::CompressionError)?;
+
+        writer.into_unwritten();
+
+        Ok(out)
+    }
+
+    fn check_solved_for_set(&self, _set: &str) -> Result<()> {
+        self.is_solved()
     }
 }

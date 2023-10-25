@@ -30,7 +30,7 @@ pub struct RevokePrivilegeEvent {
     pub revoked_user: Pubkey,
 }
 
-pub fn handler(ctx: Context<RevokePrivilege>, revoked_user: Pubkey) -> Result<()> {
+pub fn revoke_privilege_handler(ctx: Context<RevokePrivilege>, revoked_user: Pubkey) -> Result<()> {
     emit!(RevokePrivilegeEvent {
         revoker: ctx.accounts.revoker.key(),
         revoked_user,

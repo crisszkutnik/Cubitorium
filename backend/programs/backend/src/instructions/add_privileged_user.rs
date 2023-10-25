@@ -35,7 +35,7 @@ pub struct AddPrivilegedUserEvent {
     pub grantee: Pubkey,
 }
 
-pub fn handler(ctx: Context<AddPrivilegedUser>) -> Result<()> {
+pub fn add_privileged_user_handler(ctx: Context<AddPrivilegedUser>) -> Result<()> {
     // If no privilege was passed for granter, it must be the deployer
     if ctx.accounts.granter_privilege.is_none() {
         require_keys_eq!(
@@ -46,7 +46,6 @@ pub fn handler(ctx: Context<AddPrivilegedUser>) -> Result<()> {
     }
 
     // Store data and emit event
-
     ctx.accounts.grantee_privilege.granter = ctx.accounts.granter.key();
     ctx.accounts.grantee_privilege.grantee = ctx.accounts.grantee.key();
     ctx.accounts.grantee_privilege.bump = ctx.bumps.grantee_privilege;

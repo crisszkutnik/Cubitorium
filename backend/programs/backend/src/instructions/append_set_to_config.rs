@@ -42,7 +42,7 @@ pub struct AppendSetToConfig<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(
+pub fn append_set_to_config_handler(
     ctx: Context<AppendSetToConfig>,
     set_name: String,
     case_names: Vec<String>,
