@@ -11,6 +11,7 @@ import { ChangeEventHandler, useMemo, useState } from 'react';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { AddSolutionButton } from '../../../components/AddSolutionButton';
 import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
+import { decompress } from '../../../modules/utils/compression';
 
 interface Props {
   caseAccount: CaseAccount;
@@ -59,13 +60,13 @@ export function Top({ caseAccount, onCaseChange }: Props) {
     <div className="flex my-4 items-center">
       <div className="flex flex-col">
         <ScrambleDisplay2
-          scramble={caseAccount?.account.setup}
+          scramble={decompress(caseAccount?.account.setup)}
           height="h-60"
           set={caseAccount.account.set}
         />
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-lg">Setup</h2>
-          <p className="text-xl">{caseAccount?.account.setup}</p>
+          <p className="text-xl">{decompress(caseAccount?.account.setup)}</p>
         </div>
         <AddSolutionButton caseAccount={caseAccount} className="mt-4" />
       </div>

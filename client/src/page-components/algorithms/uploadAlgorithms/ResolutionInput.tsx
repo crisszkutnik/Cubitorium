@@ -8,6 +8,7 @@ import { useAlertContext } from '../../../components/context/AlertContext';
 import { useSolutionStore } from '../../../modules/store/solutionStore';
 import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
 import { SolutionAlreadyExistsError } from '../../../modules/utils/SolutionAlreadyExistsError';
+import { decompress } from '../../../modules/utils/compression';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -56,13 +57,13 @@ export function ResolutionInput({ activeCase }: Props) {
           You can see your solution in real time!
         </div>
         <p className="mt-4 text-lg">
-          <b>Setup: </b> {activeCase?.account.setup}
+          <b>Setup: </b> {decompress(activeCase?.account.setup)}
         </p>
         <ScrambleDisplay2
           height="h-60 mb-4"
           width="w-fit"
           set={activeCase?.account.set || ''}
-          scramble={activeCase?.account.setup + ' ' + userSolution}
+          scramble={decompress(activeCase?.account.setup) + ' ' + userSolution}
         />
       </div>
       <div>

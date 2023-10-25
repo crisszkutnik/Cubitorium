@@ -24,6 +24,7 @@ import {
 import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
 import { shallow } from 'zustand/shallow';
 import { useLikeStore } from '../../modules/store/likeStore';
+import { decompress } from '../../modules/utils/compression';
 
 export function MyLikes() {
   const [selectedSet, setSelectedSet] = useState('');
@@ -101,7 +102,7 @@ export function MyLikes() {
           <TableBody emptyContent="You haven't submitted a solution for this case!">
             {solutions.map(({ publicKey, account }, index) => (
               <TableRow key={index}>
-                <TableCell>{account.moves}</TableCell>
+                <TableCell>{decompress(account.moves)}</TableCell>
                 <TableCell className="w-1/6">{account.likes}</TableCell>
                 <TableCell className="w-1/6">
                   {moment(account.timestamp).format('DD/MM/YYYY')}
@@ -109,7 +110,7 @@ export function MyLikes() {
                 <TableCell className="w-1/6">
                   <Like
                     casePk={account.case}
-                    solution={account.moves}
+                    solution={decompress(account.moves)}
                     solutionPk={publicKey}
                   />
                 </TableCell>

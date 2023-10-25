@@ -1,5 +1,6 @@
 import { ScrambleDisplay2 } from '../../../../../components/ScrambleDisplay2';
 import { Case } from '../../../../../modules/types/case.interface';
+import { decompress } from '../../../../../modules/utils/compression';
 
 interface Props {
   caseData: Case;
@@ -10,7 +11,7 @@ export function Info({ caseData }: Props) {
     <div className="w-3/12 flex flex-col items-center text-center">
       <ScrambleDisplay2
         set={caseData.set}
-        scramble={caseData.setup}
+        scramble={decompress(caseData.setup)}
         height="h-36"
       />
       <div>
@@ -20,7 +21,7 @@ export function Info({ caseData }: Props) {
       </div>
       <div className="mt-3 mb-3">
         <h2 className="font-semibold text-accent-dark text-xl">Setup</h2>
-        <p>{caseData.setup}</p>
+        <p>{decompress(caseData.setup)}</p>
       </div>
     </div>
   );

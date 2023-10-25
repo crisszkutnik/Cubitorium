@@ -17,6 +17,7 @@ import { AddSolutionButton } from '../../../../../../components/AddSolutionButto
 import { CaseAccount } from '../../../../../../modules/types/case.interface';
 import { Profile } from '../../../../../../components/like/Profile';
 import moment from 'moment';
+import { decompress } from '../../../../../../modules/utils/compression';
 
 interface Props {
   caseAccount: CaseAccount;
@@ -34,7 +35,9 @@ export function AlgorithmTable({ caseAccount }: Props) {
 
     const rows = solutions.slice(0, 4).map((s, index) => (
       <TableRow key={index}>
-        <TableCell className="text-lg w-5/12">{s.account.moves}</TableCell>
+        <TableCell className="text-lg w-5/12">
+          {decompress(s.account.moves)}
+        </TableCell>
         <TableCell className="text-lg w-1/12 text-center">
           {s.account.likes}
         </TableCell>
@@ -46,7 +49,7 @@ export function AlgorithmTable({ caseAccount }: Props) {
           <Like
             casePk={caseAccount.publicKey}
             solutionPk={s.publicKey}
-            solution={s.account.moves}
+            solution={decompress(s.account.moves)}
           />
         </TableCell>
       </TableRow>

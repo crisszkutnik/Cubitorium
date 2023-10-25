@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@nextui-org/react';
 import { Profile } from '../../../components/like/Profile';
+import { decompress } from '../../../modules/utils/compression';
 
 interface Props {
   solutions: SolutionAccount[];
@@ -32,7 +33,7 @@ export function AllAlgorithmsTable({ solutions }: Props) {
       <TableBody>
         {solutions.map(({ publicKey, account }, index) => (
           <TableRow key={index}>
-            <TableCell>{account.moves}</TableCell>
+            <TableCell>{decompress(account.moves)}</TableCell>
             <TableCell className="w-1/6">{account.likes}</TableCell>
             <TableCell className="w-1/6">
               {moment(account.timestamp).format('DD/MM/YYYY')}
@@ -41,7 +42,7 @@ export function AllAlgorithmsTable({ solutions }: Props) {
               <Profile author={account.author} />
               <Like
                 casePk={account.case}
-                solution={account.moves}
+                solution={decompress(account.moves)}
                 solutionPk={publicKey}
               />
             </TableCell>
