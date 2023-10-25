@@ -1,6 +1,6 @@
 export function NotFound() {
     return (
-      <div className="w-full h-screen flex flex-col items-center justify-center -mt-60">
+      <div className="w-full h-screen flex flex-col items-center justify-center -mt-20">
         <img src="/rubik-sad.png" />
         <h1 className="text-accent-dark font-semibold text-4xl mt-4">
           404 - Not Found
