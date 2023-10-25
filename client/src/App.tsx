@@ -16,6 +16,7 @@ import { Home } from './pages/home/Home';
 import { Guide } from './pages/guide/Guide';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
+import { NotFound } from './pages/NotFound';
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -37,6 +38,7 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
+          <Route path='*' element={<NotFound />}/>
           <Route path="/" element={<Home />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
