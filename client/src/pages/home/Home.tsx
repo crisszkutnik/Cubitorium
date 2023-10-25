@@ -21,7 +21,7 @@ export function Home() {
   const currentBackground = backgroundImages[currentBackgroundIndex];
 
   return (
-    <div className="relative h-screen -mt-6">
+    <div className="relative h-screen -mt-6 mb-10">
       {/* BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <img
@@ -125,7 +125,8 @@ export function Home() {
           <AccordionItem
             key="4"
             aria-label="Accordion 4"
-            title="(Coming Soon!) "
+            title="Coming Soon!"
+          
           ></AccordionItem>
         </Accordion>
       </div>
