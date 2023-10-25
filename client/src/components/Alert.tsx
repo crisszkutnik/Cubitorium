@@ -2,7 +2,7 @@ import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Card, CardBody } from '@nextui-org/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   text: string;
@@ -11,9 +11,22 @@ interface Props {
 }
 
 export function Alert({ text, onPress, type }: Props) {
+  const [timeoutNumber, setTimeoutNumber] = useState<NodeJS.Timeout>();
+
   useEffect(() => {
-    setTimeout(() => onPress && onPress(), 20000);
-  }, []);
+    if (timeoutNumber) {
+      clearTimeout(timeoutNumber);
+    }
+
+    const n = setTimeout(() => onPress && onPress(), 10000);
+    setTimeoutNumber(n);
+
+    return () => {
+      if (timeoutNumber) {
+        clearTimeout(timeoutNumber);
+      }
+    };
+  }, [text, onPress, type]);
 
   return (
     <div className="absolute right-10 top-24 z-30">
