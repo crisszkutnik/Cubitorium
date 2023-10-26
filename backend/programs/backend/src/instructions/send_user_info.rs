@@ -28,6 +28,8 @@ pub fn send_user_info_handler(
     birthdate: String,
     profile_img_src: String,
 ) -> Result<()> {
+    msg!("Creating user info for {} {}...", name, surname);
+
     require!(
         name.len() <= MAX_NAME_LENGTH,
         UserInfoError::UserNameTooLong

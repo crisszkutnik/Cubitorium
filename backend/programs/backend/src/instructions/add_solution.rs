@@ -9,7 +9,7 @@ pub struct AddSolution<'info> {
     pub signer: Signer<'info>,
 
     /// Program PDA treasury, funded by the community
-    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump)]
+    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump = treasury.bump)]
     pub treasury: Account<'info, Treasury>,
 
     /// CHECK: no seeds needed because it can be any case
@@ -32,7 +32,7 @@ pub struct AddSolution<'info> {
     #[account(mut, seeds = [USER_INFO_TAG.as_ref(), signer.key().as_ref()], bump = user_profile.bump)]
     pub user_profile: Account<'info, UserInfo>,
 
-    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump)]
+    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump = global_config.bump)]
     pub global_config: Account<'info, GlobalConfig>,
 
     pub system_program: Program<'info, System>,
@@ -40,6 +40,8 @@ pub struct AddSolution<'info> {
 }
 
 pub fn add_solution_handler(ctx: Context<AddSolution>, solution: String) -> Result<()> {
+    msg!("Adding solution {}...", solution);
+
     // Check if case has enough solution slots left
     require!(
         ctx.accounts.case.solutions < MAX_SOLUTIONS_ALLOWED,
@@ -47,6 +49,7 @@ pub fn add_solution_handler(ctx: Context<AddSolution>, solution: String) -> Resu
     );
 
     // Check that solution works (current state + solution = solved state for its set)
+    msg!("Checking validity...");
     let compressed_solution = ctx
         .accounts
         .case
@@ -89,6 +92,7 @@ pub fn add_solution_handler(ctx: Context<AddSolution>, solution: String) -> Resu
     ctx.accounts.solution_pda.self_index = ctx.accounts.case.solutions;
     ctx.accounts.solution_pda.author = ctx.accounts.signer.key();
     ctx.accounts.solution_pda.timestamp = Clock::get()?.unix_timestamp as u64;
+    ctx.accounts.solution_pda.bump = ctx.bumps.solution_pda;
 
     // Update Case
     ctx.accounts.case.solutions += 1;

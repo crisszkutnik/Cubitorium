@@ -22,7 +22,12 @@ pub struct CreateCase<'info> {
     pub user_profile: Account<'info, UserInfo>,
 
     /// Program PDA treasury, funded by the community
-    #[account(init_if_needed, payer = signer, space = 8, seeds = [TREASURY_TAG.as_ref()], bump)]
+    #[account(
+        init_if_needed,
+        seeds = [TREASURY_TAG.as_ref()], bump,
+        payer = signer,
+        space = Treasury::LEN
+    )]
     pub treasury: Account<'info, Treasury>,
 
     /// Case to be created
@@ -34,10 +39,10 @@ pub struct CreateCase<'info> {
     )]
     pub case: Account<'info, Case>,
 
-    #[account(seeds = [SET_TAG.as_ref(), set_name.as_ref()], bump)]
+    #[account(seeds = [SET_TAG.as_ref(), set_name.as_ref()], bump = set.bump)]
     pub set: Account<'info, Set>,
 
-    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump)]
+    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump = global_config.bump)]
     pub global_config: Account<'info, GlobalConfig>,
 
     pub system_program: Program<'info, System>,
@@ -50,6 +55,8 @@ pub fn create_case_handler(
     id: String,
     setup: String,
 ) -> Result<()> {
+    msg!("Creating case {}:{} with moves {}...", set_name, id, setup);
+
     require!(
         set_name.len() < MAX_SET_NAME_LENGTH,
         CaseError::MaxSetNameLength
@@ -103,6 +110,9 @@ pub fn create_case_handler(
     ctx.accounts.case.id = id;
     ctx.accounts.case.setup = compressed_setup;
     ctx.accounts.case.bump = ctx.bumps.case;
+
+    // Treasury bump
+    ctx.accounts.treasury.bump = ctx.bumps.treasury;
 
     Ok(())
 }

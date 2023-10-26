@@ -16,6 +16,7 @@ pub struct Solution {
     pub likes: u32,
     /// Unix timestamp of submission
     pub timestamp: u64,
+    pub bump: u8,
 }
 
 impl Solution {
@@ -25,7 +26,8 @@ impl Solution {
         1  + // self_index
         32 + // author
         4  + // likes
-        8    // timestamp
+        8  + // timestamp
+        1    // bump
     ;
 }
 
