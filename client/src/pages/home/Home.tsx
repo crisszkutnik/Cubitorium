@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 export function Home() {
   // Background changer
-  const backgroundImages = ['bg0.jpg', 'bg1.jpg', 'bg2.jpg'];
+  const backgroundImages = ['bg5.jpg', 'bg6.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.jpg', 'bg1.jpg', 'bg0.jpg'];
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function Home() {
   const currentBackground = backgroundImages[currentBackgroundIndex];
 
   return (
-    <div className="relative h-screen -mt-6 mb-10">
+    <div className="relative h-screen -mt-6">
       
       <div className="absolute inset-0 -z-10">
         <img
