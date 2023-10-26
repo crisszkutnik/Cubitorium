@@ -332,6 +332,67 @@ describe("backend", () => {
         expect(e.error.errorCode.code).to.be.eq(`AccountNotInitialized`);
       }
     });
+
+    it("Can add another set to global config", async () => {
+      let testSetPda = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(SET_TAG), Buffer.from("TEST_SET")],
+        pid
+      )[0];
+
+      await program.methods
+        .appendSetToConfig("TEST_SET", ["27"])
+        .accounts({
+          admin: privilegedKeypair1.publicKey,
+          newSet: testSetPda,
+          existingSet: null,
+        })
+        .signers([privilegedKeypair1])
+        .rpc();
+
+      let config = await program.account.globalConfig.fetchNullable(
+        globalConfig
+      );
+      expect(config).to.not.be.null;
+      expect(config.sets[1].toString()).to.equal(testSetPda.toString());
+
+      let testSet = await program.account.set.fetchNullable(testSetPda);
+      expect(testSet).to.not.be.null;
+      expect(testSet.setName).to.eq("TEST_SET");
+      expect(testSet.caseNames).to.eq(`["27"]`);
+    });
+
+    it("Can remove a set from global config", async () => {
+      let testSetPda = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(SET_TAG), Buffer.from("TEST_SET")],
+        pid
+      )[0];
+
+      // Config has two elems
+      let config = await program.account.globalConfig.fetchNullable(
+        globalConfig
+      );
+      expect(config).to.not.be.null;
+      expect(config.sets.length).to.be.eq(2);
+
+      // Remove thing
+      try {
+        await program.methods.removeSetFromConfig("TEST_SET").rpc();
+      } catch (e) {
+        console.log(e);
+      }
+
+      // PDA is gone
+      let testSet = await program.account.set.fetchNullable(testSetPda);
+
+      expect(testSet).to.be.null;
+
+      // Gone from config too
+      config = await program.account.globalConfig.fetchNullable(globalConfig);
+      expect(config).to.not.be.null;
+      expect(config.sets.length).to.be.eq(1);
+      expect(config.sets.find((s) => s.toBase58() === testSetPda.toBase58())).to
+        .be.undefined;
+    });
   });
 
   describe("Cases and algorithms - basic", () => {
