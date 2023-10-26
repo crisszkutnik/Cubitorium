@@ -40,11 +40,9 @@ function App() {
         <Routes>
           <Route path='*' element={<NotFound />}/>
           <Route path="/" element={<Home />} />
+          <Route path="/guide" element={<Guide />} />{' '}
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
-          <Route path="/guide" element={<Guide />} />{' '}
-          {/* The guide page will not have a NavLink on the Navbar since it's not a func of our app */}
-          {/* Authenticated routes */}
           <Route element={<AuthenticatedRoute />}>
             <Route path="/algorithms/upload" element={<AlgorithmsUpload />} />
             <Route path="/adminpanel" element={<AdminPanel />} />

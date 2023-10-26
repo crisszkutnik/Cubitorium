@@ -23,7 +23,7 @@ export function Home() {
 
   return (
     <div className="relative h-screen -mt-6 mb-10">
-      {/* BACKGROUND */}
+      
       <div className="absolute inset-0 -z-10">
         <img
           src={`/public/${currentBackground}`}
@@ -32,7 +32,7 @@ export function Home() {
         />
       </div>
 
-      <div className="relative z-10">
+      <div className="">
         {/* Welcome to cubitorium */}
         <h1 className="text-4xl py-5 text-accent-dark font-bold text-center mt-6">
           <img
