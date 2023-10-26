@@ -47,7 +47,11 @@ pub fn append_set_to_config_handler(
     set_name: String,
     case_names: Vec<String>,
 ) -> Result<()> {
-    msg!("Appending set {} to global config with {} cases...", set_name, case_names.len());
+    msg!(
+        "Appending set {} to global config with {} cases...",
+        set_name,
+        case_names.len()
+    );
 
     match (&mut ctx.accounts.existing_set, &mut ctx.accounts.new_set) {
         // First case: EXISTING SET

@@ -41,8 +41,11 @@ pub struct RemoveLike<'info> {
 }
 
 pub fn remove_like_handler(ctx: Context<RemoveLike>) -> Result<()> {
-    msg!("Removing like from solution {}...", ctx.accounts.solution_pda.self_index);
-    
+    msg!(
+        "Removing like from solution {}...",
+        ctx.accounts.solution_pda.self_index
+    );
+
     // Decrease like count in Solution
     ctx.accounts.solution_pda.likes -= 1;
 
