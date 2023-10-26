@@ -23,14 +23,14 @@ export function Home() {
 
   return (
     <div className="relative h-screen -mt-6 mb-10">
-      {/* BACKGROUND */}
-      {/* <div className="absolute inset-0 -z-10">
+      
+      <div className="absolute inset-0 -z-10">
         <img
           src={`/public/${currentBackground}`}
           alt="Background"
           className="w-full h-full object-cover opacity-10"
         />
-      </div> */}
+      </div>
 
       <div className="">
         {/* Welcome to cubitorium */}
