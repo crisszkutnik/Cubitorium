@@ -49,6 +49,11 @@ pub mod backend {
         append_set_to_config::append_set_to_config_handler(ctx, set_name, case_names)
     }
 
+    /// Removes set with its cases from global config
+    pub fn remove_set_from_config(ctx: Context<RemoveSetFromConfig>, set_name: String) -> Result<()> {
+        remove_set_from_config::remove_set_from_config_handler(ctx, set_name)
+    }
+
     //////////// Case handling ////////////
 
     /// Creates a case (only privileged user)
