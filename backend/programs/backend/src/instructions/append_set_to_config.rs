@@ -20,7 +20,7 @@ pub struct AppendSetToConfig<'info> {
     #[account(seeds = [PRIVILEGE_TAG.as_ref(), admin.key().as_ref()], bump = user_privilege.bump)]
     pub user_privilege: Account<'info, Privilege>,
 
-    #[account(mut, seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump)]
+    #[account(mut, seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump = global_config.bump)]
     pub global_config: Account<'info, GlobalConfig>,
 
     #[account(
@@ -35,7 +35,7 @@ pub struct AppendSetToConfig<'info> {
     )]
     pub new_set: Option<Account<'info, Set>>,
 
-    #[account(mut, seeds = [SET_TAG.as_ref(), set_name.as_ref()], bump)]
+    #[account(mut, seeds = [SET_TAG.as_ref(), set_name.as_ref()], bump = existing_set.bump)]
     pub existing_set: Option<Account<'info, Set>>,
 
     pub system_program: Program<'info, System>,
@@ -47,6 +47,8 @@ pub fn append_set_to_config_handler(
     set_name: String,
     case_names: Vec<String>,
 ) -> Result<()> {
+    msg!("Appending set {} to global config with {} cases...", set_name, case_names.len());
+
     match (&mut ctx.accounts.existing_set, &mut ctx.accounts.new_set) {
         // First case: EXISTING SET
         (Some(set), None) => {
@@ -77,6 +79,7 @@ pub fn append_set_to_config_handler(
             // Serialize and write Set
             set.set_name = set_name;
             set.case_names = json::to_string(&case_names);
+            set.bump = ctx.bumps.new_set;
 
             // Realloc and write GlobalConfig
             realloc_with_rent(

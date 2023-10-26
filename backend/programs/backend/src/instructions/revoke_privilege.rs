@@ -20,8 +20,15 @@ pub struct RevokePrivilege<'info> {
     pub revoked_privilege: Account<'info, Privilege>,
 
     /// Program PDA treasury, funded by the community
-    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump)]
-    pub treasury: SystemAccount<'info>,
+    #[account(
+        init_if_needed,
+        seeds = [TREASURY_TAG.as_ref()], bump,
+        payer = revoker,
+        space = Treasury::LEN,
+    )]
+    pub treasury: Account<'info, Treasury>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[event]
@@ -31,6 +38,8 @@ pub struct RevokePrivilegeEvent {
 }
 
 pub fn revoke_privilege_handler(ctx: Context<RevokePrivilege>, revoked_user: Pubkey) -> Result<()> {
+    msg!("Revoking privilege...");
+
     emit!(RevokePrivilegeEvent {
         revoker: ctx.accounts.revoker.key(),
         revoked_user,

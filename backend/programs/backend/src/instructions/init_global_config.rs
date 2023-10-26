@@ -26,8 +26,11 @@ pub fn init_global_config_handler(
     ctx: Context<InitGlobalConfig>,
     max_fund_limit: u64,
 ) -> Result<()> {
+    msg!("Initializing global config...");
+
     ctx.accounts.global_config.sets = vec![];
     ctx.accounts.global_config.max_fund_limit = max_fund_limit;
+    ctx.accounts.global_config.bump = ctx.bumps.global_config;
 
     Ok(())
 }

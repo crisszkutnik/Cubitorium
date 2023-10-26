@@ -35,6 +35,8 @@ pub fn change_user_info_handler(
     birthdate: Option<String>,
     profile_img_src: Option<String>,
 ) -> Result<()> {
+    msg!("Updating user info...");
+
     let user_info = &mut ctx.accounts.user_info;
 
     update_opt!(

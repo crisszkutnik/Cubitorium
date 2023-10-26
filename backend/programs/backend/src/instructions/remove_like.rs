@@ -8,7 +8,7 @@ pub struct RemoveLike<'info> {
     pub signer: Signer<'info>,
 
     /// Program PDA treasury, funded by the community
-    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump)]
+    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump = treasury.bump)]
     pub treasury: Account<'info, Treasury>,
 
     /// CHECK: no seeds check because it can be any solution
@@ -41,6 +41,8 @@ pub struct RemoveLike<'info> {
 }
 
 pub fn remove_like_handler(ctx: Context<RemoveLike>) -> Result<()> {
+    msg!("Removing like from solution {}...", ctx.accounts.solution_pda.self_index);
+    
     // Decrease like count in Solution
     ctx.accounts.solution_pda.likes -= 1;
 

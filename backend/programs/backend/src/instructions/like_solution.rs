@@ -8,7 +8,7 @@ pub struct LikeSolution<'info> {
     pub signer: Signer<'info>,
 
     /// Program PDA treasury, funded by the community
-    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump)]
+    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump = treasury.bump)]
     pub treasury: Account<'info, Treasury>,
 
     /// CHECK: no seeds check because it can be any solution
@@ -32,7 +32,7 @@ pub struct LikeSolution<'info> {
     #[account(mut, seeds = [USER_INFO_TAG.as_ref(), signer.key().as_ref()], bump = user_profile.bump)]
     pub user_profile: Account<'info, UserInfo>,
 
-    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump)]
+    #[account(seeds = [GLOBAL_CONFIG_TAG.as_ref()], bump = global_config.bump)]
     pub global_config: Account<'info, GlobalConfig>,
 
     pub system_program: Program<'info, System>,
@@ -40,6 +40,8 @@ pub struct LikeSolution<'info> {
 }
 
 pub fn like_solution_handler(ctx: Context<LikeSolution>) -> Result<()> {
+    msg!("Liking solution {}...", ctx.accounts.solution_pda.self_index);
+
     // Add to like count in Solution and author UserInfo if we're not liking self
     ctx.accounts.solution_pda.likes += 1;
     if ctx.accounts.signer.key() != ctx.accounts.solution_pda.author {
@@ -48,6 +50,7 @@ pub fn like_solution_handler(ctx: Context<LikeSolution>) -> Result<()> {
 
     ctx.accounts.like_certificate.user = ctx.accounts.signer.key();
     ctx.accounts.like_certificate.solution = ctx.accounts.solution_pda.key();
+    ctx.accounts.like_certificate.bump = ctx.bumps.like_certificate;
 
     // Refund rent to Signer if user has some quota left
     let like_certificate_rent = ctx.accounts.rent.minimum_balance(LikeCertificate::LEN);
