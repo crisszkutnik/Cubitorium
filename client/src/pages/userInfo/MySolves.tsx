@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
-  selectSolutionsByCaseAndAuthor,
+  selectSolutionsForAuthorAndCases,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
 import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -18,27 +19,44 @@ import moment from 'moment';
 import { Like } from '../../components/like/Like';
 import { ThreeLevelSelect } from '../../components/ThreeLevelSelect';
 import {
-  selectCaseBySetAndId,
+  selectCasesByPuzzle,
+  selectCasesBySet,
   useCaseStore,
 } from '../../modules/store/caseStore';
-import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
+import {
+  PuzzleType,
+  PuzzleTypeKey,
+  useAlgorithmsStore,
+} from '../../modules/store/algorithmsStore';
 import { shallow } from 'zustand/shallow';
 import { useUserStore } from '../../modules/store/userStore';
 import { useLikeStore } from '../../modules/store/likeStore';
 import { decompress } from '../../modules/utils/compression';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 export function MySolves() {
   const [selectedSet, setSelectedSet] = useState('');
-  const [selectedCase, setSelectedCase] = useState('');
+  const [useAllSets, setUseAllSets] = useState(false);
   const loggedUserPk = useUserStore((state) => state.loggedUserPk);
-
-  const [caseAccount, loadCasesIfNotLoaded, casesLoadingState] = useCaseStore(
-    (state) => [
-      selectCaseBySetAndId(selectedSet, selectedCase)(state),
-      state.loadIfNotLoaded,
-      state.loadingState,
-    ],
+  const pageSize = 20;
+  const [max, setMax] = useState(pageSize);
+  const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>(
+    PuzzleType['3x3'],
   );
+
+  const [cases, casesMap, loadCasesIfNotLoaded, casesLoadingState] =
+    useCaseStore(
+      (state) => [
+        useAllSets
+          ? selectCasesByPuzzle(selectedPuzzle)(state)
+          : selectCasesBySet(selectedSet)(state),
+        state.casesMap,
+        state.loadIfNotLoaded,
+        state.loadingState,
+      ],
+      shallow,
+    );
 
   const [loadLikesIfNotLoaded, likesLoadingState] = useLikeStore((state) => [
     state.loadIfNotLoaded,
@@ -48,10 +66,10 @@ export function MySolves() {
   const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
     useSolutionStore(
       (state) => [
-        selectSolutionsByCaseAndAuthor(
-          caseAccount?.publicKey || '',
+        selectSolutionsForAuthorAndCases(
           loggedUserPk || '',
-        )(state),
+          cases,
+        )(state).slice(0, max),
         state.loadIfNotLoaded,
         state.loadingState,
       ],
@@ -87,8 +105,20 @@ export function MySolves() {
       <div className="flex flex-col bg-white drop-shadow p-5 rounded w-full h-fit">
         <ThreeLevelSelect
           runOnStart
-          onSetChange={setSelectedSet}
-          onCaseChange={setSelectedCase}
+          onSetChange={(newSet: string) => {
+            setMax(pageSize);
+            setSelectedSet(newSet);
+          }}
+          onAllSetsChange={() => {
+            setMax(pageSize);
+            setUseAllSets(!useAllSets);
+          }}
+          useAllSets={useAllSets}
+          selectedPuzzle={selectedPuzzle}
+          setSelectedPuzzle={(newPuzzle: PuzzleTypeKey) => {
+            setMax(pageSize);
+            setSelectedPuzzle(newPuzzle);
+          }}
         />
         <Table
           isStriped
@@ -100,6 +130,7 @@ export function MySolves() {
         >
           <TableHeader>
             <TableColumn>Solution</TableColumn>
+            <TableColumn>Set</TableColumn>
             <TableColumn>Likes</TableColumn>
             <TableColumn>Date submitted</TableColumn>
             <TableColumn hideHeader>Likes and learning status</TableColumn>
@@ -108,6 +139,9 @@ export function MySolves() {
             {solutions.map(({ publicKey, account }, index) => (
               <TableRow key={index}>
                 <TableCell>{decompress(account.moves)}</TableCell>
+                <TableCell className="w-1/6">
+                  {casesMap[account.case.toString()].account.set}
+                </TableCell>
                 <TableCell className="w-1/6">{account.likes}</TableCell>
                 <TableCell className="w-1/6">
                   {moment(account.timestamp).format('DD/MM/YYYY')}
@@ -123,6 +157,20 @@ export function MySolves() {
             ))}
           </TableBody>
         </Table>
+        {solutions.length === max && (
+          <div className="flex justify-center">
+            <Button
+              onClick={() => setMax(max + pageSize)}
+              variant="ghost"
+              color="primary"
+              className="w-40 mt-4 font-bold"
+              radius="sm"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              Load more
+            </Button>
+          </div>
+        )}
       </div>
     </UserInfoLayout>
   );

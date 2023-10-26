@@ -1,45 +1,36 @@
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import {
-  PuzzleType,
   PuzzleTypeKey,
   PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../modules/store/algorithmsStore';
-import { useCaseStore } from '../modules/store/caseStore';
-import { Select, SelectItem } from '@nextui-org/react';
+import { Checkbox, Select, SelectItem } from '@nextui-org/react';
 import { SetCase } from '../modules/types/globalConfig.interface';
 
 interface Props {
   column?: boolean;
   onSetChange?: (set: string) => void;
-  onCaseChange?: (caseId: string) => void;
+  useAllSets: boolean;
+  onAllSetsChange: () => void;
   runOnStart?: boolean;
+  selectedPuzzle: PuzzleTypeKey;
+  setSelectedPuzzle: (puzzle: PuzzleTypeKey) => void;
 }
 
 export function ThreeLevelSelect({
   column,
   onSetChange,
-  onCaseChange,
+  onAllSetsChange,
+  useAllSets,
   runOnStart,
+  selectedPuzzle,
+  setSelectedPuzzle,
 }: Props) {
   const setsMap = useAlgorithmsStore((state) => state.setsMap);
-  const cases = useCaseStore((state) => state.cases);
-
-  const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>(
-    PuzzleType['3x3'],
-  );
 
   const [selectedSet, setSelectedSet] = useState(
     setsMap[selectedPuzzle][0].setName,
   );
-
-  const [selectedCase, setSelectedCase] = useState(
-    setsMap[selectedPuzzle][0].caseNames[0],
-  );
-
-  const casesForSelectedSet = useMemo(() => {
-    return cases.filter((c) => c.account.set === selectedSet);
-  }, [selectedSet, selectedCase]);
 
   useEffect(() => {
     if (!runOnStart) {
@@ -48,10 +39,6 @@ export function ThreeLevelSelect({
 
     if (onSetChange) {
       onSetChange(selectedSet);
-    }
-
-    if (onCaseChange) {
-      onCaseChange(selectedCase);
     }
   }, []);
 
@@ -63,18 +50,12 @@ export function ThreeLevelSelect({
     }
 
     const newSet = setsMap[puzzle][0].setName;
-    const newCaseId = setsMap[puzzle][0].caseNames[0];
 
     setSelectedPuzzle(puzzle);
     setSelectedSet(newSet);
-    setSelectedCase(newCaseId);
 
     if (onSetChange) {
       onSetChange(newSet);
-    }
-
-    if (onCaseChange) {
-      onCaseChange(newCaseId);
     }
   };
 
@@ -86,28 +67,9 @@ export function ThreeLevelSelect({
     }
 
     setSelectedSet(value);
-    const newCase = cases.find((c) => c.account.set === value);
-    const newCaseId = newCase?.account.id || '';
-    setSelectedCase(newCaseId);
 
     if (onSetChange) {
       onSetChange(value);
-    }
-
-    if (onCaseChange) {
-      onCaseChange(newCaseId);
-    }
-  };
-
-  const handleCaseChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-
-    if (value && value !== selectedCase) {
-      setSelectedCase(event.target.value);
-
-      if (onCaseChange) {
-        onCaseChange(value);
-      }
     }
   };
 
@@ -151,25 +113,14 @@ export function ThreeLevelSelect({
           base: 'mt-10',
         }}
         items={setsMap[selectedPuzzle] as SetCase[]}
+        isDisabled={useAllSets}
       >
         {(set) => <SelectItem key={set.setName}>{set.setName}</SelectItem>}
       </Select>
 
-      <Select
-        labelPlacement="outside"
-        color="primary"
-        label="Algorithm case"
-        selectedKeys={[selectedCase]}
-        onChange={handleCaseChange}
-        disabled={casesForSelectedSet.length === 0}
-        classNames={{
-          label: 'text-accent-dark font-semibold text-lg',
-          base: 'mt-10',
-        }}
-        items={casesForSelectedSet}
-      >
-        {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
-      </Select>
+      <div className="whitespace-nowrap flex items-end mb-2">
+        <Checkbox onChange={onAllSetsChange}>All sets</Checkbox>
+      </div>
     </div>
   );
 }

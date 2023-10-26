@@ -78,16 +78,16 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
 );
 
 export function getPuzzleType(set: string): PuzzleTypeKey {
-  const sets2x2 = ['CLL', 'EG-1', 'EG-2'];
-  const setsPyra = ['L4E'];
+  switch (set) {
+    case 'CLL':
+    case 'EG-1':
+    case 'EG-2':
+      return PuzzleType['2x2'];
 
-  if (sets2x2.includes(set)) {
-    return PuzzleType['2x2'];
+    case 'L4E':
+      return PuzzleType['Pyraminx'];
+
+    default:
+      return PuzzleType['3x3'];
   }
-
-  if (setsPyra.includes(set)) {
-    return PuzzleType['Pyraminx'];
-  }
-
-  return PuzzleType['3x3'];
 }

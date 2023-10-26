@@ -15,7 +15,7 @@ export function UserInfoLayout({ children }: Props) {
       path: '/userinfo',
     },
     {
-      text: 'My submitted solves',
+      text: 'My submitted solutions',
       path: '/userinfo/solves',
     },
     {
