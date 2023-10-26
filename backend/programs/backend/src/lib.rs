@@ -50,7 +50,10 @@ pub mod backend {
     }
 
     /// Removes set with its cases from global config
-    pub fn remove_set_from_config(ctx: Context<RemoveSetFromConfig>, set_name: String) -> Result<()> {
+    pub fn remove_set_from_config(
+        ctx: Context<RemoveSetFromConfig>,
+        set_name: String,
+    ) -> Result<()> {
         remove_set_from_config::remove_set_from_config_handler(ctx, set_name)
     }
 

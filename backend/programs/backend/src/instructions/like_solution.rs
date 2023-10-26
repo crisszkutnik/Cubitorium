@@ -40,7 +40,10 @@ pub struct LikeSolution<'info> {
 }
 
 pub fn like_solution_handler(ctx: Context<LikeSolution>) -> Result<()> {
-    msg!("Liking solution {}...", ctx.accounts.solution_pda.self_index);
+    msg!(
+        "Liking solution {}...",
+        ctx.accounts.solution_pda.self_index
+    );
 
     // Add to like count in Solution and author UserInfo if we're not liking self
     ctx.accounts.solution_pda.likes += 1;

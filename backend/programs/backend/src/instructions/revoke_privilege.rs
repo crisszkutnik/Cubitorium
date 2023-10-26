@@ -20,12 +20,7 @@ pub struct RevokePrivilege<'info> {
     pub revoked_privilege: Account<'info, Privilege>,
 
     /// Program PDA treasury, funded by the community
-    #[account(
-        init_if_needed,
-        seeds = [TREASURY_TAG.as_ref()], bump,
-        payer = revoker,
-        space = Treasury::LEN,
-    )]
+    #[account(init_if_needed, seeds = [TREASURY_TAG.as_ref()], bump, space = 8+1, payer = revoker)]
     pub treasury: Account<'info, Treasury>,
 
     pub system_program: Program<'info, System>,

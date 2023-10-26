@@ -22,12 +22,7 @@ pub struct CreateCase<'info> {
     pub user_profile: Account<'info, UserInfo>,
 
     /// Program PDA treasury, funded by the community
-    #[account(
-        init_if_needed,
-        seeds = [TREASURY_TAG.as_ref()], bump,
-        payer = signer,
-        space = Treasury::LEN
-    )]
+    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump = treasury.bump)]
     pub treasury: Account<'info, Treasury>,
 
     /// Case to be created
@@ -110,9 +105,6 @@ pub fn create_case_handler(
     ctx.accounts.case.id = id;
     ctx.accounts.case.setup = compressed_setup;
     ctx.accounts.case.bump = ctx.bumps.case;
-
-    // Treasury bump
-    ctx.accounts.treasury.bump = ctx.bumps.treasury;
 
     Ok(())
 }

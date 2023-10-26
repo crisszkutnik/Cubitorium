@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{state::*, constants::*};
+use crate::{constants::*, state::*};
 
 #[derive(Accounts)]
 #[instruction(set_name: String)]
@@ -15,7 +15,7 @@ pub struct RemoveSetFromConfig<'info> {
     pub global_config: Account<'info, GlobalConfig>,
 
     /// Program PDA treasury, funded by the community
-    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump)]
+    #[account(mut, seeds = [TREASURY_TAG.as_ref()], bump = treasury.bump)]
     pub treasury: Account<'info, Treasury>,
 
     #[account(
@@ -28,19 +28,25 @@ pub struct RemoveSetFromConfig<'info> {
 
 #[event]
 pub struct RemoveSetFromConfigEvent {
-    set_name: String
+    set_name: String,
 }
 
-pub fn remove_set_from_config_handler(ctx: Context<RemoveSetFromConfig>, set_name: String) -> Result<()> {
+pub fn remove_set_from_config_handler(
+    ctx: Context<RemoveSetFromConfig>,
+    set_name: String,
+) -> Result<()> {
     msg!("Removed set {} from global config...", set_name);
 
     // Remove set from GlobalConfig vector
-    ctx.accounts.global_config.sets = ctx.accounts.global_config.sets
+    ctx.accounts.global_config.sets = ctx
+        .accounts
+        .global_config
+        .sets
         .clone()
         .into_iter()
         .filter(|set| *set != ctx.accounts.set.key())
         .collect();
-    
+
     emit!(RemoveSetFromConfigEvent { set_name });
 
     Ok(())
