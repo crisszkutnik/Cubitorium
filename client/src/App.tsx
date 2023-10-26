@@ -38,7 +38,6 @@ function App() {
     return (
       <BrowserRouter>
         <Navbar />
-        
         <BottomBar />
         <Routes>
           <Route path='*' element={<NotFound />}/>
