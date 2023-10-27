@@ -101,6 +101,7 @@ export function UserInfo() {
                   label="Birthdate (DD/MM/YYYY)"
                   type="date"
                   color="primary"
+                  placeholder="dd/mm/aaaa"
                   {...field}
                 />
               )}
