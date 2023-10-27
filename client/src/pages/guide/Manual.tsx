@@ -14,7 +14,7 @@ export function Manual() {
                                     On the Algorithms page you will find a complete series of cases to select. <br/> Be sure to select the case that you want to practice
                                     or upload your solution.
                                 </p>
-                                <img src="../../../public/step-01.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-2/5 w-2/4" />
+                                <img src="./public/step-01.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-2/5 w-2/4" />
                             </div>
                             <hr/>
                     </div>
@@ -25,7 +25,7 @@ export function Manual() {
                     <div className="mt-10 mb-10">
                     <h2 className="text-2xl underline mb-3">Step 2: Add a solution for the selected case</h2>
                     <div className="mb-4 flex items-center justify-center">
-                    <img src="../../../public/step-02.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-3/5 w-4/4" />
+                    <img src="./public/step-02.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-3/5 w-4/4" />
                         <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
                             Once you selected your case to practice or upload, click on the <b>+ Add</b> button in order to be redirected to the Upload your Algorithm page.
                         </p>
@@ -46,7 +46,7 @@ export function Manual() {
 
                             <b>Remember</b> to use the official <a className="text-sky-600 font-bold" href="https://meep.cubing.net/wcanotation.html">WCA Notation.</a>
                         </p>
-                        <img src="../../../public/step-03.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
+                        <img src="./public/step-03.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                     </div>
                     <hr/>
                     </div>
@@ -57,7 +57,7 @@ export function Manual() {
                     <h2 className="text-2xl underline mb-3 text-right">Step 4: Rock the world</h2>
                     <div className="mb-4 flex items-center justify-center">
                         
-                        <img src="../../../public/step-04.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
+                        <img src="./public/step-04.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                         <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
                             Start cubing! <br/>
                             As the image shows, you will be able to visualize in <b>real time</b> the solution that you're typing. 
@@ -88,7 +88,7 @@ export function Manual() {
                         This limit is set by the admins. If you exceed it, you will have to pay to submit your solutions.<br/>
                          Don't worry, if you get there, the cost is low. quizas expandir un poco mas idk idk idk
                         </p>
-                        <img src="../../../public/step-05.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
+                        <img src="./public/step-05.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                     </div>
                     <hr/>
                     </div>
@@ -99,7 +99,7 @@ export function Manual() {
                     {/* Step 6 */}
                     <h2 className="text-2xl mb-3 text-green-900">Congrats buddy! </h2>
                     <div className="mb-4 flex items-center justify-center">
-                        <img src="../../../public/step-06.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
+                        <img src="./public/step-06.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                         <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
                             Your solution was uploaded, now you can visualize it adaidsbaidniadsa.
 
@@ -129,7 +129,7 @@ export function Manual() {
 
                             
                         </p>
-                        <img src="../../../public/step-07.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
+                        <img src="./public/step-07.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                     </div>
 
                 
