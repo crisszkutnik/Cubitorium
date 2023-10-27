@@ -51,7 +51,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
       success('Solution liked successfully');
     } catch (e) {
       console.error(e);
-      error('Failed to like solution');
+      error('Failed to like solution', e);
     }
   };
 
