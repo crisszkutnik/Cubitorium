@@ -37,7 +37,7 @@ export function Manual() {
 
                     {/* Step 3 */}
                     <div className="mt-10 mb-10"></div>
-                    <h2 className="text-2xl underline mb-3">Step 3: Verify the selected case</h2>
+                    <h2 className="text-2xl underline mb-3 text-center">Step 3: Verify the selected case</h2>
                     <div className="mb-4 flex items-center justify-center">
                         <p className="text-sm text-gray-600 mb-4 mr-6 max-w-xs text-right">
                             Now, if the case visualized is what you wanted for, now you're ready to go. <br/>
@@ -52,11 +52,11 @@ export function Manual() {
                     </div>
 
                     
-
                     {/* Step 4 */}
                     <div className="mt-10 mb-10">
-                    <h2 className="text-2xl underline mb-3">Step 4: Rock the world</h2>
+                    <h2 className="text-2xl underline mb-3 text-right">Step 4: Rock the world</h2>
                     <div className="mb-4 flex items-center justify-center">
+                        
                         <img src="../../../public/step-04.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                         <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
                             Start cubing! <br/>
@@ -66,8 +66,7 @@ export function Manual() {
                             If you type an extra-space or something - you don't have to worry at all, because Cubitorium will solve it and validate your solution.
                             <br/>
                             <br/>
-                            When you already <b>solved</b> the case, type the Submit button to upload your solution.
-
+                            When you already <b>solved</b> the case, type the Submit button to upload your solutio
                         </p>
                         
                     </div>
@@ -98,11 +97,27 @@ export function Manual() {
                     
 
                     {/* Step 6 */}
-                    <h2 className="text-2xl mb-3 text-green-900">Congrats!</h2>
+                    <h2 className="text-2xl mb-3 text-green-900">Congrats buddy! </h2>
                     <div className="mb-4 flex items-center justify-center">
                         <img src="../../../public/step-06.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                         <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
                             Your solution was uploaded, now you can visualize it adaidsbaidniadsa.
+
+                            <br/>
+                            <br/>
+                            <br/>
+                            <b>Lorem Ispur</b> (casero):<br/>
+                                cries tobal cries and tobal tower and flowres  dasndi q8w h9qwh diwqdqwd Lore
+
+                                                        h-3/6	height: 50%;
+                                h-4/6	height: 66.666667%;
+                                h-5/6	height: 83.333333%;
+                                h-full	height: 100%;
+                                h-screen	height: 100vh;
+                                h-min	height: min-content;
+                                h-max	height: max-content;
+                                h-fit	height: fit-content;
+
                         </p>
                     </div>
 
@@ -112,17 +127,7 @@ export function Manual() {
                     <div className="mb-4 flex items-center justify-center">
                         <p className="text-sm text-gray-600 mb-4 mr-6 max-w-xs text-left">
 
-                            <b>Lorem Ispur</b> (casero):<br/>
-cries tobal cries and tobal tower and flowres  dasndi q8w h9qwh diwqdqwd Lore
-
-                        h-3/6	height: 50%;
-h-4/6	height: 66.666667%;
-h-5/6	height: 83.333333%;
-h-full	height: 100%;
-h-screen	height: 100vh;
-h-min	height: min-content;
-h-max	height: max-content;
-h-fit	height: fit-content;
+                            
                         </p>
                         <img src="../../../public/step-07.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                     </div>
