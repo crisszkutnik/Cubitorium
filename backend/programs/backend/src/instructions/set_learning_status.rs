@@ -20,7 +20,7 @@ pub struct SetLearningStatus<'info> {
             signer.key().as_ref(),
             solution_pda.key().as_ref()
         ],
-        bump,
+        bump = like_certificate.bump,
     )]
     pub like_certificate: Account<'info, LikeCertificate>,
 }
@@ -29,6 +29,8 @@ pub fn set_learning_status_handler(
     ctx: Context<SetLearningStatus>,
     status: LearningStatus,
 ) -> Result<()> {
+    msg!("Setting learning status to {:?}", status);
+
     // Set learning status
     ctx.accounts.like_certificate.learning_status = status;
 

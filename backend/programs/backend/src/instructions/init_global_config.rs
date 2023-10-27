@@ -19,6 +19,10 @@ pub struct InitGlobalConfig<'info> {
     )]
     pub global_config: Account<'info, GlobalConfig>,
 
+    /// Program PDA treasury, funded by the community
+    #[account(init_if_needed, seeds = [TREASURY_TAG.as_ref()], bump, space = 8+1, payer = admin)]
+    pub treasury: Account<'info, Treasury>,
+
     pub system_program: Program<'info, System>,
 }
 
@@ -26,8 +30,13 @@ pub fn init_global_config_handler(
     ctx: Context<InitGlobalConfig>,
     max_fund_limit: u64,
 ) -> Result<()> {
+    msg!("Initializing global config...");
+
     ctx.accounts.global_config.sets = vec![];
     ctx.accounts.global_config.max_fund_limit = max_fund_limit;
+    ctx.accounts.global_config.bump = ctx.bumps.global_config;
+
+    ctx.accounts.treasury.bump = ctx.bumps.treasury;
 
     Ok(())
 }

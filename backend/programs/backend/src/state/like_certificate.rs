@@ -16,8 +16,9 @@ pub struct LikeCertificate {
     pub learning_status: LearningStatus,
     pub user: Pubkey,
     pub solution: Pubkey,
+    pub bump: u8,
 }
 
 impl LikeCertificate {
-    pub const LEN: usize = DISCRIMINATOR_LENGTH + 1 + 32 + 32;
+    pub const LEN: usize = DISCRIMINATOR_LENGTH + 1 + 32 + 32 + 1;
 }

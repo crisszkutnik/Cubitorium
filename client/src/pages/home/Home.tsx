@@ -1,9 +1,9 @@
-import { Accordion, AccordionItem } from '@nextui-org/react';
+import { Accordion, AccordionItem, Button, Link } from '@nextui-org/react';
 import { useState, useEffect } from 'react';
 
 export function Home() {
   // Background changer
-  const backgroundImages = ['bg0.jpg', 'bg1.jpg', 'bg2.jpg'];
+  const backgroundImages = ['bg5.jpg', 'bg6.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.jpg', 'bg1.jpg', 'bg0.jpg'];
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
 
   useEffect(() => {
@@ -18,11 +18,12 @@ export function Home() {
     };
   }, []);
 
+
   const currentBackground = backgroundImages[currentBackgroundIndex];
 
   return (
     <div className="relative h-screen -mt-6">
-      {/* BACKGROUND */}
+      
       <div className="absolute inset-0 -z-10">
         <img
           src={`/public/${currentBackground}`}
@@ -31,7 +32,7 @@ export function Home() {
         />
       </div>
 
-      <div className="relative z-10">
+      <div className="">
         {/* Welcome to cubitorium */}
         <h1 className="text-4xl py-5 text-accent-dark font-bold text-center mt-6">
           <img
@@ -50,9 +51,14 @@ export function Home() {
             your skills in this global sport practiced in more than 100
             countries in the world.
           </p>
+          <Link href="/guide">
+          <Button color="secondary" variant="shadow" className="mt-4 text-gray-100 text-lg font-bold" href="/guide">
+              GET STARTED!
+          </Button>  
+          </Link>
 
           <p className="text-sm text-xm max-w-sm text-gray-600 text-center mt-5">
-          Before you start exploring the capabilities of our application, we <b>strongly recommend </b>reading this <a href='/guide' className="text-blue-600 font-bold">guide on how to install a cryptocurrency wallet</a>. Once you're ready with that:
+          Before you start exploring the capabilities of our application, we <b>strongly recommend </b>reading the guide above.
           </p>
 
           {/* Experience the best way to... */}
@@ -125,7 +131,8 @@ export function Home() {
           <AccordionItem
             key="4"
             aria-label="Accordion 4"
-            title="(Coming Soon!) "
+            title="Coming Soon!"
+          
           ></AccordionItem>
         </Accordion>
       </div>

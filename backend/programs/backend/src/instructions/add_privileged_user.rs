@@ -36,6 +36,8 @@ pub struct AddPrivilegedUserEvent {
 }
 
 pub fn add_privileged_user_handler(ctx: Context<AddPrivilegedUser>) -> Result<()> {
+    msg!("Adding privilege...");
+
     // If no privilege was passed for granter, it must be the deployer
     if ctx.accounts.granter_privilege.is_none() {
         require_keys_eq!(

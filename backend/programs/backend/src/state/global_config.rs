@@ -7,10 +7,11 @@ pub struct GlobalConfig {
     pub max_fund_limit: u64,
     /// Supported sets (pointers)
     pub sets: Vec<Pubkey>,
+    pub bump: u8,
 }
 
 impl GlobalConfig {
-    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 8 + 4;
+    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 8 + 4 + 1;
 }
 
 #[account]
@@ -24,8 +25,9 @@ pub struct Set {
     /// `["Aa","Ab","E","F"]`
     ///
     pub case_names: String,
+    pub bump: u8,
 }
 
 impl Set {
-    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 4 + 4;
+    pub const BASE_LEN: usize = DISCRIMINATOR_LENGTH + 4 + 4 + 1;
 }
