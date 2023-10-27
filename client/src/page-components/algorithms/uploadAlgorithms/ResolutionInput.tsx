@@ -64,6 +64,7 @@ export function ResolutionInput({ activeCase }: Props) {
           width="w-fit"
           set={activeCase?.account.set || ''}
           scramble={decompress(activeCase?.account.setup) + ' ' + userSolution}
+          overrideVisualization="3D"
         />
       </div>
       <div>

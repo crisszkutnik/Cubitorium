@@ -6,9 +6,16 @@ interface Props {
   className?: string;
   height: string;
   width?: string;
+  overrideVisualization?: '2D' | '3D';
 }
 
-export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
+export function ScrambleDisplay2({
+  set,
+  scramble,
+  height,
+  width,
+  overrideVisualization,
+}: Props) {
   const getRepresentationForCase = () => {
     const puzzleType = getPuzzleType(set);
 
@@ -74,7 +81,9 @@ export function ScrambleDisplay2({ set, scramble, height, width }: Props) {
                 ? 'experimental-stickering=' + repr['experimental-stickering']
                 : ''
             }
-            visualization="${repr?.visualization || '3D'}"
+            visualization="${
+              overrideVisualization || repr?.visualization || '3D'
+            }"
           >
           </twisty-player>
         `,
