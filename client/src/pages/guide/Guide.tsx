@@ -7,7 +7,7 @@ export function Guide() {
             Get Started with Cryptocurrency Wallets
           </h1>
 
-          <div className="">
+          <div>
             <p className="text-sm text-gray-900 text-center max-w-lg bg-gray-50 -mt-5">
               💡 Before you start enjoying all the features of Cubitorium, please read and follow this series of essential steps to be able to use the site swiftly.
             </p>
