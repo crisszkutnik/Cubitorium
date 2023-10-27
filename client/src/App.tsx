@@ -17,6 +17,7 @@ import { Guide } from './pages/guide/Guide';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 import { NotFound } from './pages/NotFound';
+import {Manual} from './pages/guide/Manual'
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -40,7 +41,8 @@ function App() {
         <Routes>
           <Route path='*' element={<NotFound />}/>
           <Route path="/" element={<Home />} />
-          <Route path="/guide" element={<Guide />} />{' '}
+          <Route path="/guide" element={<Guide />} />
+          <Route path="/manual" element={<Manual />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
           <Route element={<AuthenticatedRoute />}>

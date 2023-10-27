@@ -74,25 +74,6 @@ export function Home() {
           disabledKeys={['4']}
         >
 
-          {/* Learn About New Algorithms */}
-          <AccordionItem
-            key="2"
-            aria-label="2"
-            title={
-              <span>
-                Learn about{' '}
-                <span className="text-purple-600 font-bold">
-                  new algorithms
-                </span>
-              </span>
-            }
-          >
-            <p className="text-sm text-left text-gray-500 mr-25 -mt-3 mb-2">
-              Checking our Algorithms page in which you could find all the
-              uploaded algorithms by the community.
-            </p>
-          </AccordionItem>
-
           {/* Improve your cube-solving skills */}
           <AccordionItem
             key="1"
@@ -111,7 +92,24 @@ export function Home() {
             </p>
           </AccordionItem>
 
-          
+          {/* Learn About New Algorithms */}
+          <AccordionItem
+            key="2"
+            aria-label="2"
+            title={
+              <span>
+                Learn about{' '}
+                <span className="text-purple-600 font-bold">
+                  new algorithms
+                </span>
+              </span>
+            }
+          >
+            <p className="text-sm text-left text-gray-500 mr-25 -mt-3 mb-2">
+              Checking our Algorithms page in which you could find all the
+              uploaded algorithms by the community.
+            </p>
+          </AccordionItem>
 
           {/* Contribute to the community */}
           <AccordionItem
