@@ -68,29 +68,11 @@ export function Home() {
         </div>
 
         {/* Items / Accordions  - things that cubitorium does*/}
-
-        {/* Cube Solving Skills */}
         <Accordion
           variant="splitted"
           className="mx-auto text-center max-w-sm"
           disabledKeys={['4']}
         >
-          <AccordionItem
-            key="1"
-            aria-label="2"
-            title={
-              <span>
-                Improve your{' '}
-                <span className="text-green-700 font-bold">
-                  cube-solving skills
-                </span>
-              </span>
-            }
-          >
-            <p className="text-sm text-left text-gray-500 mr-25 -mt-3 mb-2">
-              Learning from others Speedcubers solutions
-            </p>
-          </AccordionItem>
 
           {/* Learn About New Algorithms */}
           <AccordionItem
@@ -110,6 +92,26 @@ export function Home() {
               uploaded algorithms by the community.
             </p>
           </AccordionItem>
+
+          {/* Improve your cube-solving skills */}
+          <AccordionItem
+            key="1"
+            aria-label="2"
+            title={
+              <span>
+                Improve your{' '}
+                <span className="text-green-700 font-bold">
+                  cube-solving skills
+                </span>
+              </span>
+            }
+          >
+            <p className="text-sm text-left text-gray-500 mr-25 -mt-3 mb-2">
+              Learning from others Speedcubers solutions
+            </p>
+          </AccordionItem>
+
+          
 
           {/* Contribute to the community */}
           <AccordionItem
