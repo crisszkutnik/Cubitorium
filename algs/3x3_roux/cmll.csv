@@ -23,12 +23,12 @@ T3, U' B' U2 B2 L' B' L B' U R' U R B, U' R U R' U R U' R' U R' U' R2 U' R2' U2'
 T4, L' U R' U' R2 B2 L' D' R' Lw2, R' U Rw U2' R2' F R F' Rw
 T5, R' U' R B U' L U L' U L U' L' B', U2 F R U R' U' R U' R' U' R U R' F'
 T6, R' U R2 D L' B2 L D' R2 U' R, R' U R2 D Rw' U2 Rw D' R2' U' R
-S1, U' B U2 B' U' B U' B', U R U R' U R U2 R'
-S2, U2 L U F' U' F L' U' F' U2 F, U L' U2 L U2' Lw F' L' F M'
-S3, U2 B U2 B D' B U' B' U' D B2 U2 B M2, U M F R' F' R U2 R U2' Rw'
-S4, U' B U2 B' U' B2 U L' U' B' U L U2 B', U R U R' U' R' F R F' R U R' U R U2' R'
-S5, U F U2 B' U F' U' B U' F U' F', U' R U R' U L' U R U' L U2 R'
-S6, U' F' U B U' F U B', U R U' L' U R' U' L
+Sune1, U' B U2 B' U' B U' B', U R U R' U R U2 R'
+Sune2, U2 L U F' U' F L' U' F' U2 F, U L' U2 L U2' Lw F' L' F M'
+Sune3, U2 B U2 B D' B U' B' U' D B2 U2 B M2, U M F R' F' R U2 R U2' Rw'
+Sune4, U' B U2 B' U' B2 U L' U' B' U L U2 B', U R U R' U' R' F R F' R U R' U R U2' R'
+Sune5, U F U2 B' U F' U' B U' F U' F', U' R U R' U L' U R U' L U2 R'
+Sune6, U' F' U B U' F U B', U R U' L' U R' U' L
 A1, U' B' U2 B U B' U B, U R' U' R U' R' U2' R
 A2, F B U2 F' U' F U2 B2 U F' U' B, U' R2 D R' U R D' R' U R' U' R U' R'
 A3, U B' U2 B U2 F U' B' U B F', U' M F' L F L' U2' L' U2 L M'
