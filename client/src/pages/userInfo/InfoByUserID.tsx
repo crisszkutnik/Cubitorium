@@ -23,6 +23,7 @@ export function InfoByUserID() {
   const [imgSrc, setImgSrc] = useState(user?.profileImgSrc);
 
   const pagingOffset = 20;
+  const placeholderImg = '/user_placeholder.png';
   const [shownCases, setShownCases] = useState(pagingOffset);
 
   const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
@@ -46,7 +47,7 @@ export function InfoByUserID() {
   }, []);
 
   const onImageLoadError = () => {
-    setImgSrc('/user_placeholder.png');
+    setImgSrc(placeholderImg);
   };
 
   const hasAllRequiredData = () => {
@@ -79,7 +80,7 @@ export function InfoByUserID() {
       <div className="flex flex-col bg-white drop-shadow py-3 px-6 rounded w-1/4 mr-6 h-fit">
         <div className="flex justify-center">
           <img
-            src={imgSrc}
+            src={imgSrc || placeholderImg}
             onError={onImageLoadError}
             className="rounded-full w-48 h-48"
           />
@@ -158,13 +159,13 @@ export function InfoByUserID() {
               </tr>
             </thead>
             <tbody>
-              {solutions.map(({ account }) => {
+              {solutions.map(({ account }, index) => {
                 const c = cases.find(
                   (c) => c.publicKey.toString() === account.case.toString(),
                 );
 
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td className="py-2">
                       {moment(account.timestamp).format('YYYY-MM-DD')}
                     </td>

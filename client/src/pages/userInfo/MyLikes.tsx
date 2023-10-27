@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
-  selectLikedSolutionsBySetAndId,
+  selectLikedSolutionsForCases,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
 import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -18,40 +19,58 @@ import moment from 'moment';
 import { Like } from '../../components/like/Like';
 import { ThreeLevelSelect } from '../../components/ThreeLevelSelect';
 import {
-  selectCaseBySetAndId,
+  selectCasesByPuzzle,
+  selectCasesBySet,
   useCaseStore,
 } from '../../modules/store/caseStore';
-import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
+import {
+  PuzzleType,
+  PuzzleTypeKey,
+  useAlgorithmsStore,
+} from '../../modules/store/algorithmsStore';
 import { shallow } from 'zustand/shallow';
 import { useLikeStore } from '../../modules/store/likeStore';
 import { decompress } from '../../modules/utils/compression';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 export function MyLikes() {
   const [selectedSet, setSelectedSet] = useState('');
-  const [selectedCase, setSelectedCase] = useState('');
+  const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleTypeKey>(
+    PuzzleType['3x3'],
+  );
+  const [useAllSets, setUseAllSets] = useState(false);
+  const pageSize = 20;
+  const [max, setMax] = useState(pageSize);
 
-  const [caseAccount, loadCasesIfNotLoaded, casesLoadingState] = useCaseStore(
-    (state) => [
-      selectCaseBySetAndId(selectedSet, selectedCase)(state),
+  const [cases, casesMap, loadCasesIfNotLoaded, casesLoadingState] =
+    useCaseStore((state) => [
+      useAllSets
+        ? selectCasesByPuzzle(selectedPuzzle)(state)
+        : selectCasesBySet(selectedSet)(state),
+      state.casesMap,
       state.loadIfNotLoaded,
       state.loadingState,
-    ],
+    ]);
+
+  const [likesMap, loadLikesIfNotLoaded, likesLoadingState] = useLikeStore(
+    (state) => [state.likesMap, state.loadIfNotLoaded, state.loadingState],
   );
 
-  const [loadLikesIfNotLoaded, likesLoadingState] = useLikeStore((state) => [
-    state.loadIfNotLoaded,
-    state.loadingState,
-  ]);
-
-  const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
-    useSolutionStore(
-      (state) => [
-        selectLikedSolutionsBySetAndId(caseAccount?.publicKey || '')(state),
-        state.loadIfNotLoaded,
-        state.loadingState,
-      ],
-      shallow,
-    );
+  const [
+    solutions,
+    loadSolutionsIfNotLoaded,
+    solutionsLoadingState,
+    sortSolutionsBySet,
+  ] = useSolutionStore(
+    (state) => [
+      selectLikedSolutionsForCases(likesMap, cases)(state).slice(0, max),
+      state.loadIfNotLoaded,
+      state.loadingState,
+      state.sortSolutionsBySet,
+    ],
+    shallow,
+  );
 
   const [loadSetsIfNotLoaded, setsLoadingState] = useAlgorithmsStore(
     (state) => [state.loadIfNotLoaded, state.loadingState],
@@ -63,6 +82,10 @@ export function MyLikes() {
     loadSetsIfNotLoaded();
     loadLikesIfNotLoaded();
   }, []);
+
+  useEffect(() => {
+    sortSolutionsBySet();
+  }, [casesLoadingState]);
 
   const hasAllRequiredData = () => {
     return (
@@ -82,8 +105,20 @@ export function MyLikes() {
       <div className="flex flex-col bg-white drop-shadow p-5 rounded w-full h-fit">
         <ThreeLevelSelect
           runOnStart
-          onSetChange={setSelectedSet}
-          onCaseChange={setSelectedCase}
+          onSetChange={(newSet: string) => {
+            setMax(pageSize);
+            setSelectedSet(newSet);
+          }}
+          onAllSetsChange={() => {
+            setMax(pageSize);
+            setUseAllSets(!useAllSets);
+          }}
+          useAllSets={useAllSets}
+          selectedPuzzle={selectedPuzzle}
+          setSelectedPuzzle={(newPuzzle: PuzzleTypeKey) => {
+            setMax(pageSize);
+            setSelectedPuzzle(newPuzzle);
+          }}
         />
         <Table
           isStriped
@@ -95,6 +130,7 @@ export function MyLikes() {
         >
           <TableHeader>
             <TableColumn>Solution</TableColumn>
+            <TableColumn>Set</TableColumn>
             <TableColumn>Likes</TableColumn>
             <TableColumn>Date submitted</TableColumn>
             <TableColumn hideHeader>Likes and learning status</TableColumn>
@@ -103,6 +139,9 @@ export function MyLikes() {
             {solutions.map(({ publicKey, account }, index) => (
               <TableRow key={index}>
                 <TableCell>{decompress(account.moves)}</TableCell>
+                <TableCell className="w-1/6">
+                  {casesMap[account.case.toString()].account.set}
+                </TableCell>
                 <TableCell className="w-1/6">{account.likes}</TableCell>
                 <TableCell className="w-1/6">
                   {moment(account.timestamp).format('DD/MM/YYYY')}
@@ -118,6 +157,20 @@ export function MyLikes() {
             ))}
           </TableBody>
         </Table>
+        {solutions.length === max && (
+          <div className="flex justify-center">
+            <Button
+              onClick={() => setMax(max + pageSize)}
+              variant="ghost"
+              color="primary"
+              className="w-40 mt-4 font-bold"
+              radius="sm"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              Load more
+            </Button>
+          </div>
+        )}
       </div>
     </UserInfoLayout>
   );

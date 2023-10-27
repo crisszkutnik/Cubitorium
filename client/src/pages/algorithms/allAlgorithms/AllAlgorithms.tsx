@@ -5,7 +5,10 @@ import { useSearchParams } from 'react-router-dom';
 import { useCaseStore } from '../../../modules/store/caseStore';
 import { LoadingState } from '../../../modules/types/loadingState.enum';
 import { Loading } from '../../Loading';
-import { useSolutionStore } from '../../../modules/store/solutionStore';
+import {
+  selectSolutionsByCaseAndLikes,
+  useSolutionStore,
+} from '../../../modules/store/solutionStore';
 import {
   getPuzzleType,
   useAlgorithmsStore,
@@ -31,9 +34,7 @@ export function AllAlgorithms() {
 
   const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
     useSolutionStore((state) => [
-      state.solutions.filter(
-        (s) => s.account.case.toString() === caseAccount?.publicKey.toString(),
-      ),
+      selectSolutionsByCaseAndLikes(caseAccount.publicKey)(state),
       state.loadIfNotLoaded,
       state.loadingState,
     ]);

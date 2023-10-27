@@ -6,37 +6,70 @@ import { PublicKey } from '@solana/web3.js';
 import { getLikePda, getStringFromPKOrObject } from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
 import { useLikeStore } from './likeStore';
+import { ParsedLikeCertificateAccount } from '../types/likeCertificate.interface';
+import { useCaseStore } from './caseStore';
 
 interface SolutionStoreState {
   solutions: SolutionAccount[];
   loadingState: LoadingState;
+  sorted: boolean;
   setLoadingState: (loadingState: LoadingState) => void;
+  sortSolutionsBySet: () => void;
   loadIfNotLoaded: () => Promise<void>;
   loadSolutions: () => Promise<void>;
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
 }
 
-export function selectSolutionsByCase(casePublicKey: PublicKey | string) {
+export function selectSolutionsByCaseAndLikes(
+  casePublicKey: PublicKey | string,
+) {
   const pk = getStringFromPKOrObject(casePublicKey);
 
   return (state: SolutionStoreState) => {
-    return state.solutions.filter((s) => s.account.case.toString() === pk);
+    return state.solutions
+      .sort((a, b) => (a.account.likes < b.account.likes ? 1 : -1))
+      .filter((s) => s.account.case.toString() === pk);
   };
 }
 
-export function selectSolutionsByCaseAndAuthor(
-  casePublicKey: PublicKey | string,
+export function selectSolutionsForAuthorAndCases(
   authorPublicKey: PublicKey | string,
+  validCases: CaseAccount[] | undefined,
 ) {
-  const casePk = getStringFromPKOrObject(casePublicKey);
   const authorPk = getStringFromPKOrObject(authorPublicKey);
+
+  const casesForSet = validCases
+    ? validCases.map((c) => c.publicKey.toString())
+    : undefined;
 
   return (state: SolutionStoreState) => {
     return state.solutions.filter(
       (s) =>
-        s.account.case.toString() === casePk &&
+        (casesForSet === undefined ||
+          casesForSet.includes(s.account.case.toString())) &&
         s.account.author.toString() === authorPk,
     );
+  };
+}
+
+export function selectLikedSolutionsForCases(
+  likesMap: Record<string, ParsedLikeCertificateAccount>,
+  validCases: CaseAccount[],
+) {
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter((s) => {
+      if (!validCases.some((c) => c.publicKey.equals(s.account.case))) {
+        return false;
+      }
+
+      const key = getLikePda(
+        web3Layer.loggedUserPK,
+        s.publicKey,
+        web3Layer.programId,
+      );
+
+      return likesMap[key.toString()] !== undefined;
+    });
   };
 }
 
@@ -73,9 +106,35 @@ export function selectSolutionsByAuthor(authorPublicKey: PublicKey | string) {
   };
 }
 
+function comparatorBySet(a: SolutionAccount, b: SolutionAccount) {
+  const casesMap = useCaseStore.getState().casesMap;
+
+  const caseA: CaseAccount | undefined = casesMap[a.account.case.toString()];
+  const caseB: CaseAccount | undefined = casesMap[b.account.case.toString()];
+
+  if (!caseA || !caseB) {
+    return 1;
+  }
+
+  return caseA.account.set > caseB.account.set ? 1 : -1;
+}
+
 export const useSolutionStore = createWithEqualityFn<SolutionStoreState>(
   (set, get) => ({
     solutions: [],
+    sorted: false,
+    sortSolutionsBySet: () => {
+      if (
+        get().sorted ||
+        useCaseStore.getState().loadingState !== LoadingState.LOADED
+      ) {
+        return;
+      }
+
+      const solutions = [...get().solutions];
+      solutions.sort(comparatorBySet);
+      set({ solutions });
+    },
     loadIfNotLoaded: async () => {
       const { loadingState, loadSolutions } = get();
 

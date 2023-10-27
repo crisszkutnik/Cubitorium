@@ -30,8 +30,8 @@ export function LastCase({ performance, solutions }: Props) {
           <ScrambleDisplay2
             scramble={decompress(performance.case.account.setup)}
             set={performance.case.account.set}
-            height="h-24"
-            width="w-24"
+            height="h-28"
+            width="w-32"
           />
           <div className="flex flex-col">
             <p>Set: {performance.case.account.set}</p>
