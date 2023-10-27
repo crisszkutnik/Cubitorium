@@ -1,3 +1,5 @@
+import { Link } from '@nextui-org/react';
+
 export function Manual() {
     return (
         <div className="relative h-screen">
@@ -10,9 +12,8 @@ export function Manual() {
                     <div className="mt-10 mb-10">
                         <h2 className="text-2xl underline mb-3">Step 1: Select your case</h2>
                             <div className="mb-4 flex items-center justify-center">
-                                <p className="text-sm text-gray-600 mb-4 mr-6 max-w-xs text-right">
-                                    On the Algorithms page you will find a complete series of cases to select. <br/> Be sure to select the case that you want to practice
-                                    or upload your solution.
+                                <p className="text-md text-gray-600 mb-4 mr-6 max-w-xs text-right">
+                                Select a case on the  <Link href="/algorithms" className="text-sky-600 font-bold">Algorithms</Link> page to which you want to upload a new solution.
                                 </p>
                                 <img src="./public/step-01.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-2/5 w-2/4" />
                             </div>
@@ -26,8 +27,8 @@ export function Manual() {
                     <h2 className="text-2xl underline mb-3">Step 2: Add a solution for the selected case</h2>
                     <div className="mb-4 flex items-center justify-center">
                     <img src="./public/step-02.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-3/5 w-4/4" />
-                        <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
-                            Once you selected your case to practice or upload, click on the <b>+ Add</b> button in order to be redirected to the Upload your Algorithm page.
+                        <p className="text-md text-gray-600 mb-4 ml-6 max-w-xs text-left">
+                            Once you select the case, click on the <b>+ Add </b>button in order to be redirected to the  <Link href="/algorithms/upload" className="text-sky-600 font-bold">Upload your Algorithm</Link> page .
                         </p>
                     </div>
                     <hr/>
@@ -39,12 +40,16 @@ export function Manual() {
                     <div className="mt-10 mb-10"></div>
                     <h2 className="text-2xl underline mb-3 text-center">Step 3: Verify the selected case</h2>
                     <div className="mb-4 flex items-center justify-center">
-                        <p className="text-sm text-gray-600 mb-4 mr-6 max-w-xs text-right">
-                            Now, if the case visualized is what you wanted for, now you're ready to go. <br/>
-                            You will find a textarea below the setup of the cube in which you can start typing the solution. <br/>
+                        <p className="text-md text-gray-600 mb-4 mr-6 max-w-xs text-right">
+                        Now, if the shown case is correct, you're ready to go.
+                        
+                        You will find a box beneath the cube in which you can start typing the solution. <br/>
+
+        
+                
                             <br/>
 
-                            <b>Remember</b> to use the official <a className="text-sky-600 font-bold" href="https://meep.cubing.net/wcanotation.html">WCA Notation.</a>
+                            Remember to use the official <Link className="text-sky-600 font-bold" href="https://www.worldcubeassociation.org/regulations/#article-12-notation">WCA Notation.</Link>
                         </p>
                         <img src="./public/step-03.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                     </div>
@@ -58,15 +63,15 @@ export function Manual() {
                     <div className="mb-4 flex items-center justify-center">
                         
                         <img src="./public/step-04.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
-                        <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
-                            Start cubing! <br/>
-                            As the image shows, you will be able to visualize in <b>real time</b> the solution that you're typing. 
-                            <br/>
-                            <br/>
-                            If you type an extra-space or something - you don't have to worry at all, because Cubitorium will solve it and validate your solution.
-                            <br/>
-                            <br/>
-                            When you already <b>solved</b> the case, type the Submit button to upload your solutio
+                        <p className="text-md text-gray-600 mb-4 ml-6 max-w-xs text-left">
+                        Start cubing!<br/>
+                        You will be able to visualize the solution that you're typing in real time.
+                        <br/>
+                        <br/>
+                        💡 If you type an extra-space or a <b>wrong solution</b>, you don't have to worry at all - we got your back.
+                        <br/>
+                        <br/>
+                        Whenever you are ready, Submit your solution.
                         </p>
                         
                     </div>
@@ -79,14 +84,12 @@ export function Manual() {
                     <div className="mt-10 mb-10">
                     <h2 className="text-2xl underline mb-3">Step 5: Sign the transaction</h2>
                     <div className="mb-4 flex items-center justify-center">
-                        <p className="text-sm text-gray-600 mb-4 mr-6 max-w-xs text-right">
-                        This will validate your solution, save it, and refund the expenses to you (<i>up to a certain limit.</i>)
-
-                        <br/>
-                        <br/>
-
-                        This limit is set by the admins. If you exceed it, you will have to pay to submit your solutions.<br/>
-                         Don't worry, if you get there, the cost is low. quizas expandir un poco mas idk idk idk
+                        <p className="text-md text-gray-600 mb-4 mr-6 max-w-xs text-right">
+                        This will send your solution to the blockchain, save it, and refund the expenses to you (<i>up to a certain limit</i>). 
+                    
+                        <br/><br/>
+                        
+                        Admins set the limit, but don't worry, it's high enough to get you going.
                         </p>
                         <img src="./public/step-05.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
                     </div>
@@ -98,38 +101,25 @@ export function Manual() {
 
                     {/* Step 6 */}
                     <h2 className="text-2xl mb-3 text-green-900">Congrats buddy! </h2>
-                    <div className="mb-4 flex items-center justify-center">
-                        <img src="./public/step-06.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
-                        <p className="text-sm text-gray-600 mb-4 ml-6 max-w-xs text-left">
-                            Your solution was uploaded, now you can visualize it adaidsbaidniadsa.
+                    <p className="text-md text-gray-600 mb-4 ml-6 max-w-xs text-center">
 
-                            <br/>
-                            <br/>
-                            <br/>
-                            <b>Lorem Ispur</b> (casero):<br/>
-                                cries tobal cries and tobal tower and flowres  dasndi q8w h9qwh diwqdqwd Lore
+                    Your solution is uploaded and everybody can see it now!
 
-                                                        h-3/6	height: 50%;
-                                h-4/6	height: 66.666667%;
-                                h-5/6	height: 83.333333%;
-                                h-full	height: 100%;
-                                h-screen	height: 100vh;
-                                h-min	height: min-content;
-                                h-max	height: max-content;
-                                h-fit	height: fit-content;
+                    <br/><br/>
+                        <b>Rejoice!</b>     
+                    
+                    </p>
+            
+                    <img src="./public/step-07.jpeg" className="border-2 border-purple-800 mb-2 inline-block max-w-6xl" />    
 
-                        </p>
-                    </div>
-
-
-
-                    {/* Step 7 */}
-                    <div className="mb-4 flex items-center justify-center">
-                        <p className="text-sm text-gray-600 mb-4 mr-6 max-w-xs text-left">
+                    
+                    <div className="-mt-20 items-center justify-center">
+                    
+                        <p className="text-md text-gray-600 mb-4 mr-6 max-w-xs text-left">
 
                             
                         </p>
-                        <img src="./public/step-07.jpeg" className="border-2 border-purple-800 mb-2 inline-block h-80 w-500" />
+                        
                     </div>
 
                 
