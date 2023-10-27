@@ -63,18 +63,23 @@ export function MySolves() {
     state.loadingState,
   ]);
 
-  const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
-    useSolutionStore(
-      (state) => [
-        selectSolutionsForAuthorAndCases(
-          loggedUserPk || '',
-          cases,
-        )(state).slice(0, max),
-        state.loadIfNotLoaded,
-        state.loadingState,
-      ],
-      shallow,
-    );
+  const [
+    solutions,
+    loadSolutionsIfNotLoaded,
+    solutionsLoadingState,
+    sortSolutionsBySet,
+  ] = useSolutionStore(
+    (state) => [
+      selectSolutionsForAuthorAndCases(
+        loggedUserPk || '',
+        cases,
+      )(state).slice(0, max),
+      state.loadIfNotLoaded,
+      state.loadingState,
+      state.sortSolutionsBySet,
+    ],
+    shallow,
+  );
 
   const [loadSetsIfNotLoaded, setsLoadingState] = useAlgorithmsStore(
     (state) => [state.loadIfNotLoaded, state.loadingState],
@@ -86,6 +91,10 @@ export function MySolves() {
     loadSetsIfNotLoaded();
     loadLikesIfNotLoaded();
   }, []);
+
+  useEffect(() => {
+    sortSolutionsBySet();
+  }, [casesLoadingState]);
 
   const hasAllRequiredData = () => {
     return (

@@ -57,19 +57,20 @@ export function MyLikes() {
     (state) => [state.likesMap, state.loadIfNotLoaded, state.loadingState],
   );
 
-  const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
-    useSolutionStore(
-      (state) => [
-        /*selectSolutionsForAuthorAndCases(
-          loggedUserPk || '',
-          cases,
-        )(state).slice(0, max),*/
-        selectLikedSolutionsForCases(likesMap, cases)(state).slice(0, max),
-        state.loadIfNotLoaded,
-        state.loadingState,
-      ],
-      shallow,
-    );
+  const [
+    solutions,
+    loadSolutionsIfNotLoaded,
+    solutionsLoadingState,
+    sortSolutionsBySet,
+  ] = useSolutionStore(
+    (state) => [
+      selectLikedSolutionsForCases(likesMap, cases)(state).slice(0, max),
+      state.loadIfNotLoaded,
+      state.loadingState,
+      state.sortSolutionsBySet,
+    ],
+    shallow,
+  );
 
   const [loadSetsIfNotLoaded, setsLoadingState] = useAlgorithmsStore(
     (state) => [state.loadIfNotLoaded, state.loadingState],
@@ -81,6 +82,10 @@ export function MyLikes() {
     loadSetsIfNotLoaded();
     loadLikesIfNotLoaded();
   }, []);
+
+  useEffect(() => {
+    sortSolutionsBySet();
+  }, [casesLoadingState]);
 
   const hasAllRequiredData = () => {
     return (

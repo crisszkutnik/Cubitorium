@@ -7,11 +7,14 @@ import { getLikePda, getStringFromPKOrObject } from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
 import { useLikeStore } from './likeStore';
 import { ParsedLikeCertificateAccount } from '../types/likeCertificate.interface';
+import { useCaseStore } from './caseStore';
 
 interface SolutionStoreState {
   solutions: SolutionAccount[];
   loadingState: LoadingState;
+  sorted: boolean;
   setLoadingState: (loadingState: LoadingState) => void;
+  sortSolutionsBySet: () => void;
   loadIfNotLoaded: () => Promise<void>;
   loadSolutions: () => Promise<void>;
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
@@ -103,9 +106,35 @@ export function selectSolutionsByAuthor(authorPublicKey: PublicKey | string) {
   };
 }
 
+function comparatorBySet(a: SolutionAccount, b: SolutionAccount) {
+  const casesMap = useCaseStore.getState().casesMap;
+
+  const caseA: CaseAccount | undefined = casesMap[a.account.case.toString()];
+  const caseB: CaseAccount | undefined = casesMap[b.account.case.toString()];
+
+  if (!caseA || !caseB) {
+    return 1;
+  }
+
+  return caseA.account.set > caseB.account.set ? 1 : -1;
+}
+
 export const useSolutionStore = createWithEqualityFn<SolutionStoreState>(
   (set, get) => ({
     solutions: [],
+    sorted: false,
+    sortSolutionsBySet: () => {
+      if (
+        get().sorted ||
+        useCaseStore.getState().loadingState !== LoadingState.LOADED
+      ) {
+        return;
+      }
+
+      const solutions = [...get().solutions];
+      solutions.sort(comparatorBySet);
+      set({ solutions });
+    },
     loadIfNotLoaded: async () => {
       const { loadingState, loadSolutions } = get();
 
