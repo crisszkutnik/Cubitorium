@@ -17,11 +17,15 @@ interface SolutionStoreState {
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
 }
 
-export function selectSolutionsByCase(casePublicKey: PublicKey | string) {
+export function selectSolutionsByCaseAndLikes(
+  casePublicKey: PublicKey | string,
+) {
   const pk = getStringFromPKOrObject(casePublicKey);
 
   return (state: SolutionStoreState) => {
-    return state.solutions.filter((s) => s.account.case.toString() === pk);
+    return state.solutions
+      .sort((a, b) => (a.account.likes < b.account.likes ? 1 : -1))
+      .filter((s) => s.account.case.toString() === pk);
   };
 }
 
