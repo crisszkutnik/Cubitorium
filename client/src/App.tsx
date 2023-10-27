@@ -17,7 +17,6 @@ import { Guide } from './pages/guide/Guide';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 import { NotFound } from './pages/NotFound';
-import { BottomBar } from './components/BottomBar';
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -38,7 +37,6 @@ function App() {
     return (
       <BrowserRouter>
         <Navbar />
-        <BottomBar />
         <Routes>
           <Route path='*' element={<NotFound />}/>
           <Route path="/" element={<Home />} />
@@ -58,7 +56,7 @@ function App() {
             <Route path=":id" element={<InfoByUserID />} />
           </Route>
           <Route path="/practice" element={<Practice />} />
-        </Routes>
+        </Routes>      
       </BrowserRouter>
     );
   }
