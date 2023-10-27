@@ -149,7 +149,7 @@ export function StopWatch({ activeCases, performance, setPerformance }: Props) {
               <ScrambleDisplay2
                 scramble={decompress(selectedCase?.account.setup) || ''}
                 set={selectedCase?.account.set || ''}
-                height="h-24"
+                height="h-32"
               />
             </div>
           </div>

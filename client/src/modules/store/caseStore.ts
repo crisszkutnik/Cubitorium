@@ -4,9 +4,11 @@ import { web3Layer } from '../web3/web3Layer';
 import { LoadingState } from '../types/loadingState.enum';
 import { PublicKey } from '@solana/web3.js';
 import { getStringFromPKOrObject } from '../web3/utils';
+import { PuzzleTypeKey, getPuzzleType } from './algorithmsStore';
 
 interface CaseStoreState {
   cases: CaseAccount[];
+  casesMap: Record<string, CaseAccount>;
   addCase: (set: string, id: string, setup: string) => Promise<void>;
   loadCases: () => Promise<void>;
   loadingState: LoadingState;
@@ -34,7 +36,9 @@ export const selectCasesByTermAndSetMax = (
       .filter((c) => {
         return (
           c.account.set === set &&
-          (filterTerm ? c.account.id.includes(filterTerm) : true)
+          (filterTerm?.toLowerCase()
+            ? c.account.id.toLocaleLowerCase().includes(filterTerm)
+            : true)
         );
       })
       .slice(0, max);
@@ -46,6 +50,14 @@ export const selectCaseBySetAndId = (set: string, caseId: string) => {
     return state.cases.find(
       ({ account: acc }) => acc.set === set && acc.id === caseId,
     );
+  };
+};
+
+export const selectCasesByPuzzle = (puzzleType: PuzzleTypeKey) => {
+  return (state: CaseStoreState) => {
+    return state.cases.filter((c) => {
+      return getPuzzleType(c.account.set) === puzzleType;
+    });
   };
 };
 
@@ -74,8 +86,11 @@ const comparator = (a: CaseAccount, b: CaseAccount) => {
 export const useCaseStore = createWithEqualityFn<CaseStoreState>(
   (set, get) => ({
     cases: [],
+    casesMap: {},
     addCase: async (set: string, id: string, setup: string) => {
       await web3Layer.addCase(set, id, setup);
+
+      get().loadCases();
     },
     loadIfNotLoaded: async () => {
       const { loadCases, loadingState } = get();
@@ -89,7 +104,14 @@ export const useCaseStore = createWithEqualityFn<CaseStoreState>(
       try {
         const cases = await web3Layer.loadCases();
         cases.sort(comparator);
-        set({ cases });
+
+        const casesMap: Record<string, CaseAccount> = {};
+
+        cases.forEach((c) => {
+          casesMap[c.publicKey.toString()] = c;
+        });
+
+        set({ cases, casesMap });
       } catch (_) {
         _;
       }

@@ -42,7 +42,11 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
     const { colour, text } = getColourAndText(status);
 
     return (
-      <Chip variant="flat" color={colour as 'success' | 'danger' | 'warning'}>
+      <Chip
+        variant="flat"
+        classNames={{ content: 'w-20' }}
+        color={colour as 'success' | 'danger' | 'warning'}
+      >
         {text}
       </Chip>
     );

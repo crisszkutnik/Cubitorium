@@ -374,7 +374,7 @@ export function decompress(compressedMoves?: Buffer) {
   // Read bit by bit
   for (let byte of compressedMoves) {
     for (let i = 0; i < 8; i++) {
-      let bit = byte & 0b10000000;
+      const bit = byte & 0b10000000;
       byte <<= 1;
 
       // 0 = left, 1 = right

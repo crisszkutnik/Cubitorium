@@ -51,7 +51,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
       success('Solution liked successfully');
     } catch (e) {
       console.error(e);
-      error('Failed to like solution');
+      error('Failed to like solution', e);
     }
   };
 
@@ -59,7 +59,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
     <div className={'flex' + (!isLogged ? ' invisible' : '')}>
       <button
         onClick={onClick}
-        className="flex flex-col items-center justify-center mr-4 hover:text-amber-400"
+        className="flex flex-col items-center justify-center mr-4 hover:text-amber-400 w-14"
       >
         <FontAwesomeIcon
           className={

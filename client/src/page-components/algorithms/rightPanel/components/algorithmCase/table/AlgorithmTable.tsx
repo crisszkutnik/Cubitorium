@@ -9,7 +9,7 @@ import {
   TableCell,
 } from '@nextui-org/react';
 import {
-  selectSolutionsByCase,
+  selectSolutionsByCaseAndLikes,
   useSolutionStore,
 } from '../../../../../../modules/store/solutionStore';
 import { Like } from '../../../../../../components/like/Like';
@@ -25,7 +25,7 @@ interface Props {
 
 export function AlgorithmTable({ caseAccount }: Props) {
   const solutions = useSolutionStore(
-    selectSolutionsByCase(caseAccount.publicKey),
+    selectSolutionsByCaseAndLikes(caseAccount.publicKey),
   );
 
   const getRows = () => {

@@ -1,9 +1,10 @@
 import React, { useState, createContext, useContext } from 'react';
 import { Alert } from '../Alert';
+import { SendTransactionError } from '@solana/web3.js';
 
 interface Context {
   success: (text: string) => void;
-  error: (text: string) => void;
+  error: (text: string, e?: Error | unknown) => void;
 }
 
 const AlertContext = createContext<Context>({
@@ -28,8 +29,21 @@ export function AlertProvider(props: Props) {
     setShowAlert(true);
   };
 
-  const error = (text: string) => {
-    setText(text);
+  const error = (text: string, e?: Error | unknown) => {
+    if (e instanceof SendTransactionError) {
+      const { message } = e;
+      console.log(message);
+      if (message.includes('no record of a prior credit')) {
+        setText('Your account does not have funds to perform this operation');
+      } else if (message.includes('Treasury is broke')) {
+        setText(
+          'This operation is funded by the program tresury and the treasury is out of funds',
+        );
+      }
+    } else {
+      setText(text);
+    }
+
     setAlertType('error');
     setShowAlert(true);
   };

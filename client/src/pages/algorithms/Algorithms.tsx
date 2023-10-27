@@ -79,6 +79,7 @@ export function Algorithms() {
           isClearable
           variant="bordered"
           onChange={(e) => setFilterTerm(e.target.value)}
+          onClear={() => setFilterTerm('')}
           value={filterTerm}
         />
       </div>
