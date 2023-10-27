@@ -59,7 +59,7 @@ describe("backend", () => {
         "2017TUNG13",
         "California, USA",
         "2003-01-22",
-        "http://face.com/anto"
+        "https://avatars.worldcubeassociation.org/uploads/user/avatar/2017TUNG13/1640815193.JPG"
       )
       .accounts({ user: deployer.publicKey })
       .rpc();
@@ -71,7 +71,7 @@ describe("backend", () => {
         "2016BARO04",
         "Herzliya, Israel",
         "2003-06-11",
-        "http://face.com/ben"
+        "https://avatars.worldcubeassociation.org/uploads/user/avatar/2016BARO04/1666385960.jpeg"
       )
       .accounts({ user: regularKeypair.publicKey })
       .signers([regularKeypair])
