@@ -3,7 +3,11 @@ import { LoadingState } from '../types/loadingState.enum';
 import { SolutionAccount } from '../types/solution.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { PublicKey } from '@solana/web3.js';
-import { getLikePda, getStringFromPKOrObject } from '../web3/utils';
+import {
+  getLikePda,
+  getPKFromStringOrObject,
+  getStringFromPKOrObject,
+} from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
 import { useLikeStore } from './likeStore';
 import { ParsedLikeCertificateAccount } from '../types/likeCertificate.interface';
@@ -18,6 +22,8 @@ interface SolutionStoreState {
   loadIfNotLoaded: () => Promise<void>;
   loadSolutions: () => Promise<void>;
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
+  incrementSolutionLikes: (solutionPk: PublicKey | string) => void;
+  decrementSolutionLikes: (solutionPk: PublicKey | string) => void;
 }
 
 export function selectSolutionsByCaseAndLikes(
@@ -162,6 +168,31 @@ export const useSolutionStore = createWithEqualityFn<SolutionStoreState>(
     loadingState: LoadingState.NOT_LOADED,
     setLoadingState: (loadingState: LoadingState) => {
       set({ loadingState });
+    },
+    incrementSolutionLikes: (solutionPk: PublicKey | string) => {
+      const pk = getPKFromStringOrObject(solutionPk);
+      const o = get().solutions.find((s) => s.publicKey.equals(pk));
+
+      if (!o) {
+        return;
+      }
+
+      o.account.likes++;
+
+      set({ solutions: [...get().solutions] });
+    },
+    decrementSolutionLikes: (solutionPk: PublicKey | string) => {
+      const { solutions } = get();
+      const pk = getPKFromStringOrObject(solutionPk);
+      const o = solutions.find((s) => s.publicKey.equals(pk));
+
+      if (!o) {
+        return;
+      }
+
+      o.account.likes--;
+
+      set({ solutions: [...solutions] });
     },
   }),
   Object.is,
