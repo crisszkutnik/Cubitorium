@@ -140,6 +140,7 @@ export function MySolves() {
           <TableHeader>
             <TableColumn>Solution</TableColumn>
             <TableColumn>Set</TableColumn>
+            <TableColumn>Case</TableColumn>
             <TableColumn>Likes</TableColumn>
             <TableColumn>Date submitted</TableColumn>
             <TableColumn hideHeader>Likes and learning status</TableColumn>
@@ -148,11 +149,14 @@ export function MySolves() {
             {solutions.map(({ publicKey, account }, index) => (
               <TableRow key={index}>
                 <TableCell>{decompress(account.moves)}</TableCell>
-                <TableCell className="w-1/6">
+                <TableCell>
                   {casesMap[account.case.toString()].account.set}
                 </TableCell>
-                <TableCell className="w-1/6">{account.likes}</TableCell>
-                <TableCell className="w-1/6">
+                <TableCell>
+                  {casesMap[account.case.toString()].account.id}
+                </TableCell>
+                <TableCell>{account.likes}</TableCell>
+                <TableCell>
                   {moment(account.timestamp).format('DD/MM/YYYY')}
                 </TableCell>
                 <TableCell className="w-1/6">

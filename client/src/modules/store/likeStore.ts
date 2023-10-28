@@ -12,6 +12,7 @@ import {
   getRawLearningStatus,
   getSolutionPda,
 } from '../web3/utils';
+import { useSolutionStore } from './solutionStore';
 
 interface LikeStoreState {
   likesMap: Record<string, ParsedLikeCertificateAccount>;
@@ -22,10 +23,12 @@ interface LikeStoreState {
   likeSolution: (
     casePublicKey: string | PublicKey,
     solution: string,
+    solutionPk: string | PublicKey,
   ) => Promise<void>;
   removeLike: (
     casePublicKey: string | PublicKey,
     solution: string,
+    solutionPk: string | PublicKey,
   ) => Promise<void>;
   setLearningStatus: (
     casePublicKey: string | PublicKey,
@@ -89,6 +92,7 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
     likeSolution: async (
       casePublicKey: string | PublicKey,
       solution: string,
+      solutionPk: string | PublicKey,
     ) => {
       const solutionPda = getSolutionPda(
         casePublicKey,
@@ -112,8 +116,13 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       };
 
       set({ likesMap });
+      useSolutionStore.getState().incrementSolutionLikes(solutionPk);
     },
-    removeLike: async (casePublicKey: string | PublicKey, solution: string) => {
+    removeLike: async (
+      casePublicKey: string | PublicKey,
+      solution: string,
+      solutionPk: string | PublicKey,
+    ) => {
       const solutionPda = getSolutionPda(
         casePublicKey,
         solution,
@@ -132,6 +141,7 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       delete likesMap[key.toString()];
 
       set({ likesMap });
+      useSolutionStore.getState().decrementSolutionLikes(solutionPk);
     },
     setLearningStatus: async (
       casePublicKey: string | PublicKey,

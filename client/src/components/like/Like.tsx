@@ -37,7 +37,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
 
   const onClickDislike = async () => {
     try {
-      await removeLike(casePk, solution);
+      await removeLike(casePk, solution, solutionPk);
       success('Solution disliked successfully');
     } catch (e) {
       console.error(e);
@@ -47,7 +47,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
 
   const onClickLike = async () => {
     try {
-      await likeSolution(casePk, solution);
+      await likeSolution(casePk, solution, solutionPk);
       success('Solution liked successfully');
     } catch (e) {
       console.error(e);

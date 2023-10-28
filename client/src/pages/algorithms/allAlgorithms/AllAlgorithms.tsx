@@ -34,7 +34,7 @@ export function AllAlgorithms() {
 
   const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
     useSolutionStore((state) => [
-      selectSolutionsByCaseAndLikes(caseAccount.publicKey)(state),
+      selectSolutionsByCaseAndLikes(caseAccount?.publicKey || '')(state),
       state.loadIfNotLoaded,
       state.loadingState,
     ]);

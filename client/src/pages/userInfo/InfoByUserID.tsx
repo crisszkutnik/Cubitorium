@@ -20,7 +20,6 @@ import { decompress } from '../../modules/utils/compression';
 export function InfoByUserID() {
   const { id } = useParams();
   const user = useUserStore(userSelector(id || ''));
-  const [imgSrc, setImgSrc] = useState(user?.profileImgSrc);
 
   const pagingOffset = 20;
   const placeholderImg = '/user_placeholder.png';
@@ -45,10 +44,6 @@ export function InfoByUserID() {
     loadSolutionsIfNotLoaded();
     loadCasesIfNotLoaded();
   }, []);
-
-  const onImageLoadError = () => {
-    setImgSrc(placeholderImg);
-  };
 
   const hasAllRequiredData = () => {
     return (
@@ -80,8 +75,7 @@ export function InfoByUserID() {
       <div className="flex flex-col bg-white drop-shadow py-3 px-6 rounded w-1/4 mr-6 h-fit">
         <div className="flex justify-center">
           <img
-            src={imgSrc || placeholderImg}
-            onError={onImageLoadError}
+            src={user?.profileImgSrc || placeholderImg}
             className="rounded-full w-48 h-48"
           />
         </div>
