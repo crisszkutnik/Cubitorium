@@ -32,9 +32,9 @@ export function Guides() {
         </div>
        
         <div className="mt-20">
-        <img src="/psy.gif" className="inline-block h-10 border rounded-full"/>
-        <p className="text-md text-gray-600 mb-10 mt-4">
-          Time to learn!
+        <img src="/psy.gif" className="inline-block h-10 border-3 border-gray-600 rounded-full"/>
+        <p className="text-md text-gray-600 ml-3 mt-4 inline-block">
+          Time to learn
         </p>
       </div>
       </div>

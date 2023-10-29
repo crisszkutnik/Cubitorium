@@ -52,8 +52,8 @@ export function Home() {
             countries in the world.
           </p>
           <Link href="/guides/">
-          <Button color="primary" variant="shadow" className="mt-4 text-gray-100 text-lg font-bold">
-              GET STARTED!
+          <Button color="primary" variant="ghost" className="mt-4 text-black-1000 text-lg font-bold">
+              GET STARTED
           </Button>  
           </Link>
 

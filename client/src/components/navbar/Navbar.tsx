@@ -30,7 +30,6 @@ export function Navbar() {
         <NavLink to="/guides"className="flex items-center text-md p-4">
           Guides
         </NavLink>
-  
       </div>
       <div className="flex-1"></div>
       <div className="flex items-center">
