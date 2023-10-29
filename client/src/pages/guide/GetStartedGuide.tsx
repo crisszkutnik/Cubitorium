@@ -1,4 +1,4 @@
-export function Guide() {
+export function GetStartedGuide() {
   return (
     <div className="relative h-screen -mt-20 mb-10">
         <div className="relative flex flex-col items-center space-y-12 mt-20">

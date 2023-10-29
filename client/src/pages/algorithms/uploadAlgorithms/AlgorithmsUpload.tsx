@@ -22,15 +22,11 @@ export function AlgorithmsUpload() {
     undefined,
   );
 
-
-
   useEffect(() => {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
 
   }, []);
-
-
 
   const hasAllRequiredData = () => {
     return (
@@ -45,7 +41,7 @@ export function AlgorithmsUpload() {
 
   return (
     <DefaultLayout column={true}>
-      <Link href="/manual">
+      <Link href="/guides/how-to-submit">
         <Button className="bg-gray-50 border text-gray-500">
           <p>
           🔍 Discover how it's done
