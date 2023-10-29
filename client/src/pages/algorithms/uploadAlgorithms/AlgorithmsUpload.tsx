@@ -7,6 +7,7 @@ import { Loading } from '../../Loading';
 import { useEffect, useState } from 'react';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { LoadingState } from '../../../modules/types/loadingState.enum';
+import { Button, Link } from '@nextui-org/react';
 
 export function AlgorithmsUpload() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -21,10 +22,15 @@ export function AlgorithmsUpload() {
     undefined,
   );
 
+
+
   useEffect(() => {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
+
   }, []);
+
+
 
   const hasAllRequiredData = () => {
     return (
@@ -39,6 +45,13 @@ export function AlgorithmsUpload() {
 
   return (
     <DefaultLayout column={true}>
+      <Link href="/manual">
+        <Button className="bg-gray-50 border text-gray-500">
+          <p>
+          🔍 Discover how it's done
+          </p>
+        </Button>
+      </Link>
       <h1 className="text-4xl py-6 text-accent-dark font-bold">
         Upload your Algorithm
       </h1>
