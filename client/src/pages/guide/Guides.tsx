@@ -1,8 +1,9 @@
-import { Button , Link} from '@nextui-org/react';
+import { Link } from '@nextui-org/react';
 
 export function Guides() {
   return (
     <div className="relative h-screen text-center mt-96">
+
       <h1 className="text-4xl font-bold mb-4 -mt-80">
       
       📚 Guides
@@ -12,8 +13,10 @@ export function Guides() {
         
         <p className="text-md text-gray-600 mb-10 mt-4">
           Explore the Cubitorium guides to learn everything <br/> you need to know 
-          to become a master.
+          before starting!
         </p>
+        
+        
         <div className="mx-auto relative text-left max-w-sm">
           <li>
             <Link href="/guides/get-started" className="text-sky-500">
@@ -28,6 +31,12 @@ export function Guides() {
 
         </div>
        
+        <div className="mt-20">
+        <img src="/psy.gif" className="inline-block h-10 border rounded-full"/>
+        <p className="text-md text-gray-600 mb-10 mt-4">
+          Time to learn!
+        </p>
+      </div>
       </div>
     </div>
    

@@ -24,12 +24,13 @@ export function Navbar() {
         <NavLink to="/practice" className="flex items-center text-md p-4">
           Practice
         </NavLink>
-        <NavLink
-          to="/algorithms/upload"
-          className="flex items-center text-md p-4"
-        >
+        <NavLink to="/algorithms/upload"className="flex items-center text-md p-4">
           Upload your Algorithm
         </NavLink>
+        <NavLink to="/guides"className="flex items-center text-md p-4">
+          Guides
+        </NavLink>
+  
       </div>
       <div className="flex-1"></div>
       <div className="flex items-center">
