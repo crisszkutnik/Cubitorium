@@ -4,9 +4,7 @@ import { HowToSubmitGuide } from './HowToSubmitGuide';
 export function Guides() {
   return (
     <div className="relative h-screen text-center mt-96">
-
       <h1 className="text-4xl font-bold mb-4 -mt-80">📚 Guides</h1>
-
       <div className="max-w-200 max-h-200">
 
         <p className="text-md text-gray-600 mb-4 mt-4">
@@ -31,15 +29,12 @@ export function Guides() {
               </a>
             </li>
           </ul>
-          
         </div>
-        <hr className="mt-5" />
-    
-
         
-       
+        <hr className="mt-5" />
+  
         <GetStartedGuide />
-        <hr className="mt-20" />
+          <hr className="mt-20" />
         <HowToSubmitGuide />
 
       </div>
