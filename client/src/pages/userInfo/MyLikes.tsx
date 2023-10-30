@@ -33,6 +33,7 @@ import { useLikeStore } from '../../modules/store/likeStore';
 import { decompress } from '../../modules/utils/compression';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Case } from '../../components/like/Case';
 
 export function MyLikes() {
   const [selectedSet, setSelectedSet] = useState('');
@@ -151,11 +152,14 @@ export function MyLikes() {
                   {moment(account.timestamp).format('DD/MM/YYYY')}
                 </TableCell>
                 <TableCell className="w-1/6">
-                  <Like
-                    casePk={account.case}
-                    solution={decompress(account.moves)}
-                    solutionPk={publicKey}
-                  />
+                  <div className="flex items-center justify-center">
+                    <Case caseAcc={casesMap[account.case.toString()]} />
+                    <Like
+                      casePk={account.case}
+                      solution={decompress(account.moves)}
+                      solutionPk={publicKey}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
