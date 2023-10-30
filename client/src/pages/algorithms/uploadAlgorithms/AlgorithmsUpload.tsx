@@ -7,8 +7,6 @@ import { Loading } from '../../Loading';
 import { useEffect, useState } from 'react';
 import { CaseAccount } from '../../../modules/types/case.interface';
 import { LoadingState } from '../../../modules/types/loadingState.enum';
-import { Link } from 'react-router-dom';
-import { ScrollLink } from 'react-scroll';
 
 export function AlgorithmsUpload() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -41,12 +39,7 @@ export function AlgorithmsUpload() {
   }
 
   return (
-    <DefaultLayout column={true}>
-
-      <Link to="/guides/#how-to-submit" className="bg-gray-50 border text-gray-500 max-w-xs text-center">
-        🔍 Discover how it's done
-      </Link>
-     
+    <DefaultLayout column={true}>     
       <h1 className="text-4xl py-6 text-accent-dark font-bold">
         Upload your Algorithm
       </h1>
