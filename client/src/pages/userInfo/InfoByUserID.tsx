@@ -149,7 +149,7 @@ export function InfoByUserID() {
                 <th>Puzzle</th>
                 <th>Set</th>
                 <th>Case</th>
-                <th>Votes</th>
+                <th>Likes</th>
               </tr>
             </thead>
             <tbody>
