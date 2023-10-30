@@ -136,12 +136,12 @@ export function StopWatch({ activeCases, performance, setPerformance }: Props) {
               {showScramble ? (
                 <>
                   <p className="text-s pr-2">Hide Scramble</p>
-                  <img src="/public/closed_eye.png" className="w-6 h-6" />
+                  <img src="/closed_eye.png" className="w-6 h-6" />
                 </>
               ) : (
                 <>
                   <p className="text-s">Show Scramble</p>
-                  <img src="/public/opened_eye.png" className="w-6 h-6" />
+                  <img src="/opened_eye.png" className="w-6 h-6" />
                 </>
               )}
             </button>

@@ -13,11 +13,10 @@ import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
 import { Practice } from './pages/practice/Practice';
 import { Home } from './pages/home/Home';
-import { Guide } from './pages/guide/Guide';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 import { NotFound } from './pages/NotFound';
-import {Manual} from './pages/guide/Manual'
+import { Guides } from './pages/guide/Guides';
 
 function App() {
   const { autoConnect, connected } = useWallet();
@@ -41,8 +40,7 @@ function App() {
         <Routes>
           <Route path='*' element={<NotFound />}/>
           <Route path="/" element={<Home />} />
-          <Route path="/guide" element={<Guide />} />
-          <Route path="/manual" element={<Manual />} />
+          <Route path="/guides/" element={<Guides />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
           <Route element={<AuthenticatedRoute />}>

@@ -1,20 +1,17 @@
-export function Guide() {
+export function GetStartedGuide() {
   return (
-    <div className="relative h-screen -mt-20 mb-10">
-        <div className="relative flex flex-col items-center space-y-12 mt-20">
+    <div id="get-started">
+        <div className="relative flex flex-col items-center space-y-12 mt-5">
           
-          <h1 className="text-4xl font-bold text-accent-dark text-center mt-10">
+          <h1 className="text-3xl font-bold text-accent-dark text-center mt-10">
             Get Started with Cryptocurrency Wallets
           </h1>
 
           <div>
-            <p className="text-sm text-gray-900 text-center max-w-lg bg-gray-50 -mt-5">
-              💡 Before you start enjoying all the features of Cubitorium, please read and follow this series of essential steps to be able to use the site swiftly.
-            </p>
           </div>
 
           <div className="max-w-xl w-full">
-            <h2 className="text-2xl font-bold my-4 -mt-5">What is a Cryptocurrency Wallet?</h2>
+            <h2 className="text-2xl font-bold my-4 -mt-20">What is a Cryptocurrency Wallet?</h2>
             <p className="text-gray-900 mb-4">
               A cryptocurrency wallet is a secure digital wallet used to store, send, and receive digital currencies like Bitcoin and Ethereum. It stores your public and private keys, allowing you to manage your cryptocurrencies and interact with the blockchain.
             </p>
@@ -23,10 +20,10 @@ export function Guide() {
             </p>
 
             <h1 className="text-2xl font-bold my-4">⚙️ Setting up a Wallet</h1>
-            <p className="text-xs text-gray-500 max-w-sm bg-gray-50 mb-5 ml-1">
+            <p className="text-xs text-gray-500 max-w-sm bg-gray-50 mb-5 ml-20">
               We strongly recommend using <b>Phantom</b> as a wallet, you can choose another wallet that fits your preferences, but this guide is intended for the wallet we recommend.
             </p>
-            <ol className="list-decimal ml-10 mb-6">
+            <ol className="list-decimal ml-20 mb-6 text-left">
               <li>Visit the official <a href="https://phantom.app/" className="text-accent text-blue-700">Phantom Wallet</a> website.</li>
               <li>Download and install the Google Chrome extension for Phantom.</li>
               <li>Open Phantom and create a new wallet.</li>
@@ -35,7 +32,7 @@ export function Guide() {
             </ol>
 
             <h2 className="text-xl font-bold my-4">🛡️ Additional Security Tips</h2>
-            <ul className="list-disc ml-10 mb-4">
+            <ul className="list-disc ml-10 mb-4 text-left ml-20">
               <li>Never share your private keys or recovery phrase with anyone.</li>
               <li>Enable two-factor authentication for an extra layer of security.</li>
               <li>Regularly update your wallet software to the latest version.</li>
