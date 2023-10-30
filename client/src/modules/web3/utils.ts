@@ -32,6 +32,20 @@ export function getStringFromPKOrObject(publicKey: string | PublicKey) {
   return publicKey.toString();
 }
 
+// Forgive me Father for I have sinned
+export function cleanSolution(solution: string) {
+  return solution
+    .replace("R2'", 'R2p')
+    .replace("L2'", 'L2p')
+    .replace("B2'", 'B2p')
+    .replace("U2'", 'U2p')
+    .replace("2'", '2')
+    .replace('R2p', "R2'")
+    .replace('L2p', "L2'")
+    .replace('B2p', "B2'")
+    .replace('U2p', "U2'");
+}
+
 export function getSolutionPda(
   caseAddress: PublicKey | string,
   solution: string,

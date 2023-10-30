@@ -11,6 +11,7 @@ import {
   getRawLearningStatus,
   getSetPda,
   getSolutionPda,
+  cleanSolution,
 } from './utils';
 import { Privilege } from '../types/privilege.interface';
 import { CaseAccount } from '../types/case.interface';
@@ -253,7 +254,13 @@ class Web3Layer extends Web3Connection {
   }
 
   async addSolution(casePublicKey: string | PublicKey, solution: string) {
-    const solutionPda = getSolutionPda(casePublicKey, solution, this.programId);
+    const cSolution = cleanSolution(solution);
+    const solutionPda = getSolutionPda(
+      casePublicKey,
+      cSolution,
+      this.programId,
+    );
+    console.log(solutionPda.toString());
 
     try {
       // Check if account exists, if it does not exists it will throw
@@ -266,7 +273,7 @@ class Web3Layer extends Web3Connection {
       }
 
       const tx = await this.program.methods
-        .addSolution(solution)
+        .addSolution(cSolution)
         .accounts({
           case: getPKFromStringOrObject(casePublicKey),
           solutionPda: solutionPda,
