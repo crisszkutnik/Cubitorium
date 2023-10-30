@@ -34,8 +34,7 @@ export function Guides() {
           </ul>
         </div>
 
-        {/* ... Otro contenido ... */}
-
+      
         <div id="get-started">
           <GetStartedGuide />
         </div>
