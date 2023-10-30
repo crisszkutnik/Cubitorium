@@ -1,3 +1,6 @@
+
+import { Link } from 'react-scroll';
+import { Button } from '@nextui-org/react';
 import { GetStartedGuide } from './GetStartedGuide';
 import { HowToSubmitGuide } from './HowToSubmitGuide';
 
@@ -12,39 +15,36 @@ export function Guides() {
           before starting!
         </p>
 
-      
         <div className="mx-auto relative text-left max-w-md mt-10 text-lg text-center">
           <ul>
             <li>
-              <a href="#get-started" className="text-sky-500">
+            <Button className="bg-gray-0 text-1xl">
+              <Link to="get-started" smooth={true} duration={500} className="text-sky-500">
                 💳 Configure your wallet
-              </a>
+              </Link>
+            </Button>
             </li>
             <li>
-              <a href="#how-to-submit" className="text-sky-500">
-                🚀 Submit your first solution for an Algorithm's case
-              </a>
+              <Button className="bg-gray-0 text-1xl">
+                <Link to="how-to-submit" smooth={true} duration={500} className="text-sky-500">
+                  🚀 Submit your first solution for an Algorithm's case
+                </Link>
+              </Button>
             </li>
           </ul>
         </div>
 
-        <p className="text-xs text-gray-500 mb-5 bg-gray-50 max-w-xs mx-auto p-2 mt-10">
-        Although the site is quite intuitive and you are sure to be able to do what you want - we have left a series of guides for you to read.
-        </p>
+        {/* ... Otro contenido ... */}
 
-      
-        
-        {/* Divider */}
-        <div className="border-b border-gray-300 my-4 max-w-5xl mx-auto"></div>
+        <div id="get-started">
+          <GetStartedGuide />
+        </div>
 
-
-        {/* Guides, maybe add more? */}
-        <GetStartedGuide />
-        <div className="border-b border-gray-300 my-4 max-w-5xl mx-auto"></div>
-        <HowToSubmitGuide />
+        <div id="how-to-submit">
+          <HowToSubmitGuide />
+        </div>
 
       </div>
- 
     </div>
   );
 }
