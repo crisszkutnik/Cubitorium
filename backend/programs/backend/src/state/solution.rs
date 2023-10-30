@@ -37,6 +37,21 @@ pub trait Hashable {
 
 impl Hashable for String {
     fn hash_solution(&self) -> [u8; 32] {
-        anchor_lang::solana_program::hash::hash(self.as_bytes()).to_bytes()
+        // Every x2' move is equivalent to their x2 sibling and is therefore
+        // compressed with the same encoding. Nonetheless, some x2' moves are
+        // an exception to this rule and they are the ones that are valid in Pyraminx.
+        // So we will need to clean the string to transform 2' to 2 unless it's a Pyra move.
+        let clean_string = self
+            .replace("R2'", "R2p")
+            .replace("L2'", "L2p")
+            .replace("U2'", "U2p")
+            .replace("B2'", "B2p")
+            .replace("2'", "2")
+            .replace("R2p", "R2'")
+            .replace("L2p", "L2'")
+            .replace("U2p", "U2'")
+            .replace("B2p", "B2'");
+
+        anchor_lang::solana_program::hash::hash(clean_string.as_bytes()).to_bytes()
     }
 }
