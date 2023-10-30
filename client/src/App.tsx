@@ -13,11 +13,9 @@ import { useUserStore } from './modules/store/userStore';
 import { Loading } from './pages/Loading';
 import { Practice } from './pages/practice/Practice';
 import { Home } from './pages/home/Home';
-import { GetStartedGuide } from './pages/guide/GetStartedGuide';
 import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 import { NotFound } from './pages/NotFound';
-import { HowToSubmitGuide } from './pages/guide/HowToSubmitGuide'
 import { Guides } from './pages/guide/Guides';
 
 function App() {
@@ -43,8 +41,6 @@ function App() {
           <Route path='*' element={<NotFound />}/>
           <Route path="/" element={<Home />} />
           <Route path="/guides/" element={<Guides />} />
-          <Route path="/guides/get-started" element={<GetStartedGuide />} />
-          <Route path="/guides/how-to-submit" element={<HowToSubmitGuide />} />
           <Route path="/algorithms" element={<Algorithms />} />
           <Route path="/algorithms/all" element={<AllAlgorithms />} />
           <Route element={<AuthenticatedRoute />}>

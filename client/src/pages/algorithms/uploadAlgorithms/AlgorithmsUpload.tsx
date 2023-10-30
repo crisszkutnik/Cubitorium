@@ -41,7 +41,7 @@ export function AlgorithmsUpload() {
 
   return (
     <DefaultLayout column={true}>
-      <Link href="/guides/how-to-submit">
+      <Link href="/guides/#how-to-submit">
         <Button className="bg-gray-50 border text-gray-500">
           <p>
           🔍 Discover how it's done

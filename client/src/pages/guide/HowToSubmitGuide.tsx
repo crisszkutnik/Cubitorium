@@ -2,13 +2,12 @@ import { Link } from '@nextui-org/react';
 
 export function HowToSubmitGuide() {
     return (
-        <div className="relative h-screen">
+        <div className="relative h-screen" id="how-to-submit">
             <div className="relative flex flex-col items-center space-y-12 mt-8">
                 <div className="container mx-auto p-4 text-center items-center">
                     <h1 className="text-4xl">📖 </h1>
                     <h1 className="text-2xl font-bold underline mb-4">How to upload your solution for an Algorithm case</h1>
             
-
                     {/* Step 1 */}
                     <div className="mt-10 mb-10">
                         <h2 className="text-2xl mb-3">Step 1 ➔ Select your case</h2>
@@ -22,7 +21,6 @@ export function HowToSubmitGuide() {
                     </div>
                     
                     
-
                     {/* Step 2 */}
                     <div className="mt-10 mb-10">
                     <h2 className="text-2xl mb-3">Step 2 ➔ Add a solution</h2>
@@ -36,7 +34,6 @@ export function HowToSubmitGuide() {
                     </div>
 
                     
-
                     {/* Step 3 */}
                     <div className="mt-10 mb-10"></div>
                     <h2 className="text-2xl mb-3 text-center">Step 3 ➔ Verify the selected case</h2>
@@ -79,8 +76,6 @@ export function HowToSubmitGuide() {
                     <hr/>
                     </div>
 
-                    
-
                     {/* Step 5 */}
                     <div className="mt-10 mb-10">
                     <h2 className="text-2xl mb-3">Step 5 ➔ Sign the transaction</h2>
@@ -97,9 +92,6 @@ export function HowToSubmitGuide() {
                     <hr/>
                     </div>
 
-                
-                    
-
                     {/* Step 6 */}
                     <h2 className="text-2xl mb-3 text-green-900">Congrats!</h2>
                     <p className="text-md text-gray-600 mb-4 ml-6 max-w-xs text-center">
@@ -113,17 +105,10 @@ export function HowToSubmitGuide() {
             
                     <img src="/public/step-07.jpeg" className="border-1 border-purple-800 mb-2 inline-block max-w-6xl" />    
 
-                    
                     <div className="-mt-20 items-center justify-center">
-                    
                         <p className="text-md text-gray-600 mb-4 mr-6 max-w-xs text-left">
-
-                            
                         </p>
-                        
                     </div>
-
-                
                 </div>
             </div>
     
