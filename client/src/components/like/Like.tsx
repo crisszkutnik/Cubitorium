@@ -9,14 +9,18 @@ import {
 import { useAlertContext } from '../context/AlertContext';
 import { LearningStatus } from './LearningStatus';
 import { useUserStore } from '../../modules/store/userStore';
+import { SolutionAccount } from '../../modules/types/solution.interface';
+import { decompress } from '../../modules/utils/compression';
 
 interface Props {
   casePk: string | PublicKey;
-  solutionPk: string | PublicKey;
-  solution: string;
+  solutionAcc: SolutionAccount;
 }
 
-export function Like({ casePk, solutionPk, solution }: Props) {
+export function Like({ casePk, solutionAcc }: Props) {
+  const solution = decompress(solutionAcc.account.moves);
+  const solutionPk = solutionAcc.publicKey.toString();
+
   const [likeSolution, likeAccount, removeLike] = useLikeStore((state) => [
     state.likeSolution,
     selectLikeForSolution(solutionPk)(state),
@@ -37,7 +41,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
 
   const onClickDislike = async () => {
     try {
-      await removeLike(casePk, solution, solutionPk);
+      await removeLike(casePk, solutionAcc);
       success('Solution disliked successfully');
     } catch (e) {
       console.error(e);
@@ -47,7 +51,7 @@ export function Like({ casePk, solutionPk, solution }: Props) {
 
   const onClickLike = async () => {
     try {
-      await likeSolution(casePk, solution, solutionPk);
+      await likeSolution(casePk, solutionAcc);
       success('Solution liked successfully');
     } catch (e) {
       console.error(e);

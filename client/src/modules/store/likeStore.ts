@@ -13,6 +13,9 @@ import {
   getSolutionPda,
 } from '../web3/utils';
 import { useSolutionStore } from './solutionStore';
+import { useUserStore } from './userStore';
+import { SolutionAccount } from '../types/solution.interface';
+import { decompress } from '../utils/compression';
 
 interface LikeStoreState {
   likesMap: Record<string, ParsedLikeCertificateAccount>;
@@ -22,13 +25,11 @@ interface LikeStoreState {
   loadIfNotLoaded: () => Promise<void>;
   likeSolution: (
     casePublicKey: string | PublicKey,
-    solution: string,
-    solutionPk: string | PublicKey,
+    solutionAcc: SolutionAccount,
   ) => Promise<void>;
   removeLike: (
     casePublicKey: string | PublicKey,
-    solution: string,
-    solutionPk: string | PublicKey,
+    solutionAcc: SolutionAccount,
   ) => Promise<void>;
   setLearningStatus: (
     casePublicKey: string | PublicKey,
@@ -91,9 +92,10 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
     },
     likeSolution: async (
       casePublicKey: string | PublicKey,
-      solution: string,
-      solutionPk: string | PublicKey,
+      solutionAcc: SolutionAccount,
     ) => {
+      const solution = decompress(solutionAcc.account.moves);
+
       const solutionPda = getSolutionPda(
         casePublicKey,
         solution,
@@ -116,13 +118,17 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       };
 
       set({ likesMap });
-      useSolutionStore.getState().incrementSolutionLikes(solutionPk);
+      useSolutionStore.getState().incrementSolutionLikes(solutionAcc.publicKey);
+      useUserStore
+        .getState()
+        .maybeIncrementLikesReceived(solutionAcc.account.author);
     },
     removeLike: async (
       casePublicKey: string | PublicKey,
-      solution: string,
-      solutionPk: string | PublicKey,
+      solutionAcc: SolutionAccount,
     ) => {
+      const solution = decompress(solutionAcc.account.moves);
+
       const solutionPda = getSolutionPda(
         casePublicKey,
         solution,
@@ -141,7 +147,10 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       delete likesMap[key.toString()];
 
       set({ likesMap });
-      useSolutionStore.getState().decrementSolutionLikes(solutionPk);
+      useSolutionStore.getState().decrementSolutionLikes(solutionAcc.publicKey);
+      useUserStore
+        .getState()
+        .maybeDecrementLikesReceived(solutionAcc.account.author);
     },
     setLearningStatus: async (
       casePublicKey: string | PublicKey,

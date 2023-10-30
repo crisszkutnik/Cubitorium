@@ -166,8 +166,7 @@ export function MySolves() {
                     <Case caseAcc={casesMap[account.case.toString()]} />
                     <Like
                       casePk={account.case}
-                      solution={decompress(account.moves)}
-                      solutionPk={publicKey}
+                      solutionAcc={{ publicKey, account }}
                     />
                   </div>
                 </TableCell>
