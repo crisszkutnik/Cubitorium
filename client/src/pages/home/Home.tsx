@@ -26,7 +26,7 @@ export function Home() {
       
       <div className="absolute inset-0 -z-10">
         <img
-          src={`/public/${currentBackground}`}
+          src={`/${currentBackground}`}
           alt="Background"
           className="w-full h-full object-cover opacity-10"
         />
@@ -37,7 +37,7 @@ export function Home() {
         <h1 className="text-4xl py-5 text-accent-dark font-bold text-center mt-6">
           <img
             className="mx-auto block -mt-2 h-40"
-            src="/public/Logo.png"
+            src="/Logo.png"
             alt="Logo"
           />
           Welcome to Cubitorium

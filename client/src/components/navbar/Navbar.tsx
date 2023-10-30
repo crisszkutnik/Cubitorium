@@ -10,7 +10,7 @@ export function Navbar() {
     <nav className="flex text-text-primary border-b-2">
       <div className="flex items-center">
       <NavLink to="/" className="flex items-center text-md p-4">
-        <img className="h-12" src="/public/Logo.png"/>
+        <img className="h-12" src="/Logo.png"/>
         <h1 className="text-2xl font-semibold">Cubitorium</h1>
       </NavLink>
       </div>
