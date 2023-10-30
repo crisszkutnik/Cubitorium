@@ -2,11 +2,12 @@ import { Link } from '@nextui-org/react';
 
 export function HowToSubmitGuide() {
     return (
-        <div className="relative h-screen" id="how-to-submit">
+        <div id="how-to-submit">
             <div className="relative flex flex-col items-center space-y-12 mt-8">
                 <div className="container mx-auto p-4 text-center items-center">
-                    <h1 className="text-4xl">📖 </h1>
-                    <h1 className="text-2xl font-bold underline mb-4">How to upload your solution for an Algorithm case</h1>
+                <h1 className="text-3xl font-bold text-accent-dark text-center mt-10">
+                    How to upload your solution for an algorithm's case 
+                </h1>
             
                     {/* Step 1 */}
                     <div className="mt-10 mb-10">
@@ -42,9 +43,6 @@ export function HowToSubmitGuide() {
                         Now, if the shown case is correct, you're ready to go.
                         
                         You will find a box beneath the cube in which you can start typing the solution. <br/>
-
-        
-                
                             <br/>
 
                             Remember to use the official <Link className="text-sky-600 font-bold" href="https://www.worldcubeassociation.org/regulations/#article-12-notation">WCA Notation.</Link>

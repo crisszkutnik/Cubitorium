@@ -1,20 +1,17 @@
 export function GetStartedGuide() {
   return (
-    <div className="relative h-screen -mt-20 mb-10" id="get-started">
-        <div className="relative flex flex-col items-center space-y-12 mt-20">
+    <div id="get-started">
+        <div className="relative flex flex-col items-center space-y-12 mt-5">
           
-          <h1 className="text-4xl font-bold text-accent-dark text-center mt-10">
+          <h1 className="text-3xl font-bold text-accent-dark text-center mt-10">
             Get Started with Cryptocurrency Wallets
           </h1>
 
           <div>
-            <p className="text-sm text-gray-900 text-center max-w-lg bg-gray-50 -mt-5">
-              💡 Before you start enjoying all the features of Cubitorium, please read and follow this series of essential steps to be able to use the site swiftly.
-            </p>
           </div>
 
           <div className="max-w-xl w-full">
-            <h2 className="text-2xl font-bold my-4 -mt-5">What is a Cryptocurrency Wallet?</h2>
+            <h2 className="text-2xl font-bold my-4 -mt-20">What is a Cryptocurrency Wallet?</h2>
             <p className="text-gray-900 mb-4">
               A cryptocurrency wallet is a secure digital wallet used to store, send, and receive digital currencies like Bitcoin and Ethereum. It stores your public and private keys, allowing you to manage your cryptocurrencies and interact with the blockchain.
             </p>

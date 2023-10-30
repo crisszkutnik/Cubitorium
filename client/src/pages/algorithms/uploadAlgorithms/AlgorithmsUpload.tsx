@@ -41,13 +41,13 @@ export function AlgorithmsUpload() {
 
   return (
     <DefaultLayout column={true}>
-      <Link href="/guides/#how-to-submit">
+      <a href="/guides#how-to-submit">
         <Button className="bg-gray-50 border text-gray-500">
           <p>
           🔍 Discover how it's done
           </p>
         </Button>
-      </Link>
+      </a>
       <h1 className="text-4xl py-6 text-accent-dark font-bold">
         Upload your Algorithm
       </h1>

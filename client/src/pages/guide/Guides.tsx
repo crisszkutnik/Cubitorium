@@ -12,32 +12,39 @@ export function Guides() {
           before starting!
         </p>
 
-        <p className="text-xs text-gray-500 mb-5 bg-gray-50 max-w-xs mx-auto p-2">
-        Although the site is quite intuitive and you are sure to be able to do what you want - we have left a series of guides for you to read. It's always good to read.
-        </p>
-
-        <div className="mx-auto relative text-left max-w-sm">
+      
+        <div className="mx-auto relative text-left max-w-md mt-10 text-lg text-center">
           <ul>
             <li>
               <a href="#get-started" className="text-sky-500">
-                💳 How to set up your wallet
+                💳 Configure your wallet
               </a>
             </li>
             <li>
               <a href="#how-to-submit" className="text-sky-500">
-                🚀 How to submit your first solution for a case
+                🚀 Submit your first solution for an Algorithm's case
               </a>
             </li>
           </ul>
         </div>
+
+        <p className="text-xs text-gray-500 mb-5 bg-gray-50 max-w-xs mx-auto p-2 mt-10">
+        Although the site is quite intuitive and you are sure to be able to do what you want - we have left a series of guides for you to read.
+        </p>
+
+      
         
-        <hr className="mt-5" />
-  
+        {/* Divider */}
+        <div className="border-b border-gray-300 my-4 max-w-5xl mx-auto"></div>
+
+
+        {/* Guides, maybe add more? */}
         <GetStartedGuide />
-          <hr className="mt-20" />
+        <div className="border-b border-gray-300 my-4 max-w-5xl mx-auto"></div>
         <HowToSubmitGuide />
 
       </div>
+ 
     </div>
   );
 }
