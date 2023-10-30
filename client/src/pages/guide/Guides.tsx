@@ -28,11 +28,13 @@ export function Guides() {
           </ul>
         </div>
 
+        <hr className="mt-5"/>
       
         <div id="get-started">
           <GetStartedGuide />
         </div>
 
+        <hr className="mt-2 -mb-10"/>
         <div id="how-to-submit">
           <HowToSubmitGuide />
         </div>
