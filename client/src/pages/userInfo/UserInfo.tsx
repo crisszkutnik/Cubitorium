@@ -98,7 +98,7 @@ export function UserInfo() {
               name="birthdate"
               render={({ field }) => (
                 <Input
-                  label="Birthdate (DD/MM/YYYY)"
+                  label="Birthdate (MM/DD/YYYY)"
                   type="date"
                   color="primary"
                   placeholder="dd/mm/aaaa"
