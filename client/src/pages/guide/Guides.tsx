@@ -1,6 +1,3 @@
-
-import { Link } from 'react-scroll';
-import { Button } from '@nextui-org/react';
 import { GetStartedGuide } from './GetStartedGuide';
 import { HowToSubmitGuide } from './HowToSubmitGuide';
 
@@ -18,19 +15,16 @@ export function Guides() {
         <div className="mx-auto relative text-left max-w-md mt-10 text-lg text-center">
           <ul>
             <li>
-            <Button className="bg-gray-0 text-1xl">
-              <Link to="get-started" smooth={true} duration={500} className="text-sky-500">
+              <a href="#get-started" className="text-sky-500">
                 💳 Configure your wallet
-              </Link>
-            </Button>
+              </a>
             </li>
             <li>
-              <Button className="bg-gray-0 text-1xl">
-                <Link to="how-to-submit" smooth={true} duration={500} className="text-sky-500">
-                  🚀 Submit your first solution for an Algorithm's case
-                </Link>
-              </Button>
+              <a href="#how-to-submit" className="text-sky-500">
+              🚀 Submit your first solution for an Algorithm's case
+              </a>
             </li>
+          
           </ul>
         </div>
 
