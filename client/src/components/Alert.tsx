@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react';
 
 interface Props {
   text: string;
+  description?: string;
   type: 'success' | 'error';
   onPress?: () => void;
 }
 
-export function Alert({ text, onPress, type }: Props) {
+export function Alert({ text, onPress, type, description }: Props) {
   const [timeoutNumber, setTimeoutNumber] = useState<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export function Alert({ text, onPress, type }: Props) {
             <FontAwesomeIcon
               icon={type === 'success' ? faCircleCheck : faCircleExclamation}
             />
-            <p className="ml-2">{text}</p>
+            <p className="ml-2">{description || text}</p>
           </div>
         </CardBody>
       </Card>

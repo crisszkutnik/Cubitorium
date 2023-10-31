@@ -20,7 +20,10 @@ export function AddCase() {
       success('Case added correctly');
     } catch (e) {
       console.error(e);
-      error('Failed to add case. Check that the specified set already exists');
+      error(
+        'Failed to add case. Check that the specified set already exists',
+        e,
+      );
     }
   };
 

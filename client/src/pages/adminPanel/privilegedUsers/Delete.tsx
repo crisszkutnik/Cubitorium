@@ -28,7 +28,7 @@ export function Delete() {
       success('Privileged user remove');
     } catch (e) {
       console.error(e);
-      error('Failed to remove privileged user');
+      error('Failed to remove privileged user', e);
     }
   };
 

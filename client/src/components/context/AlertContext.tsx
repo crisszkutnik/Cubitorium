@@ -1,6 +1,7 @@
 import React, { useState, createContext, useContext } from 'react';
 import { Alert } from '../Alert';
 import { SendTransactionError } from '@solana/web3.js';
+import { AnchorError } from '@coral-xyz/anchor';
 
 interface Context {
   success: (text: string) => void;
@@ -21,6 +22,7 @@ type AlertTypes = 'success' | 'error';
 export function AlertProvider(props: Props) {
   const [alertType, setAlertType] = useState<AlertTypes | undefined>(undefined);
   const [text, setText] = useState('');
+  const [description, setDescription] = useState('');
   const [showAlert, setShowAlert] = useState(false);
 
   const success = (text: string) => {
@@ -30,19 +32,22 @@ export function AlertProvider(props: Props) {
   };
 
   const error = (text: string, e?: Error | unknown) => {
-    if (e instanceof SendTransactionError) {
-      const { message } = e;
-      console.log(message);
-      if (message.includes('no record of a prior credit')) {
-        setText('Your account does not have funds to perform this operation');
-      } else if (message.includes('Treasury is broke')) {
-        setText(
-          'This operation is funded by the program tresury and the treasury is out of funds',
-        );
+    if (e instanceof AnchorError) {
+      setDescription(e.error.errorMessage);
+    } else if (e instanceof SendTransactionError && e.message) {
+      const msgToFind = 'Error Message: ';
+      const msgPosition = e.message.indexOf(msgToFind);
+
+      if (msgPosition >= 0) {
+        const msg = e.message.slice(msgPosition + msgToFind.length);
+
+        if (msg) {
+          setDescription(msg);
+        }
       }
-    } else {
-      setText(text);
     }
+
+    setText(text);
 
     setAlertType('error');
     setShowAlert(true);
@@ -62,6 +67,7 @@ export function AlertProvider(props: Props) {
             onPress={() => setShowAlert(false)}
             type={alertType || 'success'}
             text={text}
+            description={description}
           />
         )}
       </>

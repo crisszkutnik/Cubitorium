@@ -35,7 +35,7 @@ export function AdminPanel() {
       success('Sets updated successfully');
     } catch (e) {
       console.error(e);
-      error('Failed to update sets. Check that input is a JSON string!');
+      error('Failed to update sets. Check that input is a JSON string!', e);
     }
   };
 
