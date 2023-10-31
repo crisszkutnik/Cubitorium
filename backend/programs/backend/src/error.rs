@@ -29,7 +29,7 @@ pub enum PrivilegeError {
 
 #[error_code]
 pub enum TreasuryError {
-    #[msg("Treasury is broke - please fund it or Cubitorium dies")]
+    #[msg("Treasury is broke, please fund it in order to perform this action")]
     TreasuryNeedsFunds,
 }
 

@@ -41,10 +41,11 @@ export function ResolutionInput({ activeCase }: Props) {
       console.error(e);
 
       if (e instanceof SolutionAlreadyExistsError) {
-        error('This solution has already been added by another user :(');
+        error('This solution has already been added by another user :(', e);
       } else {
         error(
           'Failed to add solution. Check that the solution you submitted solves the selected case!',
+          e,
         );
       }
     }
@@ -78,6 +79,7 @@ export function ResolutionInput({ activeCase }: Props) {
         <form ref={ref} onSubmit={handleSubmit(onSubmit)}>
           <Controller
             control={control}
+            defaultValue=""
             name="solution"
             render={(props) => (
               <Textarea

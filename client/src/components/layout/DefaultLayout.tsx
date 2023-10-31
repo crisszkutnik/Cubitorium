@@ -7,7 +7,7 @@ interface Props {
 
 export function DefaultLayout({ children, column }: Props) {
   return (
-    <div className="flex justify-center w-full mt-4">
+    <div className="flex justify-center w-full mt-4 p-4">
       <div
         className={'flex w-full max-w-screen-xl' + (column ? ' flex-col' : '')}
       >

@@ -42,8 +42,7 @@ export function AllAlgorithmsTable({ solutions }: Props) {
               <Profile author={account.author} />
               <Like
                 casePk={account.case}
-                solution={decompress(account.moves)}
-                solutionPk={publicKey}
+                solutionAcc={{ publicKey, account }}
               />
             </TableCell>
           </TableRow>

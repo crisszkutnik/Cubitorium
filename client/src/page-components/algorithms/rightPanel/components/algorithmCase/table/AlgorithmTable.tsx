@@ -46,11 +46,7 @@ export function AlgorithmTable({ caseAccount }: Props) {
         </TableCell>
         <TableCell className="flex justify-end">
           <Profile author={s.account.author} />
-          <Like
-            casePk={caseAccount.publicKey}
-            solutionPk={s.publicKey}
-            solution={decompress(s.account.moves)}
-          />
+          <Like casePk={caseAccount.publicKey} solutionAcc={s} />
         </TableCell>
       </TableRow>
     ));

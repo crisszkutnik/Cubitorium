@@ -1,7 +1,13 @@
-import { AnchorProvider, Program, setProvider, utils } from '@coral-xyz/anchor';
+import {
+  AnchorProvider,
+  BN,
+  Program,
+  setProvider,
+  utils,
+} from '@coral-xyz/anchor';
 import { Backend, IDL } from '../../../../backend/target/types/backend';
 import { UserInfo } from '../types/userInfo.interface';
-import { SetCase } from '../types/globalConfig.interface';
+import { GlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
@@ -167,18 +173,22 @@ class Web3Layer extends Web3Connection {
     ) as unknown as Promise<UserInfo>;
   }
 
-  async loadGlobalConfig(): Promise<SetCase[]> {
+  async loadGlobalConfig(): Promise<GlobalConfig> {
     const acc = await this.program.account.globalConfig.all();
+    const maxFundLimit = acc[0].account.maxFundLimit;
 
     const config = await this.program.account.set.fetchMultiple(
       acc[0].account.sets,
     );
 
     if (config === null) {
-      return [];
+      return {
+        maxFundLimit,
+        sets: [],
+      };
     }
 
-    const ret = config
+    const sets = config
       .filter((c) => c)
       // eslint-disable-next-line  @typescript-eslint/no-explicit-any
       .map(({ setName, caseNames }: any) => ({
@@ -186,7 +196,10 @@ class Web3Layer extends Web3Connection {
         caseNames: JSON.parse(caseNames),
       }));
 
-    return ret;
+    return {
+      maxFundLimit,
+      sets,
+    };
   }
 
   async appendSetToConfig(set: string, cases: string[]) {
@@ -361,6 +374,10 @@ class Web3Layer extends Web3Connection {
       .transaction();
 
     await this.signAndSendTx(tx);
+  }
+
+  async setMaxFundLimit(value: string) {
+    await this.program.methods.setMaxFundLimit(new BN(value)).rpc();
   }
 }
 
