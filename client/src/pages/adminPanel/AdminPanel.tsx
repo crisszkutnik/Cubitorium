@@ -9,6 +9,7 @@ import { AddCase } from './addCase/AddCase';
 import { useEffect } from 'react';
 import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
+import { MaxFundLimit } from './maxFundLimit/MaxFundLimit';
 
 interface Input {
   names: string;
@@ -35,7 +36,7 @@ export function AdminPanel() {
       success('Sets updated successfully');
     } catch (e) {
       console.error(e);
-      error('Failed to update sets. Check that input is a JSON string!');
+      error('Failed to update sets. Check that input is a JSON string!', e);
     }
   };
 
@@ -58,20 +59,30 @@ export function AdminPanel() {
       </h1>
       <div className="bg-white drop-shadow w-full p-4 rounded mb-4">
         <h2 className="text-accent-dark font-semibold text-xl mb-2">Sets</h2>
-        <Textarea disabled value={JSON.stringify(sets)} />
+        <Textarea disabled value={JSON.stringify(sets, null, 4)} />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full flex-col"
         >
           <Controller
             control={control}
+            defaultValue=""
             name="names"
-            render={({ field }) => <Input {...field} />}
+            render={({ field }) => (
+              <Input className="mt-2" label="Set name" {...field} />
+            )}
           />
           <Controller
             control={control}
+            defaultValue=""
             name="cases"
-            render={({ field }) => <Input {...field} />}
+            render={({ field }) => (
+              <Input
+                className="mt-2"
+                label="Cases (separated by comma)"
+                {...field}
+              />
+            )}
           />
           <div className="w-24 mt-2">
             <Input type="submit" color="primary" />
@@ -79,6 +90,7 @@ export function AdminPanel() {
         </form>
       </div>
       <AddCase />
+      <MaxFundLimit />
       <PrivilegedUsers />
     </DefaultLayout>
   );

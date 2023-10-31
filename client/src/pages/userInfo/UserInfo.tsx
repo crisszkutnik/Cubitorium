@@ -65,6 +65,7 @@ export function UserInfo() {
           <div className="flex gap-3">
             <Controller
               control={control}
+              defaultValue=""
               name="name"
               render={({ field }) => (
                 <Input label="Name" color="primary" {...field} />
@@ -72,6 +73,7 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="surname"
               render={({ field }) => (
                 <Input label="Surname" color="primary" {...field} />
@@ -79,6 +81,7 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="wcaId"
               render={({ field }) => (
                 <Input label="WCA ID" color="primary" {...field} />
@@ -88,6 +91,7 @@ export function UserInfo() {
           <div className="flex gap-3">
             <Controller
               control={control}
+              defaultValue=""
               name="location"
               render={({ field }) => (
                 <Input label="Location" color="primary" {...field} />
@@ -95,6 +99,7 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="birthdate"
               render={({ field }) => (
                 <Input
@@ -108,6 +113,7 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="profileImgSrc"
               render={({ field }) => (
                 <Input label="Profile image URL" color="primary" {...field} />

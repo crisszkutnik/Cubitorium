@@ -28,12 +28,12 @@ export function Delete() {
       success('Privileged user remove');
     } catch (e) {
       console.error(e);
-      error('Failed to remove privileged user');
+      error('Failed to remove privileged user', e);
     }
   };
 
   return (
-    <div className="flex flex-col w-1/2 mt-5">
+    <div className="flex flex-col w-1/2">
       <h2 className="text-accent-dark text-lg mb-2">Remove</h2>
       <Table
         isStriped

@@ -20,7 +20,10 @@ export function AddCase() {
       success('Case added correctly');
     } catch (e) {
       console.error(e);
-      error('Failed to add case. Check that the specified set already exists');
+      error(
+        'Failed to add case. Check that the specified set already exists',
+        e,
+      );
     }
   };
 
@@ -31,16 +34,19 @@ export function AddCase() {
         <div className="flex gap-4">
           <Controller
             control={control}
+            defaultValue=""
             name="set"
             render={({ field }) => <Input label="Set" {...field} />}
           />
           <Controller
             control={control}
+            defaultValue=""
             name="id"
             render={({ field }) => <Input label="Name" {...field} />}
           />
           <Controller
             control={control}
+            defaultValue=""
             name="setup"
             render={({ field }) => <Input label="Setup" {...field} />}
           />
