@@ -60,7 +60,7 @@ export const Performance = ({ setPerformance, performance }: Props) => {
             </tr>
           </thead>
           <tbody>
-            {performance.reverse().map((item) => (
+            {performance.sort((a, b) => (calculateAverage(a.history) > calculateAverage(b.history) ? 1 : -1)).map((item) => (
               <tr key={item.case.account.id}>
                 <td className="justify-center w-1/6">
                   <ScrambleDisplay2

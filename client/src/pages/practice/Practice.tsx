@@ -11,6 +11,7 @@ import { CaseAccount } from '../../modules/types/case.interface';
 import { PerformanceCase } from '../../modules/types/case.interface';
 import { LastCase } from '../../page-components/practice/LastCase';
 import { useSolutionStore } from '../../modules/store/solutionStore';
+import { useLikeStore } from '../../modules/store/likeStore';
 
 export function Practice() {
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
@@ -19,6 +20,10 @@ export function Practice() {
 
   const [caseLoadingState, loadCasesIfNotLoaded] = useCaseStore(
     ({ loadingState, loadIfNotLoaded }) => [loadingState, loadIfNotLoaded],
+  );
+
+  const [loadLikesIfNotLoaded, likesLoadingState] = useLikeStore(
+    (state) => [state.loadIfNotLoaded, state.loadingState],
   );
 
   const [activeCases, setActiveCases] = useState<CaseAccount[] | undefined>(
@@ -44,13 +49,15 @@ export function Practice() {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
     loadSolutionsIfNotLoaded();
+    loadLikesIfNotLoaded();
   }, []);
 
   const hasAllRequiredData = () => {
     return (
       setsLoadingState === LoadingState.LOADED &&
       caseLoadingState === LoadingState.LOADED &&
-      solutionsLoadingState === LoadingState.LOADED
+      solutionsLoadingState === LoadingState.LOADED &&
+      likesLoadingState === LoadingState.LOADED
     );
   };
 

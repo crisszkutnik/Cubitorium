@@ -13,7 +13,11 @@ import {
   PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
-import { selectCases, useCaseStore } from '../../modules/store/caseStore';
+import {
+  selectCases,
+  selectCasesBySet,
+  useCaseStore,
+} from '../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
 import {
   CaseAccount,
@@ -21,6 +25,12 @@ import {
 } from '../../modules/types/case.interface';
 import { SetCase } from '../../modules/types/globalConfig.interface';
 import { ButtonWrapper } from '../../components/ButtonWrapper';
+import { shallow } from 'zustand/shallow';
+import {
+  selectLikedSolutionsForCases,
+  useSolutionStore,
+} from '../../modules/store/solutionStore';
+import { useLikeStore } from '../../modules/store/likeStore';
 
 interface Props {
   selectedPuzzle: string;
@@ -46,12 +56,23 @@ export function PracticeSelector({
     state.setsMap,
   ]);
 
-  const cases = useCaseStore(selectCases);
   const [selectedSet, setSelectedSet] = useState<string>(
     sets.length > 0 ? sets[0].setName : '',
   );
 
+  const [cases, casesMap] = useCaseStore((state) => [
+    selectCasesBySet(selectedSet)(state),
+    state.casesMap,
+  ]);
+
   const [selectedCases, setSelectedCases] = useState<Set<string>>();
+
+  const likesMap = useLikeStore((state) => state.likesMap);
+
+  const solutions = useSolutionStore(
+    (state) => selectLikedSolutionsForCases(likesMap, cases)(state),
+    shallow,
+  );
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const newValue = event.target.value;
@@ -79,10 +100,6 @@ export function PracticeSelector({
     searchParams.set(QueryParams.CASES, e.target.value);
     setSearchParams(searchParams);
   };
-
-  const casesForselectedSet = useMemo(() => {
-    return cases.filter((c) => c.account.set === selectedSet);
-  }, [selectedSet, cases]);
 
   useEffect(() => {
     setActiveCases(
@@ -202,14 +219,28 @@ export function PracticeSelector({
     const value = getCasesValue(selectedSet);
     const valueArray = Array.from(value!).map((c) => c.account.id);
     setSelectedCases(new Set(valueArray));
-    const test = valueArray.join(',');
-    searchParams.set(QueryParams.CASES, test);
+    const joinedArray = valueArray.join(',');
+    searchParams.set(QueryParams.CASES, joinedArray);
     setSearchParams(searchParams);
   };
 
   const onSelectNone = () => {
     setSelectedCases(new Set([]));
     searchParams.set(QueryParams.CASES, Array.from([]).join(','));
+    setSearchParams(searchParams);
+  };
+
+  const onSelectLearning = () => {
+    const solutionsIds = solutions
+      .map((s) => casesMap[s.account.case.toString()].account.id)
+      .sort((idA, idB) => {
+        const numA = Number(idA);
+        const numB = Number(idB);
+        return numA > numB ? 1 : -1;
+      });
+    setSelectedCases(new Set(solutionsIds));
+    const joinedArray = solutionsIds.join(',');
+    searchParams.set(QueryParams.CASES, joinedArray);
     setSearchParams(searchParams);
   };
 
@@ -256,24 +287,31 @@ export function PracticeSelector({
         label="Algorithm cases"
         selectedKeys={selectedCases}
         onChange={handleCaseChange}
-        disabled={casesForselectedSet.length === 0}
+        disabled={cases.length === 0}
         classNames={{
           label: 'text-accent-dark text-lg',
           base: 'mt-2',
         }}
-        items={casesForselectedSet}
+        items={cases}
       >
         {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
       </Select>
-      <div className="flex flex-row gap-2 justify-center mt-4">
+      <div className="flex flex-col gap-2 justify-center">
+        <div className="flex flex-row gap-2 justify-center mt-4">
+          <ButtonWrapper
+            onClick={() => onSelectAll()}
+            text="Select All"
+            variant="shadow"
+          />
+          <ButtonWrapper
+            onClick={() => onSelectNone()}
+            text="Select None"
+            variant="shadow"
+          />
+        </div>
         <ButtonWrapper
-          onClick={() => onSelectAll()}
-          text="Select All"
-          variant="shadow"
-        />
-        <ButtonWrapper
-          onClick={() => onSelectNone()}
-          text="Select None"
+          onClick={() => onSelectLearning()}
+          text="Select Learning"
           variant="shadow"
         />
       </div>
