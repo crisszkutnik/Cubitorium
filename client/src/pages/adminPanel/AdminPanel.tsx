@@ -58,7 +58,7 @@ export function AdminPanel() {
       </h1>
       <div className="bg-white drop-shadow w-full p-4 rounded mb-4">
         <h2 className="text-accent-dark font-semibold text-xl mb-2">Sets</h2>
-        <Textarea disabled value={JSON.stringify(sets)} />
+        <Textarea disabled value={JSON.stringify(sets, null, 4)} />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full flex-col"
@@ -66,12 +66,20 @@ export function AdminPanel() {
           <Controller
             control={control}
             name="names"
-            render={({ field }) => <Input {...field} />}
+            render={({ field }) => (
+              <Input className="mt-2" label="Set name" {...field} />
+            )}
           />
           <Controller
             control={control}
             name="cases"
-            render={({ field }) => <Input {...field} />}
+            render={({ field }) => (
+              <Input
+                className="mt-2"
+                label="Cases (separated by comma)"
+                {...field}
+              />
+            )}
           />
           <div className="w-24 mt-2">
             <Input type="submit" color="primary" />
