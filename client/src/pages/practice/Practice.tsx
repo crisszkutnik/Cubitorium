@@ -12,8 +12,10 @@ import { PerformanceCase } from '../../modules/types/case.interface';
 import { LastCase } from '../../page-components/practice/LastCase';
 import { useSolutionStore } from '../../modules/store/solutionStore';
 import { useLikeStore } from '../../modules/store/likeStore';
+import { useUserStore } from '../../modules/store/userStore';
 
 export function Practice() {
+  const { isLogged } = useUserStore();
   const [setsLoadingState, loadSetsIfNotLoaded] = useAlgorithmsStore(
     ({ loadingState, loadIfNotLoaded }) => [loadingState, loadIfNotLoaded],
   );
@@ -49,15 +51,17 @@ export function Practice() {
     loadSetsIfNotLoaded();
     loadCasesIfNotLoaded();
     loadSolutionsIfNotLoaded();
-    loadLikesIfNotLoaded();
+    if(isLogged){
+      loadLikesIfNotLoaded();
+    }
   }, []);
 
   const hasAllRequiredData = () => {
     return (
       setsLoadingState === LoadingState.LOADED &&
       caseLoadingState === LoadingState.LOADED &&
-      solutionsLoadingState === LoadingState.LOADED &&
-      likesLoadingState === LoadingState.LOADED
+      solutionsLoadingState === LoadingState.LOADED &&      
+      (!isLogged || likesLoadingState === LoadingState.LOADED)
     );
   };
 

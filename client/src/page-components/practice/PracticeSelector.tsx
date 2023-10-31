@@ -31,6 +31,7 @@ import {
   useSolutionStore,
 } from '../../modules/store/solutionStore';
 import { useLikeStore } from '../../modules/store/likeStore';
+import { useUserStore } from '../../modules/store/userStore';
 
 interface Props {
   selectedPuzzle: string;
@@ -69,8 +70,11 @@ export function PracticeSelector({
 
   const likesMap = useLikeStore((state) => state.likesMap);
 
+  const { isLogged } = useUserStore();
+
   const solutions = useSolutionStore(
-    (state) => selectLikedSolutionsForCases(likesMap, cases)(state),
+    (state) =>
+      isLogged ? selectLikedSolutionsForCases(likesMap, cases)(state) : [],
     shallow,
   );
 
@@ -309,11 +313,13 @@ export function PracticeSelector({
             variant="shadow"
           />
         </div>
-        <ButtonWrapper
-          onClick={() => onSelectLearning()}
-          text="Select Learning"
-          variant="shadow"
-        />
+        {isLogged && (
+          <ButtonWrapper
+            onClick={() => onSelectLearning()}
+            text="Select Learning"
+            variant="shadow"
+          />
+        )}
       </div>
     </div>
   );
