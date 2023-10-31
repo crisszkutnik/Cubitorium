@@ -1,12 +1,11 @@
-FROM ubuntu:22.04 as base
+FROM node:18.18.2-slim as base
 
 # update buguntu
 RUN apt-get update && \
    apt-get install -y curl gcc musl-dev libssl-dev pkg-config zlib1g-dev
 
 # NODE
-RUN curl -o- https://nodejs.org/dist/v18.17.1/node-v18.17.1-linux-x64.tar.xz | tar -xJf - -C /usr/local --strip-components=1
-RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
+# RUN curl -o- https://nodejs.org/dist/v18.17.1/node-v18.17.1-linux-x64.tar.xz | tar -xJf - -C /usr/local --strip-components=1
 ENV PATH="/usr/local/bin:${PATH}"
 
 # RUST
@@ -17,7 +16,9 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
 RUN avm install 0.29.0
 
+
 # SOLANA
+COPY id.json ~/.config/solana/id.json
 RUN curl -sSfL https://release.solana.com/v1.17.4/install | sh -
 ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
 
@@ -25,15 +26,20 @@ ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
 RUN corepack enable
 RUN yarn set version 1.22.19
 
+
 ADD . /cubitorium
 
 WORKDIR /cubitorium/backend
 
 # build back-end
-RUN solana-keygen new -o /root/.config/solana/id.json
+# RUN solana-keygen new -o /root/.config/solana/id.json
 RUN solana-test-validator &
 RUN yarn
 RUN yarn build
+
+RUN solana-keygen new -o /root/.config/solana/id.json
+RUN solana-keygen new -o ~/config/solana/id.json
+
 RUN anchor deploy 
 
 # build front-end
