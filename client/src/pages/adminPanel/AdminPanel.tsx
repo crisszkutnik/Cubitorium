@@ -65,6 +65,7 @@ export function AdminPanel() {
         >
           <Controller
             control={control}
+            defaultValue=""
             name="names"
             render={({ field }) => (
               <Input className="mt-2" label="Set name" {...field} />
@@ -72,6 +73,7 @@ export function AdminPanel() {
           />
           <Controller
             control={control}
+            defaultValue=""
             name="cases"
             render={({ field }) => (
               <Input

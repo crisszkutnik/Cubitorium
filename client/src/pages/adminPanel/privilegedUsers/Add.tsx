@@ -38,11 +38,13 @@ export function Add() {
       >
         <Controller
           control={control}
+          defaultValue=""
           name="userPublicKey"
           render={({ field }) => <Input label="Public key" {...field} />}
         />
         <Controller
           control={control}
+          defaultValue=""
           name="asDeployer"
           render={({ field }) => <Checkbox {...field}>As deployer?</Checkbox>}
         />

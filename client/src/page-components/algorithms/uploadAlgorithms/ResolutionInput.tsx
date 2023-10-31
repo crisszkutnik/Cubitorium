@@ -79,6 +79,7 @@ export function ResolutionInput({ activeCase }: Props) {
         <form ref={ref} onSubmit={handleSubmit(onSubmit)}>
           <Controller
             control={control}
+            defaultValue=""
             name="solution"
             render={(props) => (
               <Textarea
