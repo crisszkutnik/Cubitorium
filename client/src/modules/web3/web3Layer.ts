@@ -125,15 +125,22 @@ class Web3Layer extends Web3Connection {
   }
 
   async sendUserInfo(
-    name: string,
-    surname: string,
-    wcaId: string,
-    location: string,
-    birthdate: string,
-    profileImgSrc: string,
+    name?: string,
+    surname?: string,
+    wcaId?: string,
+    location?: string,
+    birthdate?: string,
+    profileImgSrc?: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .sendUserInfo(name, surname, wcaId, location, birthdate, profileImgSrc)
+      .sendUserInfo(
+        name || null,
+        surname || null,
+        wcaId || null,
+        location || null,
+        birthdate || null,
+        profileImgSrc || null,
+      )
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
@@ -144,15 +151,22 @@ class Web3Layer extends Web3Connection {
   }
 
   async changeUserInfo(
-    name: string,
-    surname: string,
-    wcaId: string,
-    location: string,
-    birthdate: string,
-    profileImgSrc: string,
+    name?: string,
+    surname?: string,
+    wcaId?: string,
+    location?: string,
+    birthdate?: string,
+    profileImgSrc?: string,
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
-      .changeUserInfo(name, surname, wcaId, location, birthdate, profileImgSrc)
+      .changeUserInfo(
+        name || null,
+        surname || null,
+        wcaId || null,
+        location || null,
+        birthdate || null,
+        profileImgSrc || null,
+      )
       .accounts({
         user: this.provider?.wallet.publicKey,
         userInfo: this.getPdaWithAuth(PDATypes.UserInfo, this.loggedUserPK),
