@@ -27,11 +27,13 @@ RUN yarn set version 1.22.19
 
 ADD . /cubitorium
 
-# TODO primero el front despues veamos esto 
+WORKDIR /cubitorium/backend
+
 # build back-end
-RUN cd /cubitorium/backend
-RUN solana-test-validator &&
-RUN yarn & yarn build
+RUN solana-keygen new -o /root/.config/solana/id.json
+RUN solana-test-validator &
+RUN yarn
+RUN yarn build
 RUN anchor deploy 
 
 # build front-end
