@@ -2,6 +2,7 @@ import { SetCase } from '../types/globalConfig.interface';
 import { web3Layer } from '../web3/web3Layer';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { LoadingState } from '../types/loadingState.enum';
+import { BN } from '@coral-xyz/anchor';
 
 export const PuzzleType = {
   '2x2': '2x2',
@@ -21,6 +22,10 @@ interface UseAlgorithmsStoreState {
   loadingState: LoadingState;
   setLoadingState: (loadingState: LoadingState) => void;
   loadIfNotLoaded: () => Promise<void>;
+  // Esto definitivamente no deberia estar aca porque es una config global pero lo mas facil
+  // es dejarlo aca porque es de donde se carga la global config :)
+  maxFundLimit: BN | undefined;
+  setMaxFundLimit: (newLimit: string) => Promise<void>;
 }
 
 export const selectSets = (state: UseAlgorithmsStoreState) => {
@@ -46,7 +51,7 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
       set({ loadingState: LoadingState.LOADING });
 
       try {
-        const sets = await web3Layer.loadGlobalConfig();
+        const { maxFundLimit, sets } = await web3Layer.loadGlobalConfig();
 
         const setsMap: Record<PuzzleTypeKey, SetCase[]> = {
           '2x2': [],
@@ -59,7 +64,7 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
           setsMap[key].push(c);
         });
 
-        set({ sets, setsMap });
+        set({ sets, setsMap, maxFundLimit });
       } catch (e) {
         console.error(e);
       } finally {
@@ -72,6 +77,13 @@ export const useAlgorithmsStore = createWithEqualityFn<UseAlgorithmsStoreState>(
     loadingState: LoadingState.NOT_LOADED,
     setLoadingState: (loadingState: LoadingState) => {
       set({ loadingState });
+    },
+    maxFundLimit: undefined,
+    setMaxFundLimit: async (newLimit: string) => {
+      await web3Layer.setMaxFundLimit(newLimit);
+      set({
+        maxFundLimit: new BN(newLimit),
+      });
     },
   }),
   Object.is,

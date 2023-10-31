@@ -9,6 +9,7 @@ import { AddCase } from './addCase/AddCase';
 import { useEffect } from 'react';
 import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
+import { MaxFundLimit } from './maxFundLimit/MaxFundLimit';
 
 interface Input {
   names: string;
@@ -89,6 +90,7 @@ export function AdminPanel() {
         </form>
       </div>
       <AddCase />
+      <MaxFundLimit />
       <PrivilegedUsers />
     </DefaultLayout>
   );
