@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import {
   PuzzleTypeKey,
   PuzzleTypeKeys,
@@ -15,6 +15,7 @@ interface Props {
   runOnStart?: boolean;
   selectedPuzzle: PuzzleTypeKey;
   setSelectedPuzzle: (puzzle: PuzzleTypeKey) => void;
+  setsWithSolutions?: string[];
 }
 
 export function ThreeLevelSelect({
@@ -25,12 +26,29 @@ export function ThreeLevelSelect({
   runOnStart,
   selectedPuzzle,
   setSelectedPuzzle,
+  setsWithSolutions,
 }: Props) {
   const setsMap = useAlgorithmsStore((state) => state.setsMap);
 
   const [selectedSet, setSelectedSet] = useState(
     setsMap[selectedPuzzle][0].setName,
   );
+
+  const disabledKeys = useMemo(() => {
+    if (!setsWithSolutions) {
+      return [];
+    }
+
+    return setsMap[selectedPuzzle].reduce((keys, item) => {
+      const { setName } = item;
+
+      if (!setsWithSolutions.includes(setName)) {
+        keys.push(setName);
+      }
+
+      return keys;
+    }, [] as string[]);
+  }, [setsWithSolutions, selectedPuzzle]);
 
   useEffect(() => {
     if (!runOnStart) {
@@ -114,6 +132,7 @@ export function ThreeLevelSelect({
         }}
         items={setsMap[selectedPuzzle] as SetCase[]}
         isDisabled={useAllSets}
+        disabledKeys={disabledKeys}
       >
         {(set) => <SelectItem key={set.setName}>{set.setName}</SelectItem>}
       </Select>

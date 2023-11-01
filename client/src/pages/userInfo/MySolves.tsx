@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
+  selectSetsWithSolutionForAuthor,
   selectSolutionsForAuthorAndCases,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
@@ -35,6 +36,7 @@ import { decompress } from '../../modules/utils/compression';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Case } from '../../components/like/Case';
+import { ScrambleDisplay2 } from '../../components/ScrambleDisplay2';
 
 export function MySolves() {
   const [selectedSet, setSelectedSet] = useState('');
@@ -69,6 +71,7 @@ export function MySolves() {
     loadSolutionsIfNotLoaded,
     solutionsLoadingState,
     sortSolutionsBySet,
+    setsWithSolution,
   ] = useSolutionStore(
     (state) => [
       selectSolutionsForAuthorAndCases(
@@ -78,6 +81,7 @@ export function MySolves() {
       state.loadIfNotLoaded,
       state.loadingState,
       state.sortSolutionsBySet,
+      selectSetsWithSolutionForAuthor(loggedUserPk || '')(state),
     ],
     shallow,
   );
@@ -129,6 +133,7 @@ export function MySolves() {
             setMax(pageSize);
             setSelectedPuzzle(newPuzzle);
           }}
+          setsWithSolutions={setsWithSolution}
         />
         <Table
           isStriped
@@ -143,35 +148,45 @@ export function MySolves() {
             <TableColumn>Set</TableColumn>
             <TableColumn>Case</TableColumn>
             <TableColumn>Likes</TableColumn>
-            <TableColumn>Date submitted</TableColumn>
+            <TableColumn>Date</TableColumn>
             <TableColumn hideHeader>Likes and learning status</TableColumn>
           </TableHeader>
           <TableBody emptyContent="You haven't submitted a solution for this case!">
-            {solutions.map(({ publicKey, account }, index) => (
-              <TableRow key={index}>
-                <TableCell>{decompress(account.moves)}</TableCell>
-                <TableCell>
-                  {casesMap[account.case.toString()].account.set}
-                </TableCell>
-                <TableCell>
-                  {casesMap[account.case.toString()].account.id}
-                </TableCell>
-                <TableCell>{account.likes}</TableCell>
-                <TableCell>
-                  {moment(account.timestamp).format('DD/MM/YYYY')}
-                </TableCell>
+            {solutions.map(({ publicKey, account }, index) => {
+              const caseAcc = casesMap[account.case.toString()];
 
-                <TableCell className="w-1/6">
-                  <div className="flex items-center justify-center">
-                    <Case caseAcc={casesMap[account.case.toString()]} />
-                    <Like
-                      casePk={account.case}
-                      solutionAcc={{ publicKey, account }}
-                    />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+              return (
+                <TableRow key={index}>
+                  <TableCell>{decompress(account.moves)}</TableCell>
+                  <TableCell className="w-20">{caseAcc.account.set}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <p className="pr-2 w-20">{caseAcc.account.id}</p>
+                      <ScrambleDisplay2
+                        set={caseAcc.account.set}
+                        scramble={decompress(caseAcc.account.setup)}
+                        height="h-12"
+                        width="w-12"
+                      ></ScrambleDisplay2>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">{account.likes}</TableCell>
+                  <TableCell className="text-center">
+                    {moment(account.timestamp).format('DD/MM/YYYY')}
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="flex items-center justify-center">
+                      <Case caseAcc={casesMap[account.case.toString()]} />
+                      <Like
+                        casePk={account.case}
+                        solutionAcc={{ publicKey, account }}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
         {solutions.length === max && (

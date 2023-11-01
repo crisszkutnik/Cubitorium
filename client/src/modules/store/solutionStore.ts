@@ -49,12 +49,40 @@ export function selectSolutionsForAuthorAndCases(
     : undefined;
 
   return (state: SolutionStoreState) => {
-    return state.solutions.filter(
-      (s) =>
-        (casesForSet === undefined ||
-          casesForSet.includes(s.account.case.toString())) &&
-        s.account.author.toString() === authorPk,
-    );
+    return state.solutions
+      .filter(
+        (s) =>
+          (casesForSet === undefined ||
+            casesForSet.includes(s.account.case.toString())) &&
+          s.account.author.toString() === authorPk,
+      )
+      .sort(comparatorByCase);
+  };
+}
+
+export function selectSetsWithSolutionForAuthor(
+  authorPublicKey: PublicKey | string,
+) {
+  const casesMap = useCaseStore.getState().casesMap;
+
+  if (!casesMap || Object.keys(casesMap).length === 0) {
+    return () => [];
+  }
+
+  const authorPk = getPKFromStringOrObject(authorPublicKey);
+
+  return (state: SolutionStoreState) => {
+    const arr = state.solutions.reduce((filtered, item) => {
+      const caseAcc = casesMap[item.account.case.toString()];
+
+      if (item.account.author.equals(authorPk) && caseAcc) {
+        filtered.push(caseAcc.account.set);
+      }
+
+      return filtered;
+    }, [] as string[]);
+
+    return [...new Set(arr)];
   };
 }
 
@@ -63,19 +91,21 @@ export function selectLikedSolutionsForCases(
   validCases: CaseAccount[],
 ) {
   return (state: SolutionStoreState) => {
-    return state.solutions.filter((s) => {
-      if (!validCases.some((c) => c.publicKey.equals(s.account.case))) {
-        return false;
-      }
+    return state.solutions
+      .filter((s) => {
+        if (!validCases.some((c) => c.publicKey.equals(s.account.case))) {
+          return false;
+        }
 
-      const key = getLikePda(
-        web3Layer.loggedUserPK,
-        s.publicKey,
-        web3Layer.programId,
-      );
+        const key = getLikePda(
+          web3Layer.loggedUserPK,
+          s.publicKey,
+          web3Layer.programId,
+        );
 
-      return likesMap[key.toString()] !== undefined;
-    });
+        return likesMap[key.toString()] !== undefined;
+      })
+      .sort(comparatorByCase);
   };
 }
 
@@ -110,6 +140,29 @@ export function selectSolutionsByAuthor(authorPublicKey: PublicKey | string) {
       (s) => s.account.author.toString() === authorPk,
     );
   };
+}
+
+function comparatorByCase(a: SolutionAccount, b: SolutionAccount) {
+  const casesMap = useCaseStore.getState().casesMap;
+
+  const caseA: CaseAccount | undefined = casesMap[a.account.case.toString()];
+  const caseB: CaseAccount | undefined = casesMap[b.account.case.toString()];
+
+  if (!caseA || !caseB) {
+    return 1;
+  }
+
+  const idA = caseA.account.id;
+  const idB = caseB.account.id;
+
+  const numA = Number(caseA.account.id);
+  const numB = Number(caseB.account.id);
+
+  if (!isNaN(numA) && !isNaN(numB)) {
+    return numA > numB ? 1 : -1;
+  }
+
+  return idA > idB ? 1 : -1;
 }
 
 function comparatorBySet(a: SolutionAccount, b: SolutionAccount) {
