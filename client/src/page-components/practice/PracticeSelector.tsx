@@ -14,8 +14,6 @@ import {
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
 import {
-  selectCases,
-  selectCasesBySet,
   useCaseStore,
 } from '../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
@@ -62,7 +60,7 @@ export function PracticeSelector({
   );
 
   const [cases, casesMap] = useCaseStore((state) => [
-    selectCasesBySet(selectedSet)(state),
+    state.cases,
     state.casesMap,
   ]);
 
@@ -72,6 +70,10 @@ export function PracticeSelector({
 
   const { isLogged } = useUserStore();
 
+  const casesForselectedSet = useMemo(() => {
+    return cases.filter((c) => c.account.set === selectedSet);
+  }, [selectedSet, cases]);
+  
   const solutions = useSolutionStore(
     (state) =>
       isLogged ? selectLearningSolutionsForCases(likesMap, cases)(state) : [],
@@ -197,22 +199,28 @@ export function PracticeSelector({
     params: URLSearchParams,
   ) => {
     if (queryCases && queryCases != Array.from(selectedCases || []).join(',')) {
+      console.log("estoy al principio");
       const queryCasesArray = queryCases.split(',');
       setSelectedCases(new Set(queryCasesArray));
       return false;
     }
     if (querySet != selectedSet) {
+      console.log("estoy en el diome");
+      console.log(querySet);
       const value = getCasesValue(querySet);
       const valueString = Array.from(value!)
         .map((c) => c.account.id)
         .join(',');
-
+      console.log(valueString);
       if (value) {
+        console.log("estoy en el if de la 212");
         params.set(QueryParams.CASES, valueString);
         return true;
       }
     }
+    
     if (!queryCases) {
+      console.log("estoy al final");
       setSelectedCases(new Set([]));
     }
 
@@ -291,12 +299,12 @@ export function PracticeSelector({
         label="Algorithm cases"
         selectedKeys={selectedCases}
         onChange={handleCaseChange}
-        disabled={cases.length === 0}
+        disabled={casesForselectedSet.length === 0}
         classNames={{
           label: 'text-accent-dark text-lg',
           base: 'mt-2',
         }}
-        items={cases}
+        items={casesForselectedSet}
       >
         {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
       </Select>
