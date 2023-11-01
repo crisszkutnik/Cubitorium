@@ -22,6 +22,13 @@
 6. (OPCIONAL) Llenar el backend de data
    - Correr el comando `yarn init-backend` para cargar dos perfiles, casos, soluciones, y algunos likes y estados de aprendizaje. Modificar el archivo en `backend/init-backend/init-backend.ts` a gusto para cargar los casos o las cosas que uno desee. Demora unos segundos / un minuto.
 
+## Setup (Docker)
+1. Copiar `/backend/target/deploy/backend-keypair.json` en `/final-thesis/backend-keypair.json`.
+2. Copiar `~/.config/solana/id.json` en `/final-thesis/id.json`.
+3. `cd /final-thesis/`
+4. Buildear la imagen: `docker build . -t cubitorium`
+5. Correr la imagen: `docker run -p 5173:5173 cubitorium`
+
 ## Contributors
 
 | Name               | Email                   | FRBA email                     |

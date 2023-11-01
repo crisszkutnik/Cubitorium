@@ -9,7 +9,7 @@ yarn
 yarn build
 anchor deploy
 
-mv /cubitorium/keypar.json
+mv /cubitorium/backend-keypair.json /cubitorium/backend/target/deploy/backend-keypair.json
 
 yarn init-backend
 
