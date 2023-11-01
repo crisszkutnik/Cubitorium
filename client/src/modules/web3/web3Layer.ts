@@ -160,12 +160,12 @@ class Web3Layer extends Web3Connection {
   ): Promise<TransactionSignature> {
     const tx = await this.program.methods
       .changeUserInfo(
-        name || null,
-        surname || null,
-        wcaId || null,
-        location || null,
-        birthdate || null,
-        profileImgSrc || null,
+        name || '',
+        surname || '',
+        wcaId || '',
+        location || '',
+        birthdate || '',
+        profileImgSrc || '',
       )
       .accounts({
         user: this.provider?.wallet.publicKey,

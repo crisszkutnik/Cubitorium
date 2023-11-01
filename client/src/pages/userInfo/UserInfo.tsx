@@ -5,11 +5,11 @@ import {
   loggedUserSelector,
   useUserStore,
 } from '../../modules/store/userStore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
-import { Alert } from '../../components/Alert';
 import { Input } from '@nextui-org/react';
 import moment from 'moment';
+import { useAlertContext } from '../../components/context/AlertContext';
 
 interface Inputs {
   name: string;
@@ -25,8 +25,7 @@ export function UserInfo() {
     (state) => [loggedUserSelector(state), state.sendUserInfo],
     shallow,
   );
-  const [showSuccessAlert, setSuccessAlert] = useState(false);
-  const [showErrorAlert, setErrorAlert] = useState(false);
+  const { success, error } = useAlertContext();
 
   const { handleSubmit, reset, control } = useForm<Inputs>();
 
@@ -38,20 +37,19 @@ export function UserInfo() {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      console.log(data);
       await sendUserInfo(
         data.name,
         data.surname,
         data.wcaId,
         data.location,
-        moment(data.birthdate).format('YYYY-MM-DD'),
+        data.birthdate ? moment(data.birthdate).format('YYYY-MM-DD') : '',
         data.profileImgSrc,
       );
-      setErrorAlert(false);
-      setSuccessAlert(true);
+      success('User details saved successfully');
     } catch (e) {
       console.error(e);
-      setSuccessAlert(false);
-      setErrorAlert(true);
+      error('Failed to save user details', e);
     }
   };
 
@@ -125,20 +123,6 @@ export function UserInfo() {
           <Submit />
         </div>
       </form>
-      {showSuccessAlert && (
-        <Alert
-          onPress={() => setSuccessAlert(false)}
-          text="User details saved successfully"
-          type="success"
-        />
-      )}
-      {showErrorAlert && (
-        <Alert
-          onPress={() => setSuccessAlert(false)}
-          text="Failed to save user details"
-          type="error"
-        />
-      )}
     </UserInfoLayout>
   );
 }
