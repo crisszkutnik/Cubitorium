@@ -1,4 +1,5 @@
 import { Program, web3 } from "@coral-xyz/anchor";
+import { Wallet } from "@coral-xyz/anchor/dist/cjs";
 import { Backend } from "../target/types/backend";
 import * as fs from "fs";
 import { casePda, setPda, solutionKey } from "../tests/utils";
@@ -8,7 +9,8 @@ export const loadCasesFromCsv = async (
   path: string,
   set: string,
   program: Program<Backend>,
-  deployer: web3.PublicKey,
+  deployer: Wallet,
+  otherLoader: web3.Keypair,
   batchSize = 3,
   liker?: web3.Keypair
 ) => {
@@ -34,7 +36,7 @@ export const loadCasesFromCsv = async (
   await program.methods
     .appendSetToConfig(set, [...new Set(cases)])
     .accounts({
-      admin: deployer,
+      admin: deployer.publicKey,
       existingSet: existing ? setKey : null,
       newSet: existing ? null : setKey,
     })
@@ -46,7 +48,7 @@ export const loadCasesFromCsv = async (
     ben.map((elem) =>
       program.methods
         .createCase(set, elem.split("BEN")[0], elem.split("BEN")[1])
-        .accounts({ signer: deployer })
+        .accounts({ signer: deployer.publicKey })
         .instruction()
     )
   );
@@ -56,16 +58,20 @@ export const loadCasesFromCsv = async (
 
   let addSolutionIxs = await Promise.all(
     solutions.map((solution, i) => {
+      let isDeployer = i < Math.floor(solutions.length / 2);
+      let submitter = isDeployer ? deployer : otherLoader;
+
       let caseAcc = casePda(set, cases[i], program.programId);
       let solutionPda = solutionKey(caseAcc, solution, program.programId);
       let authorPda = web3.PublicKey.findProgramAddressSync(
-        [Buffer.from(USER_INFO_TAG), deployer.toBuffer()],
+        [Buffer.from(USER_INFO_TAG), submitter.publicKey.toBuffer()],
         program.programId
       )[0];
 
       let addSolIx = program.methods
         .addSolution(solution)
-        .accounts({ signer: deployer, case: caseAcc, solutionPda })
+        .accounts({ signer: submitter.publicKey, case: caseAcc, solutionPda })
+        .signers(isDeployer ? [] : [submitter as web3.Keypair])
         .instruction();
 
       // welcome to hell
@@ -101,15 +107,50 @@ export const loadCasesFromCsv = async (
 
   // Send all ixs in batches
   let tx = new web3.Transaction();
-  let bigIxs = [...createCaseIxs, ...addSolutionIxs];
   let likeIxs = await Promise.all(likeIxsPromises);
 
   // Big ixs in small batches
-  for (let i = 0; i < bigIxs.length; i += batchSize) {
-    tx.add(...bigIxs.slice(i, i + batchSize));
+  for (let i = 0; i < createCaseIxs.length; i += batchSize) {
+    tx.add(...createCaseIxs.slice(i, i + batchSize));
 
     try {
       await program.provider.sendAndConfirm(tx, undefined, {
+        commitment: `confirmed`,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+    tx = new web3.Transaction();
+  }
+
+  // soy un rastafari
+  const threshold = addSolutionIxs.length / 2;
+  let deployerSolutions = addSolutionIxs.slice(0, threshold);
+  let otherLoaderSolutions = addSolutionIxs.slice(
+    threshold,
+    addSolutionIxs.length
+  );
+
+  for (let i = 0; i < deployerSolutions.length; i += batchSize) {
+    tx.add(...deployerSolutions.slice(i, i + batchSize));
+
+    try {
+      await program.provider.sendAndConfirm(tx, undefined, {
+        commitment: `confirmed`,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+    tx = new web3.Transaction();
+  }
+
+  for (let i = 0; i < otherLoaderSolutions.length; i += batchSize) {
+    tx.add(...otherLoaderSolutions.slice(i, i + batchSize));
+
+    try {
+      await program.provider.sendAndConfirm(tx, [otherLoader], {
         commitment: `confirmed`,
       });
     } catch (e) {
@@ -140,7 +181,8 @@ export const loadMultipleCasesFromCsv = async (
   paths: string[],
   sets: string[],
   program: Program<Backend>,
-  deployer: web3.PublicKey,
+  deployer: Wallet,
+  otherLoader: web3.Keypair,
   batchSize = 3,
   liker?: web3.Keypair
 ) => {
@@ -150,6 +192,7 @@ export const loadMultipleCasesFromCsv = async (
       sets[i],
       program,
       deployer,
+      otherLoader,
       batchSize,
       liker
     );
