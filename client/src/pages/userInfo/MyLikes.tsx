@@ -145,10 +145,10 @@ export function MyLikes() {
               return (
                 <TableRow key={index}>
                   <TableCell>{decompress(account.moves)}</TableCell>
-                  <TableCell>{caseAcc.account.set}</TableCell>
+                  <TableCell className="w-20">{caseAcc.account.set}</TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <p className="pr-2">{caseAcc.account.id}</p>
+                      <p className="pr-2 w-20">{caseAcc.account.id}</p>
                       <ScrambleDisplay2
                         set={caseAcc.account.set}
                         scramble={decompress(caseAcc.account.setup)}
@@ -157,8 +157,8 @@ export function MyLikes() {
                       ></ScrambleDisplay2>
                     </div>
                   </TableCell>
-                  <TableCell>{account.likes}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">{account.likes}</TableCell>
+                  <TableCell className="text-center">
                     {moment(account.timestamp).format('DD/MM/YYYY')}
                   </TableCell>
                   <TableCell className="w-1/6">
