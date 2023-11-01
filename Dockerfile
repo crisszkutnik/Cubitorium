@@ -16,7 +16,6 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
 RUN avm install 0.29.0
 
-
 # SOLANA
 COPY id.json ~/.config/solana/id.json
 RUN curl -sSfL https://release.solana.com/v1.17.4/install | sh -
@@ -26,32 +25,32 @@ ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
 RUN corepack enable
 RUN yarn set version 1.22.19
 
-
 ADD . /cubitorium
+COPY id.json /root/.config/solana/id.json
 
 WORKDIR /cubitorium/backend
 
 # build back-end
 # RUN solana-keygen new -o /root/.config/solana/id.json
-RUN solana-test-validator &
-RUN yarn
-RUN yarn build
+RUN echo $pwd 
+# RUN solana-test-validator &
+RUN yarn; yarn build 
 
-RUN solana-keygen new -o /root/.config/solana/id.json
-RUN solana-keygen new -o ~/config/solana/id.json
+#RUN anchor deploy 
 
-RUN anchor deploy 
+#build front-end
+WORKDIR /cubitorium/client
+RUN yarn; yarn build
 
-# build front-end
-# RUN cd /cubitorium/client; yarn; yarn build
+CMD ["yarn", "dev", "--host"]
 
-# copy files
+
+# --------------------------------
+
+# TODO - nginx server to host directly the /dist dir if someday it works
 # FROM nginx:alpine
 
 # # copy files to nginx
+
 # COPY default.conf /etc/nginx/conf.d/default.conf
-# # COPY --from=base /cubitorium/client/dist/* /usr/share/nginx/html/
-
-# # expose nginx
-# EXPOSE 80
-
+# COPY --from=base /cubitorium/client/dist/* /usr/share/nginx/html/
