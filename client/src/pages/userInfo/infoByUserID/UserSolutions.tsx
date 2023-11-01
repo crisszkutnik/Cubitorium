@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  selectSetsWithSolutionForAuthor,
   selectSolutionsForAuthorAndCases,
   useSolutionStore,
 } from '../../../modules/store/solutionStore';
@@ -52,10 +53,11 @@ export function UserSolutions({ userPk }: Props) {
     state.loadingState,
   ]);
 
-  const [solutions, sortSolutionsBySet] = useSolutionStore(
+  const [solutions, sortSolutionsBySet, setsWithSolution] = useSolutionStore(
     (state) => [
       selectSolutionsForAuthorAndCases(userPk, cases)(state).slice(0, max),
       state.sortSolutionsBySet,
+      selectSetsWithSolutionForAuthor(userPk)(state),
     ],
     shallow,
   );
@@ -82,6 +84,7 @@ export function UserSolutions({ userPk }: Props) {
           setMax(pageSize);
           setSelectedPuzzle(newPuzzle);
         }}
+        setsWithSolutions={setsWithSolution}
       />
       <Table
         isStriped
@@ -99,7 +102,7 @@ export function UserSolutions({ userPk }: Props) {
           <TableColumn>Date</TableColumn>
           <TableColumn hideHeader>Likes and learning status</TableColumn>
         </TableHeader>
-        <TableBody emptyContent="The user hasn't uploaded a solution yet">
+        <TableBody emptyContent="The user hasn't uploaded a solution yet for the selected case!">
           {solutions.map(({ publicKey, account }, index) => {
             const caseAcc = casesMap[account.case.toString()];
 

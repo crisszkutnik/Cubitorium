@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserInfoLayout } from '../../components/layout/UserInfoLayout';
 import {
+  selectSetsWithSolutionForAuthor,
   selectSolutionsForAuthorAndCases,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
@@ -70,6 +71,7 @@ export function MySolves() {
     loadSolutionsIfNotLoaded,
     solutionsLoadingState,
     sortSolutionsBySet,
+    setsWithSolution,
   ] = useSolutionStore(
     (state) => [
       selectSolutionsForAuthorAndCases(
@@ -79,6 +81,7 @@ export function MySolves() {
       state.loadIfNotLoaded,
       state.loadingState,
       state.sortSolutionsBySet,
+      selectSetsWithSolutionForAuthor(loggedUserPk || '')(state),
     ],
     shallow,
   );
@@ -130,6 +133,7 @@ export function MySolves() {
             setMax(pageSize);
             setSelectedPuzzle(newPuzzle);
           }}
+          setsWithSolutions={setsWithSolution}
         />
         <Table
           isStriped

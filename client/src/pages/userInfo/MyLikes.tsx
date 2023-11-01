@@ -138,7 +138,7 @@ export function MyLikes() {
             <TableColumn>Date</TableColumn>
             <TableColumn hideHeader>Likes and learning status</TableColumn>
           </TableHeader>
-          <TableBody emptyContent="You haven't submitted a solution for this case!">
+          <TableBody emptyContent="You haven't liked a solution for this case!">
             {solutions.map(({ publicKey, account }, index) => {
               const caseAcc = casesMap[account.case.toString()];
 
