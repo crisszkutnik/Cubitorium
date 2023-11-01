@@ -123,12 +123,12 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
     },
 
     sendUserInfo: async (
-      name: string,
-      surname: string,
-      wcaId: string,
-      location: string,
-      birthdate: string,
-      profileImgSrc: string,
+      name?: string,
+      surname?: string,
+      wcaId?: string,
+      location?: string,
+      birthdate?: string,
+      profileImgSrc?: string,
     ) => {
       const state = get();
 

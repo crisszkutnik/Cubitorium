@@ -15,6 +15,7 @@ pub struct ChangeUserInfo<'info> {
     pub user_info: Account<'info, UserInfo>,
 }
 
+#[macro_export]
 macro_rules! update_opt {
     ($acc:ident, $field:ident, $max_len:ident, $err:expr) => {
         if let Some(f) = $field {
