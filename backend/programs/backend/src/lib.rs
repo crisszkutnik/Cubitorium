@@ -98,12 +98,12 @@ pub mod backend {
     /// Initializes user info PDA (user)
     pub fn send_user_info(
         ctx: Context<SendUserInfo>,
-        name: String,
-        surname: String,
-        wca_id: String,
-        location: String,
-        birthdate: String,
-        profile_img_src: String,
+        name: Option<String>,
+        surname: Option<String>,
+        wca_id: Option<String>,
+        location: Option<String>,
+        birthdate: Option<String>,
+        profile_img_src: Option<String>,
     ) -> Result<()> {
         send_user_info::send_user_info_handler(
             ctx,

@@ -5,11 +5,11 @@ import {
   loggedUserSelector,
   useUserStore,
 } from '../../modules/store/userStore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
-import { Alert } from '../../components/Alert';
 import { Input } from '@nextui-org/react';
 import moment from 'moment';
+import { useAlertContext } from '../../components/context/AlertContext';
 
 interface Inputs {
   name: string;
@@ -25,8 +25,7 @@ export function UserInfo() {
     (state) => [loggedUserSelector(state), state.sendUserInfo],
     shallow,
   );
-  const [showSuccessAlert, setSuccessAlert] = useState(false);
-  const [showErrorAlert, setErrorAlert] = useState(false);
+  const { success, error } = useAlertContext();
 
   const { handleSubmit, reset, control } = useForm<Inputs>();
 
@@ -38,20 +37,19 @@ export function UserInfo() {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      console.log(data);
       await sendUserInfo(
         data.name,
         data.surname,
         data.wcaId,
         data.location,
-        moment(data.birthdate).format('YYYY-MM-DD'),
+        data.birthdate ? moment(data.birthdate).format('YYYY-MM-DD') : '',
         data.profileImgSrc,
       );
-      setErrorAlert(false);
-      setSuccessAlert(true);
+      success('User details saved successfully');
     } catch (e) {
       console.error(e);
-      setSuccessAlert(false);
-      setErrorAlert(true);
+      error('Failed to save user details', e);
     }
   };
 
@@ -65,6 +63,7 @@ export function UserInfo() {
           <div className="flex gap-3">
             <Controller
               control={control}
+              defaultValue=""
               name="name"
               render={({ field }) => (
                 <Input label="Name" color="primary" {...field} />
@@ -72,6 +71,7 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="surname"
               render={({ field }) => (
                 <Input label="Surname" color="primary" {...field} />
@@ -79,6 +79,7 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="wcaId"
               render={({ field }) => (
                 <Input label="WCA ID" color="primary" {...field} />
@@ -88,6 +89,7 @@ export function UserInfo() {
           <div className="flex gap-3">
             <Controller
               control={control}
+              defaultValue=""
               name="location"
               render={({ field }) => (
                 <Input label="Location" color="primary" {...field} />
@@ -95,19 +97,21 @@ export function UserInfo() {
             />
             <Controller
               control={control}
+              defaultValue=""
               name="birthdate"
               render={({ field }) => (
                 <Input
-                  label="Birthdate (MM/DD/YYYY)"
+                  label="Birthdate"
                   type="date"
                   color="primary"
-                  placeholder="dd/mm/aaaa"
+                  placeholder=" "
                   {...field}
                 />
               )}
             />
             <Controller
               control={control}
+              defaultValue=""
               name="profileImgSrc"
               render={({ field }) => (
                 <Input label="Profile image URL" color="primary" {...field} />
@@ -119,20 +123,6 @@ export function UserInfo() {
           <Submit />
         </div>
       </form>
-      {showSuccessAlert && (
-        <Alert
-          onPress={() => setSuccessAlert(false)}
-          text="User details saved successfully"
-          type="success"
-        />
-      )}
-      {showErrorAlert && (
-        <Alert
-          onPress={() => setSuccessAlert(false)}
-          text="Failed to save user details"
-          type="error"
-        />
-      )}
     </UserInfoLayout>
   );
 }

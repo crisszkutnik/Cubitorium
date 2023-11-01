@@ -62,7 +62,7 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
       success('Learning status set correctly');
     } catch (e) {
       console.error(e);
-      error('Failed to set learning status');
+      error('Failed to set learning status', e);
     }
   };
 

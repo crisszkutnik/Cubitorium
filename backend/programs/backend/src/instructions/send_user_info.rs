@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{constants::*, error::UserInfoError, utils::check_date, UserInfo};
+use crate::{constants::*, error::UserInfoError, update_opt, utils::check_date, UserInfo};
 
 #[derive(Accounts)]
 pub struct SendUserInfo<'info> {
@@ -21,42 +21,49 @@ pub struct SendUserInfo<'info> {
 
 pub fn send_user_info_handler(
     ctx: Context<SendUserInfo>,
-    name: String,
-    surname: String,
-    wca_id: String,
-    location: String,
-    birthdate: String,
-    profile_img_src: String,
+    name: Option<String>,
+    surname: Option<String>,
+    wca_id: Option<String>,
+    location: Option<String>,
+    birthdate: Option<String>,
+    profile_img_src: Option<String>,
 ) -> Result<()> {
-    msg!("Creating user info for {} {}...", name, surname);
-
-    require!(
-        name.len() <= MAX_NAME_LENGTH,
-        UserInfoError::UserNameTooLong
-    );
-    require!(
-        surname.len() <= MAX_SURNAME_LENGTH,
-        UserInfoError::UserSurnameTooLong
-    );
-    require!(wca_id.len() <= WCA_ID_LENGTH, UserInfoError::WrongWCAID);
-    require!(
-        location.len() <= MAX_LOCATION_LENGTH,
-        UserInfoError::LocationTooLong
-    );
-    require!(
-        profile_img_src.len() <= MAX_URL_LEN,
-        UserInfoError::ImgSrcTooLong
-    );
-    check_date(&birthdate)?;
+    msg!("Creating user info...");
 
     let user_info = &mut ctx.accounts.user_info;
-    user_info.name = name;
-    user_info.surname = surname;
-    user_info.wca_id = wca_id;
-    user_info.location = location;
-    user_info.birthdate = birthdate;
+
+    update_opt!(
+        user_info,
+        name,
+        MAX_NAME_LENGTH,
+        UserInfoError::UserNameTooLong
+    );
+    update_opt!(
+        user_info,
+        surname,
+        MAX_SURNAME_LENGTH,
+        UserInfoError::UserSurnameTooLong
+    );
+    update_opt!(user_info, wca_id, WCA_ID_LENGTH, UserInfoError::WrongWCAID);
+    update_opt!(
+        user_info,
+        location,
+        MAX_LOCATION_LENGTH,
+        UserInfoError::LocationTooLong
+    );
+    update_opt!(
+        user_info,
+        profile_img_src,
+        MAX_URL_LEN,
+        UserInfoError::ImgSrcTooLong
+    );
+
+    if let Some(_birthdate) = birthdate {
+        check_date(&_birthdate)?;
+        user_info.birthdate = _birthdate;
+    }
+
     user_info.join_timestamp = Clock::get()?.unix_timestamp as u64;
-    user_info.profile_img_src = profile_img_src;
     user_info.bump = ctx.bumps.user_info;
 
     Ok(())

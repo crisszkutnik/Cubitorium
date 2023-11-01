@@ -41,10 +41,11 @@ export function ResolutionInput({ activeCase }: Props) {
       console.error(e);
 
       if (e instanceof SolutionAlreadyExistsError) {
-        error('This solution has already been added by another user :(');
+        error('This solution has already been added by another user :(', e);
       } else {
         error(
           'Failed to add solution. Check that the solution you submitted solves the selected case!',
+          e,
         );
       }
     }
@@ -71,13 +72,14 @@ export function ResolutionInput({ activeCase }: Props) {
         <div className="text-md items-center flex rounded text-gray-600 text-center mb-5 bg-blue-100 p-2">
           <FontAwesomeIcon icon={faCircleInfo} />
           <p className="pl-3 w-full">
-            You need to provide an algorithms that <b>solves</b> the case you
+            You need to provide an algorithm that <b>solves</b> the case you
             selected. Otherwise the upload will not be possible
           </p>
         </div>
         <form ref={ref} onSubmit={handleSubmit(onSubmit)}>
           <Controller
             control={control}
+            defaultValue=""
             name="solution"
             render={(props) => (
               <Textarea

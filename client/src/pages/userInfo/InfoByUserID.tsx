@@ -1,54 +1,56 @@
 import { useParams } from 'react-router-dom';
 import { DefaultLayout } from '../../components/layout/DefaultLayout';
-import { ButtonWrapper } from '../../components/ButtonWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { getName } from '../../modules/utils/userDisplayUtils';
 import { useUserStore, userSelector } from '../../modules/store/userStore';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
-import {
-  selectSolutionsByAuthor,
-  useSolutionStore,
-} from '../../modules/store/solutionStore';
+import { useEffect } from 'react';
+import { useSolutionStore } from '../../modules/store/solutionStore';
 import { LoadingState } from '../../modules/types/loadingState.enum';
 import { Loading } from '../Loading';
-import { selectCasesByPks, useCaseStore } from '../../modules/store/caseStore';
-import { getPuzzleType } from '../../modules/store/algorithmsStore';
-import { decompress } from '../../modules/utils/compression';
+import { useCaseStore } from '../../modules/store/caseStore';
+import { UserSolutions } from './infoByUserID/UserSolutions';
+import { useLikeStore } from '../../modules/store/likeStore';
+import { useAlgorithmsStore } from '../../modules/store/algorithmsStore';
 
 export function InfoByUserID() {
   const { id } = useParams();
   const user = useUserStore(userSelector(id || ''));
 
-  const pagingOffset = 20;
   const placeholderImg = '/user_placeholder.png';
-  const [shownCases, setShownCases] = useState(pagingOffset);
 
-  const [solutions, loadSolutionsIfNotLoaded, solutionsLoadingState] =
-    useSolutionStore((state) => [
-      selectSolutionsByAuthor(id || '')(state).slice(0, shownCases),
-      state.loadIfNotLoaded,
-      state.loadingState,
-    ]);
+  const [loadSolutionsIfNotLoaded, solutionsLoadingState] = useSolutionStore(
+    (state) => [state.loadIfNotLoaded, state.loadingState],
+  );
 
-  const [cases, loadCasesIfNotLoaded, casesLoadingState] = useCaseStore(
-    (state) => [
-      selectCasesByPks(solutions.map((s) => s.account.case))(state),
-      state.loadIfNotLoaded,
-      state.loadingState,
-    ],
+  const [loadCasesIfNotLoaded, casesLoadingState] = useCaseStore((state) => [
+    state.loadIfNotLoaded,
+    state.loadingState,
+  ]);
+
+  const [loadLikesIfNotLoaded, likesLoadingState] = useLikeStore((state) => [
+    state.loadIfNotLoaded,
+    state.loadingState,
+  ]);
+
+  const [loadSetsIfNotLoaded, setsLoadingState] = useAlgorithmsStore(
+    (state) => [state.loadIfNotLoaded, state.loadingState],
   );
 
   useEffect(() => {
     loadSolutionsIfNotLoaded();
     loadCasesIfNotLoaded();
+    loadLikesIfNotLoaded();
+    loadSetsIfNotLoaded();
   }, []);
 
   const hasAllRequiredData = () => {
     return (
       solutionsLoadingState === LoadingState.LOADED &&
-      casesLoadingState === LoadingState.LOADED
+      casesLoadingState === LoadingState.LOADED &&
+      likesLoadingState === LoadingState.LOADED &&
+      setsLoadingState === LoadingState.LOADED
     );
   };
 
@@ -140,49 +142,7 @@ export function InfoByUserID() {
           </div>
         </div>
         <hr className="w-full h-px my-3" />
-        <div className="p-4 w-full flex flex-col items-center">
-          <table className="text-left w-full mb-3">
-            <thead>
-              <tr>
-                <th>Date submitted</th>
-                <th>Solution</th>
-                <th>Puzzle</th>
-                <th>Set</th>
-                <th>Case</th>
-                <th>Likes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {solutions.map(({ account }, index) => {
-                const c = cases.find(
-                  (c) => c.publicKey.toString() === account.case.toString(),
-                );
-
-                return (
-                  <tr key={index}>
-                    <td className="py-2">
-                      {moment(account.timestamp).format('YYYY-MM-DD')}
-                    </td>
-                    <td className="py-2">{decompress(account.moves)}</td>
-                    <td className="py-2">
-                      {getPuzzleType(c?.account.set || '')}
-                    </td>
-                    <td className="py-2">{c?.account.set}</td>
-                    <td className="py-2">{c?.account.id}</td>
-                    <td className="py-2">{account.likes}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tr></tr>
-          </table>
-          {shownCases <= solutions.length && (
-            <ButtonWrapper
-              onClick={() => setShownCases(shownCases + pagingOffset)}
-              text="+ Load more"
-            />
-          )}
-        </div>
+        <UserSolutions userPk={id || ''} />
       </div>
     </DefaultLayout>
   );

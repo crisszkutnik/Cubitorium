@@ -26,7 +26,7 @@ export function Add() {
       success('Privileged user added');
     } catch (e) {
       console.error(e);
-      error('Failed to add privileged user');
+      error('Failed to add privileged user', e);
     }
   };
   return (
@@ -38,11 +38,13 @@ export function Add() {
       >
         <Controller
           control={control}
+          defaultValue=""
           name="userPublicKey"
           render={({ field }) => <Input label="Public key" {...field} />}
         />
         <Controller
           control={control}
+          defaultValue=""
           name="asDeployer"
           render={({ field }) => <Checkbox {...field}>As deployer?</Checkbox>}
         />

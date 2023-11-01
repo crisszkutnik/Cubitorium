@@ -76,7 +76,14 @@ export function UserActionButton() {
           onClick={onClick}
           className="ml-2 flex items-center cursor-pointer"
         >
-          <FontAwesomeIcon icon={faUser} />
+          {user?.profileImgSrc ? (
+            <img
+              className="w-6 h-6 rounded-full object-cover"
+              src={user.profileImgSrc}
+            />
+          ) : (
+            <FontAwesomeIcon icon={faUser} />
+          )}
           <p className="mx-3">{getName(user)}</p>
           <FontAwesomeIcon icon={open ? faCaretDown : faCaretUp} />
         </button>

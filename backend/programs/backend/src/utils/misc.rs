@@ -66,6 +66,10 @@ pub fn pay_rent_and_refund_to_user<'a, 'info>(
 
 /// Asserts that date matches yyyy-mm-dd format (Regex crate didn't work...)
 pub fn check_date(date: &str) -> Result<()> {
+    if date == "" {
+        return Ok(())
+    }
+
     let year = date[0..=3]
         .parse::<u32>()
         .map_err(|_| UserInfoError::WrongDateFormat)?;
