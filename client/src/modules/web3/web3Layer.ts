@@ -29,6 +29,7 @@ import {
   ParsedLikeCertificateAccount,
 } from '../types/likeCertificate.interface';
 import { SolutionAlreadyExistsError } from '../utils/SolutionAlreadyExistsError';
+import { UserDoesNotHaveUserInfo } from '../utils/UserDoesNotHaveUserInfo';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -287,7 +288,14 @@ class Web3Layer extends Web3Connection {
       cSolution,
       this.programId,
     );
-    console.log(solutionPda.toString());
+
+    const hasUserInfo = !!(await this.program.account.userInfo.fetchNullable(
+      this.loggedUserPK,
+    ));
+
+    if (!hasUserInfo) {
+      throw new UserDoesNotHaveUserInfo();
+    }
 
     try {
       // Check if account exists, if it does not exists it will throw

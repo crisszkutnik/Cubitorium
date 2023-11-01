@@ -30,7 +30,7 @@ export function Alert({ text, onPress, type, description }: Props) {
   }, [text, onPress, type]);
 
   return (
-    <div className="fixed right-10 top-24 z-30">
+    <div className="fixed right-10 top-24 z-30 max-w-2xl">
       <Card
         onPress={onPress}
         isPressable={true}
