@@ -10,7 +10,7 @@ import {
 } from '../web3/utils';
 import { CaseAccount } from '../types/case.interface';
 import { useLikeStore } from './likeStore';
-import { ParsedLikeCertificateAccount } from '../types/likeCertificate.interface';
+import { LearningStatus, ParsedLikeCertificateAccount } from '../types/likeCertificate.interface';
 import { useCaseStore } from './caseStore';
 
 interface SolutionStoreState {
@@ -75,6 +75,27 @@ export function selectLikedSolutionsForCases(
       );
 
       return likesMap[key.toString()] !== undefined;
+    });
+  };
+}
+
+export function selectLearningSolutionsForCases(
+  likesMap: Record<string, ParsedLikeCertificateAccount>,
+  validCases: CaseAccount[],
+) {
+  return (state: SolutionStoreState) => {
+    return state.solutions.filter((s) => {
+      if (!validCases.some((c) => c.publicKey.equals(s.account.case))) {
+        return false;
+      }
+
+      const key = getLikePda(
+        web3Layer.loggedUserPK,
+        s.publicKey,
+        web3Layer.programId,
+      );
+
+      return likesMap[key.toString()] !== undefined && likesMap[key.toString()].account.parsedLearningStatus === LearningStatus.Learning;
     });
   };
 }

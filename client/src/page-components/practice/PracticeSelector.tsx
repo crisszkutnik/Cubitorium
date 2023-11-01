@@ -27,7 +27,7 @@ import { SetCase } from '../../modules/types/globalConfig.interface';
 import { ButtonWrapper } from '../../components/ButtonWrapper';
 import { shallow } from 'zustand/shallow';
 import {
-  selectLikedSolutionsForCases,
+  selectLearningSolutionsForCases,
   useSolutionStore,
 } from '../../modules/store/solutionStore';
 import { useLikeStore } from '../../modules/store/likeStore';
@@ -74,7 +74,7 @@ export function PracticeSelector({
 
   const solutions = useSolutionStore(
     (state) =>
-      isLogged ? selectLikedSolutionsForCases(likesMap, cases)(state) : [],
+      isLogged ? selectLearningSolutionsForCases(likesMap, cases)(state) : [],
     shallow,
   );
 
