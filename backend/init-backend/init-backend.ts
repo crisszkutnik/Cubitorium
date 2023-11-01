@@ -6,6 +6,7 @@ import { keypairs } from "../tests/test-keys";
 import { fundAccounts } from "../tests/utils";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { loadCasesFromCsv, loadMultipleCasesFromCsv } from "./utils";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 
 describe("backend", () => {
   // Configure the client to use the local cluster.
@@ -16,10 +17,11 @@ describe("backend", () => {
   anchor.setProvider(provider);
 
   const program = anchor.workspace.Backend as Program<Backend>;
-  const deployer = provider.wallet;
   const pid = program.programId;
 
-  const regularKeypair: web3.Keypair = keypairs[3];
+  const deployer = provider.wallet;
+  const benKeypair: web3.Keypair = keypairs[3];
+  const lopezKeypair: web3.Keypair = keypairs[4];
 
   const treasury = web3.PublicKey.findProgramAddressSync(
     [Buffer.from(TREASURY_TAG)],
@@ -44,14 +46,14 @@ describe("backend", () => {
     await program.methods
       .addPrivilegedUser()
       .accounts({
-        granter: deployer.publicKey,
+        granter: provider.wallet.publicKey,
         grantee: deployer.publicKey,
         granterPrivilege: null,
       })
       .rpc();
   });
 
-  it("Creates user profile", async () => {
+  it("Creates user profiles", async () => {
     await program.methods
       .sendUserInfo(
         "Antonio",
@@ -66,6 +68,19 @@ describe("backend", () => {
 
     await program.methods
       .sendUserInfo(
+        "Martín",
+        "López",
+        "2018LOPE22",
+        "Parque Chas, Argentina",
+        "2003-09-19",
+        "https://avatars.worldcubeassociation.org/uploads/user/avatar/2018LOPE22/1693889884.JPG"
+      )
+      .accounts({ user: lopezKeypair.publicKey })
+      .signers([lopezKeypair])
+      .rpc();
+
+    await program.methods
+      .sendUserInfo(
         "Ben",
         "Baron",
         "2016BARO04",
@@ -73,8 +88,8 @@ describe("backend", () => {
         "2003-06-11",
         "https://avatars.worldcubeassociation.org/uploads/user/avatar/2016BARO04/1666385960.jpeg"
       )
-      .accounts({ user: regularKeypair.publicKey })
-      .signers([regularKeypair])
+      .accounts({ user: benKeypair.publicKey })
+      .signers([benKeypair])
       .rpc();
   });
 
@@ -90,9 +105,10 @@ describe("backend", () => {
       "../algs/pyra/l4e.csv",
       "L4E",
       program,
-      deployer.publicKey,
-      8,
-      regularKeypair
+      deployer as NodeWallet,
+      lopezKeypair,
+      7,
+      benKeypair
     );
   });
 
@@ -102,9 +118,10 @@ describe("backend", () => {
       ["cll.csv", "eg1.csv", "eg2.csv"],
       ["CLL", "EG-1", "EG-2"],
       program,
-      deployer.publicKey,
+      deployer as NodeWallet,
+      lopezKeypair,
       7,
-      regularKeypair
+      benKeypair
     );
   });
 
@@ -114,9 +131,10 @@ describe("backend", () => {
       ["f2l.csv", "oll.csv", "pll.csv"],
       ["F2L", "OLL", "PLL"],
       program,
-      deployer.publicKey,
-      7,
-      regularKeypair
+      deployer as NodeWallet,
+      lopezKeypair,
+      6,
+      benKeypair
     );
   });
 
@@ -126,9 +144,10 @@ describe("backend", () => {
       ["cmll.csv"],
       ["CMLL"],
       program,
-      deployer.publicKey,
-      7,
-      regularKeypair
+      deployer as NodeWallet,
+      lopezKeypair,
+      6,
+      benKeypair
     );
   });
 
@@ -138,9 +157,10 @@ describe("backend", () => {
       ["pi", "s", "h", "t", "u", "l", "a"].map((l) => `zbll_${l}.csv`),
       ["Pi", "S", "H", "T", "U", "L", "A"].map((l) => `ZBLL ${l}`),
       program,
-      deployer.publicKey,
-      6,
-      regularKeypair
+      deployer as NodeWallet,
+      lopezKeypair,
+      5,
+      benKeypair
     );
   });
 
