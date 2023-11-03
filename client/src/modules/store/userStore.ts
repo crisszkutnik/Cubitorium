@@ -27,6 +27,7 @@ interface UserStoreState {
   sendUserInfo: SendUserInfoType;
   maybeIncrementLikesReceived: (userPk: PublicKey | string) => void;
   maybeDecrementLikesReceived: (userPk: PublicKey | string) => void;
+  processLikesBulk: (authorDiff: Record<string, number>) => void;
 }
 
 export const userSelector = (publicKey: PublicKey | string) => {
@@ -189,6 +190,19 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
       }
 
       user.likesReceived--;
+
+      set({ users: [...users] });
+    },
+    processLikesBulk: (authorDiff: Record<string, number>) => {
+      const { users } = get();
+
+      for (const [key, value] of Object.entries(authorDiff)) {
+        const user = users.find((u) => u.publicKey === key);
+
+        if (user) {
+          user.likesReceived += value;
+        }
+      }
 
       set({ users: [...users] });
     },

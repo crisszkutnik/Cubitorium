@@ -12,18 +12,36 @@ import {
   ParsedLikeCertificateAccount,
 } from '../../modules/types/likeCertificate.interface';
 import { useAlertContext } from '../context/AlertContext';
-import { useLikeStore } from '../../modules/store/likeStore';
+import {
+  selectPendingLearningStatusTx,
+  useLikeStore,
+} from '../../modules/store/likeStore';
+import { useMemo } from 'react';
+import { shallow } from 'zustand/shallow';
+
 interface Props {
   casePk: string | PublicKey;
+  solutionPk: string | PublicKey;
   solution: string;
   likeAccount?: ParsedLikeCertificateAccount;
+  isLiked: boolean;
 }
 
-export function LearningStatus({ casePk, solution, likeAccount }: Props) {
+export function LearningStatus({
+  casePk,
+  solutionPk,
+  solution,
+  likeAccount,
+  isLiked,
+}: Props) {
   const { success, error } = useAlertContext();
-  const [setLearningStatus] = useLikeStore((state) => [
-    state.setLearningStatus,
-  ]);
+  const [setLearningStatus, pendingTx] = useLikeStore(
+    (state) => [
+      state.setLearningStatusTx,
+      selectPendingLearningStatusTx(solutionPk)(state),
+    ],
+    shallow,
+  );
 
   const getColourAndText = (status: string | undefined) => {
     switch (status) {
@@ -37,6 +55,14 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
         return { colour: 'danger', text: LearningStatusEnum.NotLearnt };
     }
   };
+
+  const status = useMemo(() => {
+    if (pendingTx && pendingTx.learningStatusValue) {
+      return pendingTx.learningStatusValue;
+    }
+
+    return likeAccount?.account.parsedLearningStatus;
+  }, [likeAccount, pendingTx]);
 
   const getChip = (status: string | undefined) => {
     const { colour, text } = getColourAndText(status);
@@ -54,10 +80,6 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
 
   const onSetStatus = async (status: LearningStatusEnum) => {
     try {
-      if (likeAccount && likeAccount.account.parsedLearningStatus === status) {
-        return;
-      }
-
       await setLearningStatus(casePk, solution, status);
       success('Learning status set correctly');
     } catch (e) {
@@ -72,13 +94,11 @@ export function LearningStatus({ casePk, solution, likeAccount }: Props) {
     <button
       className={
         'flex flex-col items-center justify-center' +
-        (likeAccount === undefined ? ' invisible' : '')
+        (isLiked ? '' : ' invisible')
       }
     >
       <Popover placement="bottom" showArrow={true}>
-        <PopoverTrigger>
-          {getChip(likeAccount?.account.parsedLearningStatus)}
-        </PopoverTrigger>
+        <PopoverTrigger>{getChip(status)}</PopoverTrigger>
         <PopoverContent>
           <div className="flex flex-col text-left w-24">
             <button
