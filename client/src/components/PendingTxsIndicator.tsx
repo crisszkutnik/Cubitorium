@@ -17,27 +17,26 @@ export function PendingTxsIndicator() {
   const onClearTxs = () => {
     try {
       clearTxs();
-      success('Pending instructions cleared successfully');
+      success('Pending likes and learning status cleared successfully');
     } catch (e) {
       console.error(e);
-      error('Fatal error clearing pending instructions');
+      error('Fatal error clearing pending likes and learning status');
     }
   };
 
   const onCommitTxs = async () => {
     try {
       await commitTxs();
-      success('Pending instructions committed successfully');
+      success('Pending likes and learning status saved successfully');
     } catch (e) {
       console.error(e);
-      error('Fatal error comitting pending instructions', e);
+      error('Fatal error saving pending likes and learning status', e);
     }
   };
 
   if (pendingTxs.length === 0) {
     return <></>;
   }
-  //
 
   return (
     <div className="w-fit h-fit flex flex-col bottom-10 right-10 fixed bg-white drop-shadow-lg p-4 z-50 rounded">
@@ -56,7 +55,7 @@ export function PendingTxsIndicator() {
           <FontAwesomeIcon className="text-gray-500" icon={faQuestionCircle} />
         </Tooltip>
         <h3 className="ml-2 text-accent-dark">
-          You have pending actions waiting to be commited
+          You have pending actions waiting to be saved
         </h3>
       </div>
 
@@ -64,7 +63,7 @@ export function PendingTxsIndicator() {
         <FontAwesomeIcon icon={faWarning} />
         <p className="ml-1">
           Be careful! Some functionalities may not fully work without all the
-          actions commited!
+          actions saved!
         </p>
       </div>
       <div>

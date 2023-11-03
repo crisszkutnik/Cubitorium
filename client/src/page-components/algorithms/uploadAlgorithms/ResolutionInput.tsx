@@ -45,7 +45,7 @@ export function ResolutionInput({ activeCase }: Props) {
         error('This solution has already been added by another user :(', e);
       } else if (e instanceof UserDoesNotHaveUserInfo) {
         error(
-          'User does not have user info. Go to "My profile" and complete your information in order to be able to upload solutions',
+          'Go to "My profile" and complete your information in order to be able to upload solutions',
         );
       } else {
         error(

@@ -16,6 +16,7 @@ import { useSolutionStore } from './solutionStore';
 import { useUserStore } from './userStore';
 import { SolutionAccount } from '../types/solution.interface';
 import { decompress } from '../utils/compression';
+import { TooManyPendingTransactions } from '../utils/TooManyPendingTransactions';
 
 export enum TransactionType {
   LIKE_ADD = 'like_add',
@@ -162,6 +163,10 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
         return;
       }
 
+      if (pendingTxs.length >= 6) {
+        throw new TooManyPendingTransactions();
+      }
+
       const obj: PendingTransaction = {
         type: TransactionType.LIKE_ADD,
         solutionPda,
@@ -205,6 +210,10 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       }
 
       if (!existsLike) {
+        if (pendingTxs.length >= 6) {
+          throw new TooManyPendingTransactions();
+        }
+
         const obj: PendingTransaction = {
           type: TransactionType.LIKE_REMOVE,
           solutionPda,
@@ -247,6 +256,11 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
         !originalValue ||
         originalValue.account.parsedLearningStatus !== learningStatus
       ) {
+        // Check also if we removed a pending learning status transaction in the filter
+        if (pendingTxs.length >= 6 && newTxs.length === pendingTxs.length) {
+          throw new TooManyPendingTransactions();
+        }
+
         const obj: PendingTransaction = {
           type: TransactionType.LEARNING_STATUS,
           solutionPda,

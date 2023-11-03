@@ -2,6 +2,7 @@ import React, { useState, createContext, useContext } from 'react';
 import { Alert } from '../Alert';
 import { SendTransactionError } from '@solana/web3.js';
 import { AnchorError } from '@coral-xyz/anchor';
+import { TooManyPendingTransactions } from '../../modules/utils/TooManyPendingTransactions';
 
 interface Context {
   success: (text: string) => void;
@@ -26,14 +27,30 @@ export function AlertProvider(props: Props) {
   const [showAlert, setShowAlert] = useState(false);
 
   const success = (text: string) => {
+    if (showAlert) {
+      setShowAlert(false);
+    }
+
+    if (description) {
+      setDescription('');
+    }
+
     setText(text);
     setAlertType('success');
     setShowAlert(true);
   };
 
   const error = (text: string, e?: Error | unknown) => {
+    if (showAlert) {
+      setShowAlert(false);
+    }
+
     if (e instanceof AnchorError) {
       setDescription(e.error.errorMessage);
+    } else if (e instanceof TooManyPendingTransactions) {
+      setDescription(
+        'Too many pending pending actions to be save. Save/clear them to continue.',
+      );
     } else if (e instanceof SendTransactionError && e.message) {
       const msgToFind = 'Error Message: ';
       const msgPosition = e.message.indexOf(msgToFind);
