@@ -13,7 +13,9 @@ import {
   PuzzleTypeKeys,
   useAlgorithmsStore,
 } from '../../modules/store/algorithmsStore';
-import { selectCases, useCaseStore } from '../../modules/store/caseStore';
+import {
+  useCaseStore,
+} from '../../modules/store/caseStore';
 import { Select, SelectItem } from '@nextui-org/react';
 import {
   CaseAccount,
@@ -21,6 +23,13 @@ import {
 } from '../../modules/types/case.interface';
 import { SetCase } from '../../modules/types/globalConfig.interface';
 import { ButtonWrapper } from '../../components/ButtonWrapper';
+import { shallow } from 'zustand/shallow';
+import {
+  selectLearningSolutionsForCases,
+  useSolutionStore,
+} from '../../modules/store/solutionStore';
+import { useLikeStore } from '../../modules/store/likeStore';
+import { useUserStore } from '../../modules/store/userStore';
 
 interface Props {
   selectedPuzzle: string;
@@ -46,12 +55,30 @@ export function PracticeSelector({
     state.setsMap,
   ]);
 
-  const cases = useCaseStore(selectCases);
   const [selectedSet, setSelectedSet] = useState<string>(
     sets.length > 0 ? sets[0].setName : '',
   );
 
+  const [cases, casesMap] = useCaseStore((state) => [
+    state.cases,
+    state.casesMap,
+  ]);
+
   const [selectedCases, setSelectedCases] = useState<Set<string>>();
+
+  const likesMap = useLikeStore((state) => state.likesMap);
+
+  const { isLogged } = useUserStore();
+
+  const casesForselectedSet = useMemo(() => {
+    return cases.filter((c) => c.account.set === selectedSet);
+  }, [selectedSet, cases]);
+  
+  const solutions = useSolutionStore(
+    (state) =>
+      isLogged ? selectLearningSolutionsForCases(likesMap, cases)(state) : [],
+    shallow,
+  );
 
   const handlePuzzleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const newValue = event.target.value;
@@ -79,10 +106,6 @@ export function PracticeSelector({
     searchParams.set(QueryParams.CASES, e.target.value);
     setSearchParams(searchParams);
   };
-
-  const casesForselectedSet = useMemo(() => {
-    return cases.filter((c) => c.account.set === selectedSet);
-  }, [selectedSet, cases]);
 
   useEffect(() => {
     setActiveCases(
@@ -176,22 +199,28 @@ export function PracticeSelector({
     params: URLSearchParams,
   ) => {
     if (queryCases && queryCases != Array.from(selectedCases || []).join(',')) {
+      console.log("estoy al principio");
       const queryCasesArray = queryCases.split(',');
       setSelectedCases(new Set(queryCasesArray));
       return false;
     }
     if (querySet != selectedSet) {
+      console.log("estoy en el diome");
+      console.log(querySet);
       const value = getCasesValue(querySet);
       const valueString = Array.from(value!)
         .map((c) => c.account.id)
         .join(',');
-
+      console.log(valueString);
       if (value) {
+        console.log("estoy en el if de la 212");
         params.set(QueryParams.CASES, valueString);
         return true;
       }
     }
+    
     if (!queryCases) {
+      console.log("estoy al final");
       setSelectedCases(new Set([]));
     }
 
@@ -202,14 +231,28 @@ export function PracticeSelector({
     const value = getCasesValue(selectedSet);
     const valueArray = Array.from(value!).map((c) => c.account.id);
     setSelectedCases(new Set(valueArray));
-    const test = valueArray.join(',');
-    searchParams.set(QueryParams.CASES, test);
+    const joinedArray = valueArray.join(',');
+    searchParams.set(QueryParams.CASES, joinedArray);
     setSearchParams(searchParams);
   };
 
   const onSelectNone = () => {
     setSelectedCases(new Set([]));
     searchParams.set(QueryParams.CASES, Array.from([]).join(','));
+    setSearchParams(searchParams);
+  };
+
+  const onSelectLearning = () => {
+    const solutionsIds = solutions
+      .map((s) => casesMap[s.account.case.toString()].account.id)
+      .sort((idA, idB) => {
+        const numA = Number(idA);
+        const numB = Number(idB);
+        return numA > numB ? 1 : -1;
+      });
+    setSelectedCases(new Set(solutionsIds));
+    const joinedArray = solutionsIds.join(',');
+    searchParams.set(QueryParams.CASES, joinedArray);
     setSearchParams(searchParams);
   };
 
@@ -265,17 +308,26 @@ export function PracticeSelector({
       >
         {(c) => <SelectItem key={c.account.id}>{c.account.id}</SelectItem>}
       </Select>
-      <div className="flex flex-row gap-2 justify-center mt-4">
-        <ButtonWrapper
-          onClick={() => onSelectAll()}
-          text="Select All"
-          variant="shadow"
-        />
-        <ButtonWrapper
-          onClick={() => onSelectNone()}
-          text="Select None"
-          variant="shadow"
-        />
+      <div className="flex flex-col gap-2 justify-center">
+        <div className="flex flex-row gap-2 justify-center mt-4">
+          <ButtonWrapper
+            onClick={() => onSelectAll()}
+            text="Select All"
+            variant="shadow"
+          />
+          <ButtonWrapper
+            onClick={() => onSelectNone()}
+            text="Select None"
+            variant="shadow"
+          />
+        </div>
+        {isLogged && (
+          <ButtonWrapper
+            onClick={() => onSelectLearning()}
+            text="Select Learning"
+            variant="shadow"
+          />
+        )}
       </div>
     </div>
   );
