@@ -43,6 +43,8 @@ pub fn pay_rent_and_refund_to_user<'a, 'info>(
 ) -> Result<()> {
     // Refund lamports if user has some quota left
     if user_profile.sol_funded + refund_amount < max_fund_limit {
+        msg!("Refunding {} lamports to user...", refund_amount);
+
         require!(
             **treasury_lamports >= refund_amount,
             TreasuryError::TreasuryNeedsFunds

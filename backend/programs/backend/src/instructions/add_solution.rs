@@ -49,7 +49,7 @@ pub fn add_solution_handler(ctx: Context<AddSolution>, solution: String) -> Resu
     );
 
     // Check that solution works (current state + solution = solved state for its set)
-    msg!("Checking validity...");
+    msg!("Compressing and checking validity...");
     let compressed_solution = ctx
         .accounts
         .case

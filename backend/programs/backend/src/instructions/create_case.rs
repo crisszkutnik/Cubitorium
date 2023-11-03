@@ -67,6 +67,7 @@ pub fn create_case_handler(
         .ok_or(CubeError::InvalidCase)?;
 
     // Compress setup and compute puzzle state
+    msg!("Compressing sequence and computing puzzle state...");
     ctx.accounts.case.set = set_name;
     let compressed_setup = ctx.accounts.case.set_puzzle_state_and_compress(&setup)?;
 

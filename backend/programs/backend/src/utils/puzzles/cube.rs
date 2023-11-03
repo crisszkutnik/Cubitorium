@@ -117,8 +117,8 @@ impl Cube {
 
 impl Puzzle for Cube {
     /// Compress given move sequence and apply it to the Cube
-    fn compress_and_apply(&mut self, moves: &str) -> Result<Vec<u8>> {
-        let moves = moves.split_whitespace();
+    fn compress_and_apply(&mut self, movestr: &str) -> Result<Vec<u8>> {
+        let moves = movestr.split_whitespace();
 
         let mut out = Vec::<u8>::new();
         let mut writer = BitWriter::endian(&mut out, BigEndian);
@@ -140,6 +140,8 @@ impl Puzzle for Cube {
             .map_err(|_| CompressionError::CompressionError)?;
 
         writer.into_unwritten();
+
+        msg!("Compressed {} into {:?}", movestr, out);
 
         Ok(out)
     }
