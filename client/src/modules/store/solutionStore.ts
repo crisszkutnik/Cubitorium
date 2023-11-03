@@ -22,8 +22,6 @@ interface SolutionStoreState {
   loadIfNotLoaded: () => Promise<void>;
   loadSolutions: () => Promise<void>;
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
-  incrementSolutionLikes: (solutionPk: PublicKey | string) => void;
-  decrementSolutionLikes: (solutionPk: PublicKey | string) => void;
   processSolutionLikesBulk: (diff: Record<string, number>) => void;
 }
 
@@ -222,31 +220,6 @@ export const useSolutionStore = createWithEqualityFn<SolutionStoreState>(
     loadingState: LoadingState.NOT_LOADED,
     setLoadingState: (loadingState: LoadingState) => {
       set({ loadingState });
-    },
-    incrementSolutionLikes: (solutionPk: PublicKey | string) => {
-      const pk = getPKFromStringOrObject(solutionPk);
-      const o = get().solutions.find((s) => s.publicKey.equals(pk));
-
-      if (!o) {
-        return;
-      }
-
-      o.account.likes++;
-
-      set({ solutions: [...get().solutions] });
-    },
-    decrementSolutionLikes: (solutionPk: PublicKey | string) => {
-      const { solutions } = get();
-      const pk = getPKFromStringOrObject(solutionPk);
-      const o = solutions.find((s) => s.publicKey.equals(pk));
-
-      if (!o) {
-        return;
-      }
-
-      o.account.likes--;
-
-      set({ solutions: [...solutions] });
     },
     processSolutionLikesBulk: (diff: Record<string, number>) => {
       const { solutions } = get();

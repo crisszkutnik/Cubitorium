@@ -37,19 +37,6 @@ interface LikeStoreState {
   setLoadingState: (loadingState: LoadingState) => void;
   loadLikes: () => Promise<void>;
   loadIfNotLoaded: () => Promise<void>;
-  likeSolution: (
-    casePublicKey: string | PublicKey,
-    solutionAcc: SolutionAccount,
-  ) => Promise<void>;
-  removeLike: (
-    casePublicKey: string | PublicKey,
-    solutionAcc: SolutionAccount,
-  ) => Promise<void>;
-  setLearningStatus: (
-    casePublicKey: string | PublicKey,
-    solution: string,
-    learningStatus: LearningStatus,
-  ) => Promise<void>;
   likeSolutionTx: (
     casePublicKey: string | PublicKey,
     solutionAcc: SolutionAccount,
@@ -147,39 +134,6 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       if (loadingState === LoadingState.NOT_LOADED) {
         loadLikes();
       }
-    },
-    likeSolution: async (
-      casePublicKey: string | PublicKey,
-      solutionAcc: SolutionAccount,
-    ) => {
-      const solution = decompress(solutionAcc.account.moves);
-
-      const solutionPda = getSolutionPda(
-        casePublicKey,
-        solution,
-        web3Layer.programId,
-      );
-
-      await web3Layer.likeSolution(solutionPda);
-
-      const likePda = getLikePda(
-        web3Layer.loggedUserPK,
-        solutionPda,
-        web3Layer.programId,
-      );
-
-      const acc = await web3Layer.loadLike(likePda);
-
-      const likesMap = {
-        ...get().likesMap,
-        [likePda.toString()]: acc,
-      };
-
-      set({ likesMap });
-      useSolutionStore.getState().incrementSolutionLikes(solutionAcc.publicKey);
-      useUserStore
-        .getState()
-        .maybeIncrementLikesReceived(solutionAcc.account.author);
     },
     likeSolutionTx: async (
       casePublicKey: string | PublicKey,
@@ -303,64 +257,6 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       }
 
       set({ remainingTransactions: newTxs });
-    },
-    removeLike: async (
-      casePublicKey: string | PublicKey,
-      solutionAcc: SolutionAccount,
-    ) => {
-      const solution = decompress(solutionAcc.account.moves);
-
-      const solutionPda = getSolutionPda(
-        casePublicKey,
-        solution,
-        web3Layer.programId,
-      );
-
-      await web3Layer.removeLike(solutionPda);
-
-      const key = getLikePda(
-        web3Layer.loggedUserPK,
-        solutionPda,
-        web3Layer.programId,
-      );
-
-      const likesMap = { ...get().likesMap };
-      delete likesMap[key.toString()];
-
-      set({ likesMap });
-      useSolutionStore.getState().decrementSolutionLikes(solutionAcc.publicKey);
-      useUserStore
-        .getState()
-        .maybeDecrementLikesReceived(solutionAcc.account.author);
-    },
-    setLearningStatus: async (
-      casePublicKey: string | PublicKey,
-      solution: string,
-      learningStatus: LearningStatus,
-    ) => {
-      const solutionPda = getSolutionPda(
-        casePublicKey,
-        solution,
-        web3Layer.programId,
-      );
-
-      await web3Layer.setLearningStatus(learningStatus, solutionPda);
-
-      const key = getLikePda(
-        web3Layer.loggedUserPK,
-        solutionPda,
-        web3Layer.programId,
-      );
-
-      const likesMap = { ...get().likesMap };
-
-      const mapKey = key.toString();
-
-      likesMap[mapKey].account.learningStatus =
-        getRawLearningStatus(learningStatus);
-      likesMap[mapKey].account.parsedLearningStatus = learningStatus;
-
-      set({ likesMap });
     },
     clearTxs: () => {
       set({ remainingTransactions: [] });

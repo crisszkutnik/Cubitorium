@@ -25,8 +25,6 @@ interface UserStoreState {
   login: (wallet: AnchorWallet) => void;
   logout: () => void;
   sendUserInfo: SendUserInfoType;
-  maybeIncrementLikesReceived: (userPk: PublicKey | string) => void;
-  maybeDecrementLikesReceived: (userPk: PublicKey | string) => void;
   processLikesBulk: (authorDiff: Record<string, number>) => void;
 }
 
@@ -162,36 +160,6 @@ export const useUserStore = createWithEqualityFn<UserStoreState>(
       }
 
       await get().loadUser(state.loggedUserPk);
-    },
-    maybeIncrementLikesReceived: (userPk: PublicKey | string) => {
-      const pk = getStringFromPKOrObject(userPk);
-
-      const { users } = get();
-
-      const user = users.find((u) => u.publicKey === pk);
-
-      if (!user) {
-        return;
-      }
-
-      user.likesReceived++;
-
-      set({ users: [...users] });
-    },
-    maybeDecrementLikesReceived: (userPk: PublicKey | string) => {
-      const pk = getStringFromPKOrObject(userPk);
-
-      const { users } = get();
-
-      const user = users.find((u) => u.publicKey === pk);
-
-      if (!user) {
-        return;
-      }
-
-      user.likesReceived--;
-
-      set({ users: [...users] });
     },
     processLikesBulk: (authorDiff: Record<string, number>) => {
       const { users } = get();
