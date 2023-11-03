@@ -9,7 +9,7 @@ import { Backend, IDL } from '../../../../backend/target/types/backend';
 import { UserInfo } from '../types/userInfo.interface';
 import { GlobalConfig } from '../types/globalConfig.interface';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
-import { PublicKey, TransactionSignature } from '@solana/web3.js';
+import { PublicKey, Transaction, TransactionSignature } from '@solana/web3.js';
 import { Web3Connection } from './web3Connection';
 import {
   getPKFromStringOrObject,
@@ -29,6 +29,8 @@ import {
   ParsedLikeCertificateAccount,
 } from '../types/likeCertificate.interface';
 import { SolutionAlreadyExistsError } from '../utils/SolutionAlreadyExistsError';
+import { UserDoesNotHaveUserInfo } from '../utils/UserDoesNotHaveUserInfo';
+import { PendingTransaction, TransactionType } from '../store/likeStore';
 
 export enum PDATypes {
   UserInfo = 'user-info',
@@ -287,7 +289,19 @@ class Web3Layer extends Web3Connection {
       cSolution,
       this.programId,
     );
-    console.log(solutionPda.toString());
+
+    const pda = this.getPdaWithAuth(
+      PDATypes.UserInfo,
+      getPKFromStringOrObject(this.loggedUserPK),
+    );
+
+    const hasUserInfo = !!(await this.program.account.userInfo.fetchNullable(
+      pda,
+    ));
+
+    if (!hasUserInfo) {
+      throw new UserDoesNotHaveUserInfo();
+    }
 
     try {
       // Check if account exists, if it does not exists it will throw
@@ -392,6 +406,56 @@ class Web3Layer extends Web3Connection {
 
   async setMaxFundLimit(value: string) {
     await this.program.methods.setMaxFundLimit(new BN(value)).rpc();
+  }
+
+  async commitLikesTransactions(arr: PendingTransaction[]) {
+    const pda = this.getPdaWithAuth(
+      PDATypes.UserInfo,
+      getPKFromStringOrObject(this.loggedUserPK),
+    );
+
+    const hasUserInfo = !!(await this.program.account.userInfo.fetchNullable(
+      pda,
+    ));
+
+    if (!hasUserInfo) {
+      throw new UserDoesNotHaveUserInfo();
+    }
+
+    const tx = new Transaction();
+
+    for (const { type, solutionPda, learningStatusValue: value } of arr) {
+      if (type === TransactionType.LIKE_ADD) {
+        tx.add(
+          await this.program.methods
+            .likeSolution()
+            .accounts({
+              solutionPda,
+            })
+            .transaction(),
+        );
+      } else if (type === TransactionType.LIKE_REMOVE) {
+        tx.add(
+          await this.program.methods
+            .removeLike()
+            .accounts({
+              solutionPda,
+            })
+            .transaction(),
+        );
+      } else if (type === TransactionType.LEARNING_STATUS && value) {
+        tx.add(
+          await this.program.methods
+            .setLearningStatus(getRawLearningStatus(value))
+            .accounts({
+              solutionPda,
+            })
+            .transaction(),
+        );
+      }
+    }
+
+    await this.signAndSendTx(tx);
   }
 }
 

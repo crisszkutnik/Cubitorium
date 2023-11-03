@@ -83,7 +83,7 @@ export function MyLikes() {
     loadCasesIfNotLoaded();
     loadSetsIfNotLoaded();
     loadLikesIfNotLoaded();
-  }, []);
+  }, [likesLoadingState]);
 
   useEffect(() => {
     sortSolutionsBySet();

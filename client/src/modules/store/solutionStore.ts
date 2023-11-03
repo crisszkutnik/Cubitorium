@@ -22,8 +22,7 @@ interface SolutionStoreState {
   loadIfNotLoaded: () => Promise<void>;
   loadSolutions: () => Promise<void>;
   addSolution: (selectedCase: CaseAccount, solution: string) => Promise<void>;
-  incrementSolutionLikes: (solutionPk: PublicKey | string) => void;
-  decrementSolutionLikes: (solutionPk: PublicKey | string) => void;
+  processSolutionLikesBulk: (diff: Record<string, number>) => void;
 }
 
 export function selectSolutionsByCaseAndLikes(
@@ -243,28 +242,16 @@ export const useSolutionStore = createWithEqualityFn<SolutionStoreState>(
     setLoadingState: (loadingState: LoadingState) => {
       set({ loadingState });
     },
-    incrementSolutionLikes: (solutionPk: PublicKey | string) => {
-      const pk = getPKFromStringOrObject(solutionPk);
-      const o = get().solutions.find((s) => s.publicKey.equals(pk));
-
-      if (!o) {
-        return;
-      }
-
-      o.account.likes++;
-
-      set({ solutions: [...get().solutions] });
-    },
-    decrementSolutionLikes: (solutionPk: PublicKey | string) => {
+    processSolutionLikesBulk: (diff: Record<string, number>) => {
       const { solutions } = get();
-      const pk = getPKFromStringOrObject(solutionPk);
-      const o = solutions.find((s) => s.publicKey.equals(pk));
 
-      if (!o) {
-        return;
+      for (const [key, value] of Object.entries(diff)) {
+        const o = solutions.find((s) => s.publicKey.toString() === key);
+
+        if (o) {
+          o.account.likes += value;
+        }
       }
-
-      o.account.likes--;
 
       set({ solutions: [...solutions] });
     },

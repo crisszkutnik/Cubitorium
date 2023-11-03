@@ -17,11 +17,14 @@ import { MyLikes } from './pages/userInfo/MyLikes';
 import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 import { NotFound } from './pages/NotFound';
 import { Guides } from './pages/guide/Guides';
+import { PendingTxsIndicator } from './components/PendingTxsIndicator';
+import { useLikeStore } from './modules/store/likeStore';
 
 function App() {
   const { autoConnect, connected } = useWallet();
   const anchorWallet = useAnchorWallet();
   const { login, logout, isLogged } = useUserStore();
+  const { reset } = useLikeStore();
 
   useEffect(() => {
     if ((autoConnect && connected) || !autoConnect) {
@@ -29,6 +32,7 @@ function App() {
         login(anchorWallet);
       } else if (isLogged) {
         logout();
+        reset();
       }
     }
   }, [autoConnect, connected, anchorWallet]);
@@ -37,8 +41,9 @@ function App() {
     return (
       <BrowserRouter>
         <Navbar />
+        <PendingTxsIndicator />
         <Routes>
-          <Route path='*' element={<NotFound />}/>
+          <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/guides/" element={<Guides />} />
           <Route path="/algorithms" element={<Algorithms />} />
@@ -56,7 +61,7 @@ function App() {
             <Route path=":id" element={<InfoByUserID />} />
           </Route>
           <Route path="/practice" element={<Practice />} />
-        </Routes>      
+        </Routes>
       </BrowserRouter>
     );
   }

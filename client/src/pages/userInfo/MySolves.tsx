@@ -95,7 +95,7 @@ export function MySolves() {
     loadCasesIfNotLoaded();
     loadSetsIfNotLoaded();
     loadLikesIfNotLoaded();
-  }, []);
+  }, [likesLoadingState]);
 
   useEffect(() => {
     sortSolutionsBySet();

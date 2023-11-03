@@ -41,7 +41,7 @@ export function Algorithms() {
     loadCasesIfNotLoaded();
     loadSolutionsIfNotLoaded();
     loadLikesIfNotLoaded();
-  }, []);
+  }, [likesLoadingState]);
 
   const hasAllRequiredData = () => {
     return (

@@ -85,7 +85,7 @@ export function AllAlgorithms() {
     loadSolutionsIfNotLoaded();
     loadAlgorithmsIfNotLoaded();
     loadLikesIfNotLoaded();
-  }, []);
+  }, [likesLoadingState]);
 
   const onChangeCase = (newCase: string, newSet: string) => {
     searchParams.set('case', newCase);
