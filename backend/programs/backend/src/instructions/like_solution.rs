@@ -60,6 +60,7 @@ pub fn like_solution_handler(ctx: Context<LikeSolution>) -> Result<()> {
     if ctx.accounts.user_profile.sol_funded + like_certificate_rent
         < ctx.accounts.global_config.max_fund_limit
     {
+        msg!("Refunding {} lamports to user...", like_certificate_rent);
         require!(
             ctx.accounts.treasury.to_account_info().lamports() >= like_certificate_rent,
             TreasuryError::TreasuryNeedsFunds

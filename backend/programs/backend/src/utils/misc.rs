@@ -41,6 +41,8 @@ pub fn pay_rent_and_refund_to_user<'a, 'info>(
     mut user_lamports: RefMut<&'a mut u64>,
     user_profile: &mut Account<UserInfo>,
 ) -> Result<()> {
+    let mut paid_for_user = 0;
+
     // Refund lamports if user has some quota left
     if user_profile.sol_funded + refund_amount < max_fund_limit {
         require!(
@@ -51,6 +53,7 @@ pub fn pay_rent_and_refund_to_user<'a, 'info>(
         **treasury_lamports -= refund_amount;
         **user_lamports += refund_amount;
         user_profile.sol_funded += refund_amount;
+        paid_for_user += refund_amount;
     }
 
     // Transfer extra rent
@@ -60,6 +63,9 @@ pub fn pay_rent_and_refund_to_user<'a, 'info>(
     );
     **treasury_lamports -= extra_amount;
     **pda_lamports += extra_amount;
+    paid_for_user += extra_amount;
+
+    msg!("Refunding {} lamports to user...", paid_for_user);
 
     Ok(())
 }
