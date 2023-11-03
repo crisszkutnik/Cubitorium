@@ -3,6 +3,7 @@ import { Alert } from '../Alert';
 import { SendTransactionError } from '@solana/web3.js';
 import { AnchorError } from '@coral-xyz/anchor';
 import { TooManyPendingTransactions } from '../../modules/utils/TooManyPendingTransactions';
+import { UserDoesNotHaveUserInfo } from '../../modules/utils/UserDoesNotHaveUserInfo';
 
 interface Context {
   success: (text: string) => void;
@@ -54,6 +55,10 @@ export function AlertProvider(props: Props) {
     } else if (e instanceof TooManyPendingTransactions) {
       setDescription(
         'Too many pending pending actions to be save. Save/clear them to continue.',
+      );
+    } else if (e instanceof UserDoesNotHaveUserInfo) {
+      setDescription(
+        'Go to "My profile" and complete your information in order to be able to upload and like solutions',
       );
     } else if (e instanceof SendTransactionError && e.message) {
       const msgToFind = 'Error Message: ';

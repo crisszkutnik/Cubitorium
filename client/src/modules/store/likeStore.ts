@@ -53,6 +53,7 @@ interface LikeStoreState {
   ) => Promise<void>;
   clearTxs: () => void;
   commitTxs: () => Promise<void>;
+  reset: () => void;
 }
 
 export const selectLikeForSolution = (solutionPda: string | PublicKey) => {
@@ -345,6 +346,13 @@ export const useLikeStore = createWithEqualityFn<LikeStoreState>(
       set({ remainingTransactions: [], likesMap: newLikesMap });
       useSolutionStore.getState().processSolutionLikesBulk(solutionDiff);
       useUserStore.getState().processLikesBulk(authorDiff);
+    },
+    reset: () => {
+      set({
+        likesMap: {},
+        loadingState: LoadingState.NOT_LOADED,
+        remainingTransactions: [],
+      });
     },
   }),
   Object.is,

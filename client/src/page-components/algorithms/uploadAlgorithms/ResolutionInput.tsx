@@ -9,7 +9,6 @@ import { useSolutionStore } from '../../../modules/store/solutionStore';
 import { ScrambleDisplay2 } from '../../../components/ScrambleDisplay2';
 import { SolutionAlreadyExistsError } from '../../../modules/utils/SolutionAlreadyExistsError';
 import { decompress } from '../../../modules/utils/compression';
-import { UserDoesNotHaveUserInfo } from '../../../modules/utils/UserDoesNotHaveUserInfo';
 
 interface Props {
   activeCase: CaseAccount | undefined;
@@ -43,10 +42,6 @@ export function ResolutionInput({ activeCase }: Props) {
 
       if (e instanceof SolutionAlreadyExistsError) {
         error('This solution has already been added by another user :(', e);
-      } else if (e instanceof UserDoesNotHaveUserInfo) {
-        error(
-          'Go to "My profile" and complete your information in order to be able to upload solutions',
-        );
       } else {
         error(
           'Failed to add solution. Check that the solution you submitted solves the selected case!',

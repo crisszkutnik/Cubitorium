@@ -409,6 +409,19 @@ class Web3Layer extends Web3Connection {
   }
 
   async commitLikesTransactions(arr: PendingTransaction[]) {
+    const pda = this.getPdaWithAuth(
+      PDATypes.UserInfo,
+      getPKFromStringOrObject(this.loggedUserPK),
+    );
+
+    const hasUserInfo = !!(await this.program.account.userInfo.fetchNullable(
+      pda,
+    ));
+
+    if (!hasUserInfo) {
+      throw new UserDoesNotHaveUserInfo();
+    }
+
     const tx = new Transaction();
 
     for (const { type, solutionPda, learningStatusValue: value } of arr) {

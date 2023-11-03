@@ -43,7 +43,7 @@ export function InfoByUserID() {
     loadCasesIfNotLoaded();
     loadLikesIfNotLoaded();
     loadSetsIfNotLoaded();
-  }, []);
+  }, [likesLoadingState]);
 
   const hasAllRequiredData = () => {
     return (

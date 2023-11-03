@@ -18,11 +18,13 @@ import { AuthenticatedRoute } from './components/AuthenticatedRoute';
 import { NotFound } from './pages/NotFound';
 import { Guides } from './pages/guide/Guides';
 import { PendingTxsIndicator } from './components/PendingTxsIndicator';
+import { useLikeStore } from './modules/store/likeStore';
 
 function App() {
   const { autoConnect, connected } = useWallet();
   const anchorWallet = useAnchorWallet();
   const { login, logout, isLogged } = useUserStore();
+  const { reset } = useLikeStore();
 
   useEffect(() => {
     if ((autoConnect && connected) || !autoConnect) {
@@ -30,6 +32,7 @@ function App() {
         login(anchorWallet);
       } else if (isLogged) {
         logout();
+        reset();
       }
     }
   }, [autoConnect, connected, anchorWallet]);
