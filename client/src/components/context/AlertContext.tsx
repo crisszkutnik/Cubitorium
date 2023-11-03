@@ -45,6 +45,10 @@ export function AlertProvider(props: Props) {
       setShowAlert(false);
     }
 
+    if (description) {
+      setDescription('');
+    }
+
     if (e instanceof AnchorError) {
       setDescription(e.error.errorMessage);
     } else if (e instanceof TooManyPendingTransactions) {
