@@ -76,7 +76,7 @@ export function PracticeSelector({
   
   const solutions = useSolutionStore(
     (state) =>
-      isLogged ? selectLearningSolutionsForCases(likesMap, cases)(state) : [],
+      isLogged ? selectLearningSolutionsForCases(likesMap, casesForselectedSet)(state) : [],
     shallow,
   );
 
