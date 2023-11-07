@@ -199,28 +199,22 @@ export function PracticeSelector({
     params: URLSearchParams,
   ) => {
     if (queryCases && queryCases != Array.from(selectedCases || []).join(',')) {
-      console.log("estoy al principio");
       const queryCasesArray = queryCases.split(',');
       setSelectedCases(new Set(queryCasesArray));
       return false;
     }
     if (querySet != selectedSet) {
-      console.log("estoy en el diome");
-      console.log(querySet);
       const value = getCasesValue(querySet);
       const valueString = Array.from(value!)
         .map((c) => c.account.id)
         .join(',');
-      console.log(valueString);
       if (value) {
-        console.log("estoy en el if de la 212");
         params.set(QueryParams.CASES, valueString);
         return true;
       }
     }
     
     if (!queryCases) {
-      console.log("estoy al final");
       setSelectedCases(new Set([]));
     }
 

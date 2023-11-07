@@ -15,9 +15,10 @@ interface Props {
   activeCases: CaseAccount[] | undefined;
   performance: PerformanceCase[];
   setPerformance: Dispatch<SetStateAction<PerformanceCase[]>>;
+  setLastCase: Dispatch<SetStateAction<CaseAccount | undefined>>;
 }
 
-export function StopWatch({ activeCases, performance, setPerformance }: Props) {
+export function StopWatch({ activeCases, performance, setPerformance, setLastCase }: Props) {
   // state to store time
   const [time, setTime] = useState(0);
   const [redTime, setRedTime] = useState(false);
@@ -115,6 +116,7 @@ export function StopWatch({ activeCases, performance, setPerformance }: Props) {
 
   function updateCase() {
     if (activeCases) {
+      setLastCase(selectedCase);
       setSelectedCase(
         activeCases[Math.floor(Math.random() * activeCases.length)],
       );
