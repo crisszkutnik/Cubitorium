@@ -71,7 +71,6 @@ export function StopWatch({ activeCases, performance, setPerformance, setLastCas
         newPerformance.push(newPerformanceCase);
       }
       setPerformance(newPerformance);
-      window.scrollTo(0, 0);
     }
   }
 
