@@ -32,6 +32,8 @@ export function Practice() {
     undefined,
   );
 
+  const [lastCase, setLastCase] = useState<CaseAccount>();
+
   const [performance, setPerformance] = useState<PerformanceCase[]>([]);
 
   const [selectedPuzzle, setSelectedPuzzle] = useState<string>('3x3');
@@ -82,7 +84,7 @@ export function Practice() {
           />
           {performance.length > 0 && (
             <LastCase
-              performance={performance[performance.length - 1]}
+              lastCase={lastCase as CaseAccount}
               solutions={solutions}
             />
           )}
@@ -90,6 +92,7 @@ export function Practice() {
         <div className="flex flex-col w-3/4 items-center">
           <StopWatch
             activeCases={activeCases}
+            setLastCase={setLastCase}
             performance={performance}
             setPerformance={setPerformance}
           />

@@ -49,7 +49,7 @@ export const Performance = ({ setPerformance, performance }: Props) => {
             </p>
           )}
         </div>
-        <table className="w-5/6 overscroll-none">
+        <table className="w-5/6">
           <thead>
             <tr>
               <th>&nbsp;</th>
