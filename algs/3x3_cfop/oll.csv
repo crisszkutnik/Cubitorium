@@ -33,9 +33,17 @@ OCLL7, R U2 R' U' R U' R', R U R' U R U2 R'
 OELL1, R U R' U' L R' F R F' L', Rw U R' U' M U R U' R'
 OELL2, R' D F' D' R L' F U F' L, R U R' U' M' U R U' Rw'
 Awkward1, F R' U2 B' R B U2 R F2 L F L', R U R' U' R U' R' F' U' F R U R'
+Awkward1, F R' U2 B' R B U2 R F2 L F L', U' Rw2 D' Rw U Rw' D Rw2 U' Rw' U' Rw
+Awkward1, F R' U2 B' R B U2 R F2 L F L', U' M U R U R' U' R' F R F' M'
 Awkward2, F' U' L U2 L2 U' L2 U' L' F, F U R U2 R' U' R U2 R' U' F'
+Awkward2, F' U' L U2 L2 U' L2 U' L' F, U Rw' D' Rw U' Rw' D Rw2 U' Rw' U Rw U Rw'
+Awkward2, F' U' L U2 L2 U' L2 U' L' F, U' S' R' U' R Fw R' U R U' F'
 Awkward3, U R' L F' D R F' R' D' L' F R, R U R' U R U2 R' F R U R' U' F'
+Awkward3, U R' L F' D R F' R' D' L' F R, F U R2 D R' U' R D' R2 F'
+Awkward3, U R' L F' D R F' R' D' L' F R, U S U' R' F' U' F U R S'
 Awkward4, R U R' U R U2 R' B' R' U' R U B, R' U' R U' R' U2 R F R U R' U' F'
+Awkward4, R U R' U R U2 R' B' R' U' R U B, U F S' R U R' U' F' U S
+Awkward4, R U R' U R U2 R' B' R' U' R U B, U R' U' F2 Uw' R U R' D R2 B y
 P1, R' U L F U F' U' R L', R' U' F U R U' R' F' R
 P2, F B L F' U F L' F' U' B', S R U R' U' R' F R Fw'
 P3, R' F' U' F U R, R' U' F' U F R
