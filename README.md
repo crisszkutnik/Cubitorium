@@ -1,28 +1,60 @@
-# Proyecto Final - 2023
+# Cubitorium | final-thesis | 2023
 
 ## Setup
 
-1. Instalar Node >= 18, recomiendo usar [NVM](https://github.com/nvm-sh/nvm)
-2. Instalar [YARN](https://yarnpkg.com/getting-started/install)
-3. Instalar Rust, Solana y Anchor siguiendo [esta guia](https://www.anchor-lang.com/docs/installation). Pueden ignorar la parte de YARN porque ya lo instalaron
-4. Probar el setup
-   - Parados sobre la carpeta `client` corran el comando `yarn build`. Se les tiene que compilar el front y el output va a estar en `client/dist`
-   - Parados sobre la carpeta `backend`
-     - Primero correr `yarn test`. Se tiene que compilar el programa de Rust cuya salida esta en `backend/target` y se tienen que correr los tests. Para solo compilar, hacer `yarn build`.
-5. Correr la app
-   - Parados sobre la carpeta `backend`, correr Solana localmente corriendo `solana-test-validator`
-   - Tambien parados sobre `backend`, correr los siguientes comandos:
-     ```
-     solana config set --url localhost
-     yarn build
-     anchor deploy
-     ```
-     Se deberia hacer el deploy en tu instancia local de Solana
-   - Sobre la carpeta `client` correr `yarn dev` e ir a la URL que salga en pantalla. Agregar la ruta `/test` y se deberia mostrar un boton para conectarse a una wallet (por ahora solo funciona con Phantom). Una vez conectado, hay dos campos para enviar informacion de usuario a Solana. Si se guarda correctamente, la misma se deberia mostrar en pantalla
-6. (OPCIONAL) Llenar el backend de data
-   - Correr el comando `yarn init-backend` para cargar dos perfiles, casos, soluciones, y algunos likes y estados de aprendizaje. Modificar el archivo en `backend/init-backend/init-backend.ts` a gusto para cargar los casos o las cosas que uno desee. Demora unos segundos / un minuto.
+1. Install Node >= 18, [NVM](https://github.com/nvm-sh/nvm) is recommended
+2. Install [Yarn](https://yarnpkg.com/getting-started/install)
+3. Install Rust, Solana and Anchor following [this guide](https://www.anchor-lang.com/docs/installation). Ignore `yarn` part as you already have it
 
-## Contributors
+### Test the setup
+
+1. From `client/` run `yarn build`. Check that the compiled frontend shows in `client/dist`
+2. From `backend/` run `yarn test`. Backend will compile to `backend/target` and tests will run
+   - If you only want to compile run `yarn build`
+
+## Running the app
+
+We need to run a local validator, deploy the backend, and serve the frontend.
+
+### Run the validator
+
+In one terminal:
+
+```shell
+cd ~
+solana config set --url localhost
+solana-test-validator
+```
+
+### Deploy the backend
+
+In another terminal:
+
+```shell
+cd backend
+yarn build
+anchor deploy
+```
+
+Alternatively, to compile, deploy, and load data all with one command:
+
+```shell
+cd backend
+yarn init-backend
+```
+
+### Serve the frontend
+
+In any terminal that's not running something:
+
+```shell
+cd client
+yarn dev
+```
+
+Now open `localhost:5173` in your browser of preference.
+
+## Authors
 
 | Name               | Email                   | FRBA email                     |
 | ------------------ | ----------------------- | ------------------------------ |
