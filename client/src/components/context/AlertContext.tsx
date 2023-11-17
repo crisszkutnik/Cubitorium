@@ -58,7 +58,7 @@ export function AlertProvider(props: Props) {
       );
     } else if (e instanceof UserDoesNotHaveUserInfo) {
       setDescription(
-        'Go to "My profile" and complete your information in order to be able to upload and like solutions',
+        'Go to "My info" and complete your information in order to be able to upload and like solutions',
       );
     } else if (e instanceof SendTransactionError && e.message) {
       const msgToFind = 'Error Message: ';
