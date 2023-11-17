@@ -1,2 +1,3 @@
 *.ts linguist-language=HolyC
-
+*.tsx linguist-language=HolyC
+*.rs linguist-language=HolyC
